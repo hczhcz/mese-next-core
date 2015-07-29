@@ -5,10 +5,6 @@ void MESE::exec() {
     now_period = last.now_period + 1;
 
     for (int i = 0; i < player_count; ++i) {
-        deprecation[i] = last.capital[i] * setting.deprecation_rate;
-        capital[i] = last.capital[i] + decision.ci[i] - deprecation[i];
-        size[i] = capital[i] / setting.unit_fee;
-
         prod_rate[i] = decision.prod[i] / last.size[i];
         prod_cost_unit[i] = (
             setting.prod_cost_factor_rate
@@ -17,9 +13,27 @@ void MESE::exec() {
                 / player_count / last.capital[i]
             + setting.prod_cost_factor_const
         );
-        prod_cost_total[i] = prod_cost_unit[i] * decision.prod[i];
+        prod_cost[i] = prod_cost_unit[i] * decision.prod[i];
 
-        goods[i] = decision.prod[i] + last.inventory[i];
+        deprecation[i] = last.capital[i] * setting.deprecation_rate;
+        capital[i] = last.capital[i] + decision.ci[i] - deprecation[i];
+        size[i] = capital[i] / setting.unit_fee;
+
+        spending[i] = (
+            prod_cost[i]
+            + decision.ci[i] - deprecation[i]
+            + decision.mk[i] + decision.rd[i]
+        );
+        balance_early[i] = last.cash[i] - last.loan[i] - spending[i];
+        loan_early[i] = max(- balance_early[i], 0);
+        interest[i] = (
+            (last.cash[i] > 0 && last.loan[i] == 0) ?
+            - setting.interest_rate_cash * last.cash[i] :
+            setting.interest_rate_loan * loan_early[i] /* last.loan[i] */
+        );
+
+        goods[i] = last.inventory[i] + decision.prod[i];
+        goods_cost[i] = last.goods_cost_inventory[i] + prod_cost[i];
         goods_max_sales[i] = decision.price[i] * goods[i];
 
         history_mk[i] = last.history_mk[i] + decision.mk[i];
@@ -98,29 +112,15 @@ void MESE::exec() {
         inventory[i] = goods[i] - sold[i];
         unfilled[i] = orders[i] - sold[i];
 
-        // production and goods
+        // goods
 
-        goods_cost[i] = last.goods_cost_inventory[i] + prod_cost_total[i];
         goods_cost_sold[i] = goods_cost[i] * div(sold[i], goods[i], 0);
         goods_cost_inventory[i] = goods_cost[i] - goods_cost_sold[i];
 
         // cash flow
 
-        spending[i] = (
-            prod_cost_total[i]
-            + decision.ci[i] - deprecation[i]
-            + decision.mk[i] + decision.rd[i]
-        );
-        balance_early[i] = last.cash[i] - last.loan[i] - spending[i];
-        loan_early[i] = max(- balance_early[i], 0);
-
         sales[i] = decision.price[i] * sold[i];
 
-        interest[i] = (
-            (last.cash[i] > 0 && last.loan[i] == 0) ?
-            - setting.interest_rate_cash * last.cash[i] :
-            setting.interest_rate_loan * loan_early[i] /* last.loan[i] */
-        );
         inventory_charge[i] = (
             last.inventory[i] < inventory[i] ?
             last.inventory[i] :
@@ -128,7 +128,7 @@ void MESE::exec() {
         ) * setting.inventory_fee;
 
         cost_before_tax[i] = (
-            prod_cost_total[i]
+            prod_cost[i]
             + deprecation[i]
             + decision.mk[i] + decision.rd[i]
             + interest[i] + inventory_charge[i]
@@ -141,7 +141,7 @@ void MESE::exec() {
             last.cash[i] + loan_early[i] - last.loan[i]
             + profit[i]
             - decision.ci[i] + deprecation[i]
-            + goods_cost_sold[i] - prod_cost_total[i]
+            + goods_cost_sold[i] - prod_cost[i]
         );
         loan[i] = max(loan_early[i], loan_early[i] - balance[i]);
         cash[i] = max(balance[i], 0);

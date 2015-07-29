@@ -74,14 +74,20 @@ struct MESE {
         double rd[BUFSIZE];
     } decision;
 
+    double prod_rate[BUFSIZE];
+    double prod_cost_unit[BUFSIZE];
+    double prod_cost[BUFSIZE];
+
     double deprecation[BUFSIZE];
     double capital[BUFSIZE];
     double size[BUFSIZE];
+    double spending[BUFSIZE];
+    double balance_early[BUFSIZE];
+    double loan_early[BUFSIZE];
+    double interest[BUFSIZE];
 
-    double prod_rate[BUFSIZE];
-    double prod_cost_unit[BUFSIZE];
-    double prod_cost_total[BUFSIZE];
     double goods[BUFSIZE];
+    double goods_cost[BUFSIZE];
     double goods_max_sales[BUFSIZE];
 
     double history_mk[BUFSIZE];
@@ -105,16 +111,10 @@ struct MESE {
     double inventory[BUFSIZE];
     double unfilled[BUFSIZE];
 
-    double goods_cost[BUFSIZE];
     double goods_cost_sold[BUFSIZE];
     double goods_cost_inventory[BUFSIZE];
 
-    double spending[BUFSIZE];
-    double balance_early[BUFSIZE];
-    double loan_early[BUFSIZE];
-
     double sales[BUFSIZE];
-    double interest[BUFSIZE];
     double inventory_charge[BUFSIZE];
     double cost_before_tax[BUFSIZE];
     double profit_before_tax[BUFSIZE];
