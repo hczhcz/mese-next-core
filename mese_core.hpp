@@ -3,14 +3,16 @@
 #include <cmath>
 #include <string>
 
-struct MESE {
-    static const size_t BUFSIZE = 32;
+namespace mese {
 
-    MESE &last;
+const size_t MAX_PLAYER = 16;
+const size_t MAX_PERIOD = 32;
 
+struct Period {
     size_t player_count;
     size_t now_period;
-    std::string company_name[BUFSIZE]; // TODO
+
+    Period &last;
 
     struct {
         // decision limits
@@ -67,31 +69,31 @@ struct MESE {
     } setting;
 
     struct {
-        double price[BUFSIZE];
-        double prod[BUFSIZE];
-        double mk[BUFSIZE];
-        double ci[BUFSIZE];
-        double rd[BUFSIZE];
+        double price[MAX_PLAYER];
+        double prod[MAX_PLAYER];
+        double mk[MAX_PLAYER];
+        double ci[MAX_PLAYER];
+        double rd[MAX_PLAYER];
     } decision;
 
-    double prod_rate[BUFSIZE];
-    double prod_cost_unit[BUFSIZE];
-    double prod_cost[BUFSIZE];
+    double prod_rate[MAX_PLAYER];
+    double prod_cost_unit[MAX_PLAYER];
+    double prod_cost[MAX_PLAYER];
 
-    double deprecation[BUFSIZE];
-    double capital[BUFSIZE];
-    double size[BUFSIZE];
-    double spending[BUFSIZE];
-    double balance_early[BUFSIZE];
-    double loan_early[BUFSIZE];
-    double interest[BUFSIZE];
+    double deprecation[MAX_PLAYER];
+    double capital[MAX_PLAYER];
+    double size[MAX_PLAYER];
+    double spending[MAX_PLAYER];
+    double balance_early[MAX_PLAYER];
+    double loan_early[MAX_PLAYER];
+    double interest[MAX_PLAYER];
 
-    double goods[BUFSIZE];
-    double goods_cost[BUFSIZE];
-    double goods_max_sales[BUFSIZE];
+    double goods[MAX_PLAYER];
+    double goods_cost[MAX_PLAYER];
+    double goods_max_sales[MAX_PLAYER];
 
-    double history_mk[BUFSIZE];
-    double history_rd[BUFSIZE];
+    double history_mk[MAX_PLAYER];
+    double history_rd[MAX_PLAYER];
 
     double average_price_given;
     double average_price_planned;
@@ -100,43 +102,43 @@ struct MESE {
     double demand_effect_rd;
     double orders_demand;
 
-    double share_effect_price[BUFSIZE];
-    double share_effect_mk[BUFSIZE];
-    double share_effect_rd[BUFSIZE];
-    double share[BUFSIZE];
-    double share_compressed[BUFSIZE];
+    double share_effect_price[MAX_PLAYER];
+    double share_effect_mk[MAX_PLAYER];
+    double share_effect_rd[MAX_PLAYER];
+    double share[MAX_PLAYER];
+    double share_compressed[MAX_PLAYER];
 
-    double orders[BUFSIZE];
-    double sold[BUFSIZE];
-    double inventory[BUFSIZE];
-    double unfilled[BUFSIZE];
+    double orders[MAX_PLAYER];
+    double sold[MAX_PLAYER];
+    double inventory[MAX_PLAYER];
+    double unfilled[MAX_PLAYER];
 
-    double goods_cost_sold[BUFSIZE];
-    double goods_cost_inventory[BUFSIZE];
+    double goods_cost_sold[MAX_PLAYER];
+    double goods_cost_inventory[MAX_PLAYER];
 
-    double sales[BUFSIZE];
-    double inventory_charge[BUFSIZE];
-    double cost_before_tax[BUFSIZE];
-    double profit_before_tax[BUFSIZE];
-    double tax_charge[BUFSIZE];
-    double profit[BUFSIZE];
+    double sales[MAX_PLAYER];
+    double inventory_charge[MAX_PLAYER];
+    double cost_before_tax[MAX_PLAYER];
+    double profit_before_tax[MAX_PLAYER];
+    double tax_charge[MAX_PLAYER];
+    double profit[MAX_PLAYER];
 
-    double balance[BUFSIZE];
-    double loan[BUFSIZE];
-    double cash[BUFSIZE];
-    double retern[BUFSIZE];
+    double balance[MAX_PLAYER];
+    double loan[MAX_PLAYER];
+    double cash[MAX_PLAYER];
+    double retern[MAX_PLAYER];
 
-    double mpi_a[BUFSIZE];
-    double mpi_b[BUFSIZE];
-    double mpi_c[BUFSIZE];
-    double mpi_d[BUFSIZE];
-    double mpi_e[BUFSIZE];
-    double mpi_f[BUFSIZE];
-    double mpi[BUFSIZE];
+    double mpi_a[MAX_PLAYER];
+    double mpi_b[MAX_PLAYER];
+    double mpi_c[MAX_PLAYER];
+    double mpi_d[MAX_PLAYER];
+    double mpi_e[MAX_PLAYER];
+    double mpi_f[MAX_PLAYER];
+    double mpi[MAX_PLAYER];
 
     double average_price;
 
-    inline double sum(double (&member)[BUFSIZE]) {
+    inline double sum(double (&member)[MAX_PLAYER]) {
         double result = 0;
 
         for (size_t i = 0; i < player_count; ++i) {
@@ -160,3 +162,14 @@ struct MESE {
 
     void exec();
 };
+
+struct Game {
+    size_t player_count;
+    size_t now_period;
+
+    std::string company_name[MAX_PLAYER]; // TODO
+
+    Period period[MAX_PERIOD];
+};
+
+}

@@ -1,6 +1,8 @@
 #include "mese_core.hpp"
 
-void MESE::exec() {
+namespace mese {
+
+void Period::exec() {
     player_count = last.player_count;
     now_period = last.now_period + 1;
 
@@ -29,7 +31,7 @@ void MESE::exec() {
         interest[i] = (
             (last.cash[i] > 0 && last.loan[i] == 0) ?
             - setting.interest_rate_cash * last.cash[i] :
-            setting.interest_rate_loan * loan_early[i] /* last.loan[i] */
+            setting.interest_rate_loan * loan_early[i]
         );
 
         goods[i] = last.inventory[i] + decision.prod[i];
@@ -198,4 +200,18 @@ void MESE::exec() {
     }
 
     average_price = div(sum(sales), sum(sold), average_price_given);
+}
+
+}
+
+// debug
+
+#include <iostream>
+int main() {
+    using namespace mese;
+
+    std::cout << sizeof(Period) << std::endl;
+    std::cout << sizeof(Game) << std::endl;
+
+    return 0;
 }
