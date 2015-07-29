@@ -112,7 +112,7 @@ bool Period::submit(
     balance_early[i] = last.cash[i] - last.loan[i] - spending[i];
     loan_early[i] = max(- balance_early[i], 0);
     interest[i] = (
-        last.loan[i] == 0 ?
+        loan_early[i] == 0 ?
         - setting.interest_rate_cash * last.cash[i] :
         setting.interest_rate_loan * loan_early[i]
     );

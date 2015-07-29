@@ -39,8 +39,8 @@ struct Setting {
     double initial_capital {168000};
     double deprecation_rate {0.05};
 
-    double interest_rate_cash {0.0025}; // 0.005 - 0.0001 * setting
-    double interest_rate_loan {0.005}; // 0.0025 + 0.0001 * setting
+    double interest_rate_cash {0.025}; // const - 0.0025 * setting
+    double interest_rate_loan {0.05}; // const + 0.0025 * setting
     double inventory_fee {1};
     double unit_fee {40};
     double tax_rate {0.1}; // 0.01 * setting
