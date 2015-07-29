@@ -2,30 +2,68 @@
 
 namespace mese {
 
-Period::Period(size_t count):
-    PeriodDataEarly{},
-    PeriodData{},
-
-    last{*static_cast<Period *>(nullptr)},
-    player_count{count},
-    now_period{0},
-
-    setting{},
-    decision{}
+Game::Game(size_t count):
+    player_count {count},
+    init {count}
 {
-    // nothing
+    period.push_back({player_count, init});
+    Period &current {period.back()};
+
+    for (size_t i = 0; i < player_count; ++i) {
+        if (!period.back().submit(
+            i,
+            current.setting.demand_ref_price,
+            init.size[i] * current.setting.prod_rate_balanced,
+            current.setting.demand_ref_mk / player_count,
+            init.capital[i] * current.setting.deprecation_rate,
+            current.setting.demand_ref_rd / player_count
+        )) {
+            throw 1; // TODO: initial decision should not break limits
+        }
+    }
+
+    current.exec();
+}
+
+Period::Period(size_t count):
+    PeriodDataEarly {},
+    PeriodData {},
+
+    last {*static_cast<Period *>(nullptr)},
+    player_count {count},
+    now_period {0},
+
+    setting {},
+    decision {}
+{
+    for (size_t i = 0; i < player_count; ++i) {
+        capital[i] = setting.initial_capital / player_count;
+        size[i] = capital[i] / setting.unit_fee;
+        history_mk[i] = 0;
+        history_rd[i] = 0;
+
+        inventory[i] = 0;
+        goods_cost_inventory[i] = 0;
+
+        sales[i] = setting.demand_ref_price * size[i] * setting.prod_rate_balanced;
+        loan[i] = 0;
+        cash[i] = setting.initial_cash / player_count; // C + 168000 = 182700 + L
+        retern[i] = 0;
+    }
+
+    average_price = setting.demand_ref_price;
 }
 
 Period::Period(size_t count, Period &_last):
-    PeriodDataEarly{},
-    PeriodData{},
+    PeriodDataEarly {},
+    PeriodData {},
 
-    last{_last},
-    player_count{count},
-    now_period{_last.now_period + 1},
+    last {_last},
+    player_count {count},
+    now_period {_last.now_period + 1},
 
-    setting{_last.setting},
-    decision{}
+    setting {_last.setting},
+    decision {}
 {
     // nothing
 }
@@ -51,7 +89,7 @@ bool Period::submit(
     prod_cost_unit[i] = (
         prod_cost_factor_rate * pow(prod_over[i], setting.prod_rate_pow)
         + setting.prod_cost_factor_size
-            / player_count / last.capital[i]
+            * setting.initial_capital / player_count / last.capital[i]
         + setting.prod_cost_factor_const
     );
     prod_cost_marginal[i] = ( // D(prod_cost(prod), prod)
@@ -92,12 +130,12 @@ bool Period::submit(
         && decision.prod[i] >= 0
         && decision.prod[i] <= last.size[i]
         && decision.mk[i] >= 0
-        && decision.mk[i] <= setting.mk_limit
+        && decision.mk[i] <= setting.mk_limit / player_count
         && decision.ci[i] >= 0
-        && decision.ci[i] <= setting.ci_limit
+        && decision.ci[i] <= setting.ci_limit / player_count
         && decision.rd[i] >= 0
-        && decision.rd[i] <= setting.rd_limit
-        && loan_early[i] <= setting.loan_limit
+        && decision.rd[i] <= setting.rd_limit / player_count
+        && loan_early[i] <= setting.loan_limit / player_count
     );
 }
 
@@ -136,7 +174,7 @@ void Period::exec() {
         demand_effect_rd + demand_effect_mk
     );
 
-    for (int i = 0; i < player_count; ++i) {
+    for (size_t i = 0; i < player_count; ++i) {
         share_effect_price[i] = pow(
             average_price_mixed / decision.price[i],
             setting.share_pow_price
@@ -155,7 +193,7 @@ void Period::exec() {
     double sum_share_effect_mk = sum(share_effect_mk);
     double sum_share_effect_rd = sum(share_effect_rd);
 
-    for (int i = 0; i < player_count; ++i) {
+    for (size_t i = 0; i < player_count; ++i) {
         // orders
 
         share[i] = (
@@ -217,7 +255,7 @@ void Period::exec() {
     double sum_sales = sum(sales);
     double sum_last_sales = sum(last.sales);
 
-    for (int i = 0; i < player_count; ++i) {
+    for (size_t i = 0; i < player_count; ++i) {
         mpi_a[i] = (
             setting.mpi_factor_a * player_count * (
                 retern[i] / (now_period + 1)
@@ -273,6 +311,8 @@ int main() {
 
     std::cout << sizeof(Period) << std::endl;
     std::cout << sizeof(Game) << std::endl;
+
+    Game game {6};
 
     return 0;
 }

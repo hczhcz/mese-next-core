@@ -199,7 +199,9 @@ public:
     Setting setting;
     Decision decision;
 
+    // initial period
     Period(size_t count);
+    // normal period
     Period(size_t count, Period &_last);
 
     bool submit(
@@ -215,7 +217,11 @@ public:
     size_t player_count;
 
     std::string company_name[MAX_PLAYER];
+
+    Period init;
     std::vector<Period> period;
+
+    Game(size_t count);
 };
 
 }
