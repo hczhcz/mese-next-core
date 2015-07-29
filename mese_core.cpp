@@ -13,7 +13,7 @@ Game::Game(size_t count):
         if (!period.back().submit(
             i,
             current.setting.demand_ref_price,
-            init.size[i] * current.setting.prod_rate_initial,
+            init.size[i] * current.setting.prod_rate_balanced,
             current.setting.demand_ref_mk / player_count,
             init.capital[i] * current.setting.deprecation_rate,
             current.setting.demand_ref_rd / player_count
@@ -315,7 +315,6 @@ void Period::debug(std::ostream &stream) {
 
     debug_group(stream, "costs related");
 
-    debug_val(stream, "prod_rate_initial", setting.prod_rate_initial);
     debug_val(stream, "prod_rate_balanced", setting.prod_rate_balanced);
     debug_val(stream, "prod_rate_pow", setting.prod_rate_pow);
     debug_val(stream, "prod_cost_factor_rate_over", setting.prod_cost_factor_rate_over);

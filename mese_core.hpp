@@ -27,7 +27,6 @@ struct Setting {
 
     // costs related
 
-    double prod_rate_initial {0.75}; // special
     double prod_rate_balanced {0.8};
     double prod_rate_pow {2};
     double prod_cost_factor_rate_over {69};
@@ -35,7 +34,7 @@ struct Setting {
     double prod_cost_factor_size {15};
     double prod_cost_factor_const {3};
 
-    double initial_cash {14700};
+    double initial_cash {15600};
     double initial_capital {168000};
     double deprecation_rate {0.05};
 
@@ -43,21 +42,21 @@ struct Setting {
     double interest_rate_loan {0.05}; // const + 0.0025 * setting
     double inventory_fee {1};
     double unit_fee {40};
-    double tax_rate {0.1}; // 0.01 * setting
+    double tax_rate {0.25}; // 0.01 * setting
 
     // orders related
 
     double mk_overload {16800};
     double mk_compression {0.25};
 
-    double demand {500}; // 500 + setting
+    double demand {540}; // const + setting
     double demand_price {1}; // 1 + 0.01 * setting
-    double demand_mk {5.3}; // 159 / sqrt(8400) + 0.0053 * setting
-    double demand_rd {1}; // (1 + 0.01 * setting) / 3150
+    double demand_mk {5}; // 159 / sqrt(8400) + 0.0053 * setting (?)
+    double demand_rd {1}; // 1 + 0.01 * setting
 
     double demand_ref_price {30};
     double demand_ref_mk {8400};
-    double demand_ref_rd {3150};
+    double demand_ref_rd {3360};
     double demand_pow_price {1};
     double demand_pow_mk {0.5};
     double demand_pow_rd {1};
@@ -73,7 +72,7 @@ struct Setting {
 
     // mpi related
 
-    double mpi_retern_factor {15120}; // 11155?
+    double mpi_retern_factor {10296};
     double mpi_factor_a {50};
     double mpi_factor_b {10};
     double mpi_factor_c {10};
