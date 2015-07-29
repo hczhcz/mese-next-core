@@ -3,6 +3,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include <iostream>
 
 namespace mese {
 
@@ -26,6 +27,7 @@ struct Setting {
 
     // costs related
 
+    double prod_rate_initial {0.75}; // special
     double prod_rate_balanced {0.8};
     double prod_rate_pow {2};
     double prod_cost_factor_rate_over {69};
@@ -71,7 +73,7 @@ struct Setting {
 
     // mpi related
 
-    double mpi_retern_factor {11155};
+    double mpi_retern_factor {15120}; // 11155?
     double mpi_factor_a {50};
     double mpi_factor_b {10};
     double mpi_factor_c {10};
@@ -190,6 +192,43 @@ private:
         return a > b ? a : b;
     }
 
+    inline void debug_title(
+        std::ostream &stream,
+        std::string title
+    ) {
+        stream << title << std::endl;
+        //
+    }
+
+    inline void debug_group(
+        std::ostream &stream,
+        std::string name
+    ) {
+        stream << "    " << name << std::endl;
+    }
+
+    inline void debug_val(
+        std::ostream &stream,
+        std::string name,
+        double value
+    ) {
+        stream << "        " << name << ": " << value << std::endl;
+    }
+
+    inline void debug_arr(
+        std::ostream &stream,
+        std::string name,
+        double (&member)[MAX_PLAYER]
+    ) {
+        stream << "        " << name << ": " << member[0];
+
+        for (size_t i = 1; i < player_count; ++i) {
+            stream << ", " << member[i];
+        }
+
+        stream << std::endl;
+    }
+
 public:
     Period &last;
 
@@ -210,6 +249,8 @@ public:
     );
 
     void exec();
+
+    void debug(std::ostream &stream);
 };
 
 class Game {
