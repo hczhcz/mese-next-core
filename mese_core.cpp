@@ -26,15 +26,15 @@ void MESE::exec() {
         history_rd[i] = last.history_rd[i] + decision.rd[i];
     }
 
-    sum_mk = sum(decision.mk);
-    sum_mk_compressed = (
+    double sum_mk = sum(decision.mk);
+    double sum_mk_compressed = (
         sum_mk > setting.mk_overload ? (
             (sum_mk - setting.mk_overload) * setting.mk_compression
             + setting.mk_overload
         ) : sum_mk
     );
-    sum_history_mk = sum(history_mk);
-    sum_history_rd = sum(history_rd);
+    double sum_history_mk = sum(history_mk);
+    double sum_history_rd = sum(history_rd);
 
     average_price_given = sum(decision.price) / player_count;
     average_price_planned = div(
@@ -70,9 +70,9 @@ void MESE::exec() {
         );
     }
 
-    sum_share_effect_price = sum(share_effect_price);
-    sum_share_effect_mk = sum(share_effect_mk);
-    sum_share_effect_rd = sum(share_effect_rd);
+    double sum_share_effect_price = sum(share_effect_price);
+    double sum_share_effect_mk = sum(share_effect_mk);
+    double sum_share_effect_rd = sum(share_effect_rd);
 
     for (int i = 0; i < player_count; ++i) {
         // orders
@@ -148,9 +148,10 @@ void MESE::exec() {
         retern[i] = last.retern[i] + profit[i];
     }
 
-    sum_size = sum(size);
-    sum_sold = sum(sold);
-    sum_sales = sum(sales);
+    double sum_size = sum(size);
+    double sum_sold = sum(sold);
+    double sum_sales = sum(sales);
+    double sum_last_sales = sum(last.sales);
 
     for (int i = 0; i < player_count; ++i) {
         mpi_a[i] = round(
@@ -187,8 +188,8 @@ void MESE::exec() {
 
         mpi_f[i] = min(round(
             setting.mpi_factor_f * div(
-                div(sold[i], last.sold[i], 0),
-                div(sum_sales, last.sum_sales, 0),
+                div(sales[i], last.sales[i], 0),
+                div(sum_sales, sum_last_sales, 0),
                 0
             )
         ), 20);

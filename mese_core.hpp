@@ -87,11 +87,6 @@ struct MESE {
     double history_mk[BUFSIZE];
     double history_rd[BUFSIZE];
 
-    double sum_mk;
-    double sum_mk_compressed;
-    double sum_history_mk;
-    double sum_history_rd;
-
     double average_price_given;
     double average_price_planned;
     double average_price_mixed;
@@ -102,9 +97,6 @@ struct MESE {
     double share_effect_price[BUFSIZE];
     double share_effect_mk[BUFSIZE];
     double share_effect_rd[BUFSIZE];
-    double sum_share_effect_price;
-    double sum_share_effect_mk;
-    double sum_share_effect_rd;
     double share[BUFSIZE];
     double share_compressed[BUFSIZE];
 
@@ -133,10 +125,6 @@ struct MESE {
     double loan[BUFSIZE];
     double cash[BUFSIZE];
     double retern[BUFSIZE];
-
-    double sum_size;
-    double sum_sold;
-    double sum_sales;
 
     double mpi_a[BUFSIZE];
     double mpi_b[BUFSIZE];
