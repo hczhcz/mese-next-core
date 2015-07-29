@@ -11,56 +11,65 @@ const size_t MAX_PLAYER = 16;
 struct Setting {
     // decision limits
 
-    double price_limit;
-    double loan_limit;
-    double mk_limit;
-    double ci_limit;
-    double rd_limit;
+    double price_max{99};
+    double price_min{12};
+    double loan_limit{30000};
+    double mk_limit{15000};
+    double ci_limit{15000};
+    double rd_limit{15000};
 
     // costs related
 
-    double prod_rate_balanced; // 0.8
-    double prod_cost_factor_rate; // 138
-    double prod_cost_factor_size; // 2520000 = 168000 * 15
-    double prod_cost_factor_const; // 3
+    double prod_rate_balanced{0.8};
+    double prod_rate_pow{2};
+    double prod_cost_factor_rate_over{69};
+    double prod_cost_factor_rate_under{138};
+    double prod_cost_factor_size{168000 * 15};
+    double prod_cost_factor_const{3};
 
-    double deprecation_rate; // 0.05
+    double deprecation_rate{0.05};
 
-    double interest_rate_cash; // 0.005 - 0.0001 * setting
-    double interest_rate_loan; // 0.0025 + 0.0001 * setting
-    double inventory_fee; // 1
-    double unit_fee; // 40
-    double tax_rate; // 0.01 * setting
+    double interest_rate_cash{0.0025}; // 0.005 - 0.0001 * setting
+    double interest_rate_loan{0.005}; // 0.0025 + 0.0001 * setting
+    double inventory_fee{1};
+    double unit_fee{40};
+    double tax_rate{0.1}; // 0.01 * setting
 
     // orders related
 
-    double mk_overload; // 16800
-    double mk_compression; // 0.25
+    double mk_overload{16800};
+    double mk_compression{0.25};
 
-    double demand; // 500 + setting
-    double demand_price; // 1 + 0.01 * setting
-    double demand_mk; // 159 / sqrt(8400) + 0.0053 * setting
-    double demand_rd; // (1 + 0.01 * setting) / 3150
+    double demand{500}; // 500 + setting
+    double demand_price{1}; // 1 + 0.01 * setting
+    double demand_mk{5.3}; // 159 / sqrt(8400) + 0.0053 * setting
+    double demand_rd{1}; // (1 + 0.01 * setting) / 3150
 
-    double share_price; // 0.01 * setting
-    double share_mk; // 0.01 * setting
-    double share_rd; // 0.01 * setting
+    double demand_ref_price{30};
+    double demand_ref_mk{8400};
+    double demand_ref_rd{3150};
+    double demand_pow_price{1};
+    double demand_pow_mk{0.5};
+    double demand_pow_rd{1};
 
-    double share_pow_price; // 3
-    double share_pow_mk; // 1.5
-    double share_pow_rd; // 1
+    double share_price{0.4}; // 0.01 * setting
+    double share_mk{0.3}; // 0.01 * setting
+    double share_rd{0.3}; // 0.01 * setting
+    double share_pow_price{3};
+    double share_pow_mk{1.5};
+    double share_pow_rd{1};
 
-    double price_overload; // 40
+    double price_overload{40};
 
     // mpi related
 
-    double mpi_retern_factor; // 11155
-    double mpi_factor_a; // 50
-    double mpi_factor_b; // 10
-    double mpi_factor_c; // 10
-    double mpi_factor_d; // 10
-    double mpi_factor_e; // 10
-    double mpi_factor_f; // 10
+    double mpi_retern_factor{11155};
+    double mpi_factor_a{50};
+    double mpi_factor_b{10};
+    double mpi_factor_c{10};
+    double mpi_factor_d{10};
+    double mpi_factor_e{10};
+    double mpi_factor_f{10};
 };
 
 struct Decision {
@@ -182,6 +191,7 @@ public:
 
     Period(Game &_game);
     Period(Period &_last);
+
     void exec();
 };
 

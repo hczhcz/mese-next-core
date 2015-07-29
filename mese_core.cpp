@@ -30,9 +30,11 @@ void Period::exec() {
     for (int i = 0; i < player_count; ++i) {
         prod_rate[i] = decision.prod[i] / last.size[i];
         prod_cost_unit[i] = (
-            setting.prod_cost_factor_rate
-                * (prod_rate[i] > setting.prod_rate_balanced ? 0.5 : 1)
-                * pow(prod_rate[i] - setting.prod_rate_balanced, 2)
+            (
+                prod_rate[i] > setting.prod_rate_balanced ?
+                setting.prod_cost_factor_rate_over :
+                setting.prod_cost_factor_rate_under
+            ) * pow(prod_rate[i] - setting.prod_rate_balanced, setting.prod_rate_pow)
             + setting.prod_cost_factor_size
                 / player_count / last.capital[i]
             + setting.prod_cost_factor_const
@@ -84,11 +86,16 @@ void Period::exec() {
     );
 
     demand_effect_mk = setting.demand_mk * (
-        pow(sum_mk_compressed, 0.5) / average_price_mixed
-    ); // 5.3
+        pow(sum_mk_compressed, setting.demand_pow_mk)
+        / pow(setting.demand_ref_mk, setting.demand_pow_mk)
+    ) / (
+        pow(average_price_mixed, setting.demand_pow_price)
+        / pow(setting.demand_ref_price, setting.demand_pow_price)
+    );
     demand_effect_rd = setting.demand_rd * (
-        sum_history_rd / (now_period + 1)
-    ); // 2.66666
+        pow(sum_history_rd / (now_period + 1), setting.demand_pow_rd)
+        / pow(setting.demand_ref_rd, setting.demand_pow_rd)
+    );
     orders_demand = setting.demand * (
         demand_effect_rd + demand_effect_mk
     );
