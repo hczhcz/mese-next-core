@@ -217,7 +217,7 @@ void Period::exec() {
 
         mpi_d[i] = (
             setting.mpi_factor_d * (
-                1 - abs(prod_rate[i] - setting.prod_rate_balanced)
+                1 - abs(prod_over[i])
             )
         );
 

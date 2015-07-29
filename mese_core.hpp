@@ -6,17 +6,18 @@
 
 namespace mese {
 
-const size_t MAX_PLAYER = 16;
+const size_t MAX_PLAYER{16};
+const double FILL{0.0/0.0};
 
 struct Setting {
     // decision limits
 
     double price_max{99};
     double price_min{12};
-    double loan_limit{30000};
     double mk_limit{15000};
     double ci_limit{15000};
     double rd_limit{15000};
+    double loan_limit{30000};
 
     // costs related
 
