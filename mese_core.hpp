@@ -82,7 +82,9 @@ struct Decision {
 
 struct PeriodDataEarly {
     double prod_rate[MAX_PLAYER];
+    double prod_over[MAX_PLAYER];
     double prod_cost_unit[MAX_PLAYER];
+    double prod_cost_marginal[MAX_PLAYER];
     double prod_cost[MAX_PLAYER];
 
     double deprecation[MAX_PLAYER];
@@ -135,6 +137,8 @@ struct PeriodData {
     double cash[MAX_PLAYER]; // *
     double retern[MAX_PLAYER]; // *
 
+    double average_price; // *
+
     double mpi_a[MAX_PLAYER];
     double mpi_b[MAX_PLAYER];
     double mpi_c[MAX_PLAYER];
@@ -142,8 +146,6 @@ struct PeriodData {
     double mpi_e[MAX_PLAYER];
     double mpi_f[MAX_PLAYER];
     double mpi[MAX_PLAYER];
-
-    double average_price; // *
 };
 
 class Game;

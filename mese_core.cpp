@@ -29,15 +29,24 @@ Period::Period(Period &_last):
 void Period::exec() {
     for (int i = 0; i < player_count; ++i) {
         prod_rate[i] = decision.prod[i] / last.size[i];
+        prod_over[i] = prod_rate[i] - setting.prod_rate_balanced;
+
+        double prod_cost_factor_rate = (
+            prod_rate[i] > setting.prod_rate_balanced ?
+            setting.prod_cost_factor_rate_over :
+            setting.prod_cost_factor_rate_under
+        );
         prod_cost_unit[i] = (
-            (
-                prod_rate[i] > setting.prod_rate_balanced ?
-                setting.prod_cost_factor_rate_over :
-                setting.prod_cost_factor_rate_under
-            ) * pow(prod_rate[i] - setting.prod_rate_balanced, setting.prod_rate_pow)
+            prod_cost_factor_rate * pow(prod_over[i], setting.prod_rate_pow)
             + setting.prod_cost_factor_size
                 / player_count / last.capital[i]
             + setting.prod_cost_factor_const
+        );
+        prod_cost_marginal[i] = ( // D(prod_cost(prod), prod)
+            prod_cost_factor_rate
+                * setting.prod_rate_pow
+                * prod_rate[i] * pow(prod_over[i], setting.prod_rate_pow - 1)
+            + prod_cost_unit[i]
         );
         prod_cost[i] = prod_cost_unit[i] * decision.prod[i];
 
@@ -174,6 +183,8 @@ void Period::exec() {
         retern[i] = last.retern[i] + profit[i];
     }
 
+    average_price = div(sum(sales), sum(sold), average_price_given);
+
     double sum_size = sum(size);
     double sum_sold = sum(sold);
     double sum_sales = sum(sales);
@@ -223,8 +234,6 @@ void Period::exec() {
 
         mpi[i] = mpi_a[i] + mpi_b[i] + mpi_c[i] + mpi_d[i] + mpi_e[i] + mpi_f[i];
     }
-
-    average_price = div(sum(sales), sum(sold), average_price_given);
 }
 
 }
