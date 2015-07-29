@@ -30,55 +30,78 @@ Period::Period(size_t count, Period &_last):
     // nothing
 }
 
+bool Period::submit(
+    size_t i,
+    double price, double prod, double mk, double ci, double rd
+) {
+    decision.price[i] = price;
+    decision.prod[i] = prod;
+    decision.mk[i] = mk;
+    decision.ci[i] = ci;
+    decision.rd[i] = rd;
+
+    prod_rate[i] = decision.prod[i] / last.size[i];
+    prod_over[i] = prod_rate[i] - setting.prod_rate_balanced;
+
+    double prod_cost_factor_rate = (
+        prod_over[i] > 0 ?
+        setting.prod_cost_factor_rate_over :
+        setting.prod_cost_factor_rate_under
+    );
+    prod_cost_unit[i] = (
+        prod_cost_factor_rate * pow(prod_over[i], setting.prod_rate_pow)
+        + setting.prod_cost_factor_size
+            / player_count / last.capital[i]
+        + setting.prod_cost_factor_const
+    );
+    prod_cost_marginal[i] = ( // D(prod_cost(prod), prod)
+        prod_cost_factor_rate
+            * setting.prod_rate_pow
+            * prod_rate[i] * pow(prod_over[i], setting.prod_rate_pow - 1)
+        + prod_cost_unit[i]
+    );
+    prod_cost[i] = prod_cost_unit[i] * decision.prod[i];
+
+    deprecation[i] = last.capital[i] * setting.deprecation_rate;
+    capital[i] = last.capital[i] + decision.ci[i] - deprecation[i];
+    size[i] = capital[i] / setting.unit_fee;
+
+    spending[i] = (
+        prod_cost[i]
+        + decision.ci[i] - deprecation[i]
+        + decision.mk[i] + decision.rd[i]
+    );
+    balance_early[i] = last.cash[i] - last.loan[i] - spending[i];
+    loan_early[i] = max(- balance_early[i], 0);
+    interest[i] = (
+        last.loan[i] == 0 ?
+        - setting.interest_rate_cash * last.cash[i] :
+        setting.interest_rate_loan * loan_early[i]
+    );
+
+    goods[i] = last.inventory[i] + decision.prod[i];
+    goods_cost[i] = last.goods_cost_inventory[i] + prod_cost[i];
+    goods_max_sales[i] = decision.price[i] * goods[i];
+
+    history_mk[i] = last.history_mk[i] + decision.mk[i];
+    history_rd[i] = last.history_rd[i] + decision.rd[i];
+
+    return (
+        decision.price[i] >= setting.price_min
+        && decision.price[i] <= setting.price_max
+        && decision.prod[i] >= 0
+        && decision.prod[i] <= last.size[i]
+        && decision.mk[i] >= 0
+        && decision.mk[i] <= setting.mk_limit
+        && decision.ci[i] >= 0
+        && decision.ci[i] <= setting.ci_limit
+        && decision.rd[i] >= 0
+        && decision.rd[i] <= setting.rd_limit
+        && loan_early[i] <= setting.loan_limit
+    );
+}
+
 void Period::exec() {
-    for (int i = 0; i < player_count; ++i) {
-        prod_rate[i] = decision.prod[i] / last.size[i];
-        prod_over[i] = prod_rate[i] - setting.prod_rate_balanced;
-
-        double prod_cost_factor_rate = (
-            prod_rate[i] > setting.prod_rate_balanced ?
-            setting.prod_cost_factor_rate_over :
-            setting.prod_cost_factor_rate_under
-        );
-        prod_cost_unit[i] = (
-            prod_cost_factor_rate * pow(prod_over[i], setting.prod_rate_pow)
-            + setting.prod_cost_factor_size
-                / player_count / last.capital[i]
-            + setting.prod_cost_factor_const
-        );
-        prod_cost_marginal[i] = ( // D(prod_cost(prod), prod)
-            prod_cost_factor_rate
-                * setting.prod_rate_pow
-                * prod_rate[i] * pow(prod_over[i], setting.prod_rate_pow - 1)
-            + prod_cost_unit[i]
-        );
-        prod_cost[i] = prod_cost_unit[i] * decision.prod[i];
-
-        deprecation[i] = last.capital[i] * setting.deprecation_rate;
-        capital[i] = last.capital[i] + decision.ci[i] - deprecation[i];
-        size[i] = capital[i] / setting.unit_fee;
-
-        spending[i] = (
-            prod_cost[i]
-            + decision.ci[i] - deprecation[i]
-            + decision.mk[i] + decision.rd[i]
-        );
-        balance_early[i] = last.cash[i] - last.loan[i] - spending[i];
-        loan_early[i] = max(- balance_early[i], 0);
-        interest[i] = (
-            last.loan[i] == 0 ?
-            - setting.interest_rate_cash * last.cash[i] :
-            setting.interest_rate_loan * loan_early[i]
-        );
-
-        goods[i] = last.inventory[i] + decision.prod[i];
-        goods_cost[i] = last.goods_cost_inventory[i] + prod_cost[i];
-        goods_max_sales[i] = decision.price[i] * goods[i];
-
-        history_mk[i] = last.history_mk[i] + decision.mk[i];
-        history_rd[i] = last.history_rd[i] + decision.rd[i];
-    }
-
     double sum_mk = sum(decision.mk);
     double sum_mk_compressed = (
         sum_mk > setting.mk_overload ? (
