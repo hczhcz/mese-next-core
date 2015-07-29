@@ -2,26 +2,30 @@
 
 namespace mese {
 
-Period::Period(Game &_game):
-    PeriodDataEarly(),
-    PeriodData(),
-    last(*this),
-    player_count(_game.player_count),
-    now_period(0),
-    setting(),
-    decision()
+Period::Period(size_t count):
+    PeriodDataEarly{},
+    PeriodData{},
+
+    last{*static_cast<Period *>(nullptr)},
+    player_count{count},
+    now_period{0},
+
+    setting{},
+    decision{}
 {
     // nothing
 }
 
-Period::Period(Period &_last):
-    PeriodDataEarly(),
-    PeriodData(),
-    last(_last),
-    player_count(_last.player_count),
-    now_period(_last.now_period + 1),
-    setting(_last.setting),
-    decision()
+Period::Period(size_t count, Period &_last):
+    PeriodDataEarly{},
+    PeriodData{},
+
+    last{_last},
+    player_count{count},
+    now_period{_last.now_period + 1},
+
+    setting{_last.setting},
+    decision{}
 {
     // nothing
 }

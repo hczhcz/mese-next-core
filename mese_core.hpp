@@ -191,8 +191,13 @@ public:
     Setting setting;
     Decision decision;
 
-    Period(Game &_game);
-    Period(Period &_last);
+    Period(size_t count);
+    Period(size_t count, Period &_last);
+
+    bool submit(
+        size_t i,
+        double price, double prod, double mk, double ci, double rd
+    );
 
     void exec();
 };
@@ -200,7 +205,6 @@ public:
 class Game {
 public:
     size_t player_count;
-    size_t now_period;
 
     std::string company_name[MAX_PLAYER];
     std::vector<Period> period;
