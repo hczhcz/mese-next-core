@@ -2,10 +2,31 @@
 
 namespace mese {
 
-void Period::exec() {
-    player_count = last.player_count;
-    now_period = last.now_period + 1;
+Period::Period(Game &_game):
+    PeriodDataEarly(),
+    PeriodData(),
+    last(*this),
+    player_count(_game.player_count),
+    now_period(0),
+    setting(),
+    decision()
+{
+    // nothing
+}
 
+Period::Period(Period &_last):
+    PeriodDataEarly(),
+    PeriodData(),
+    last(_last),
+    player_count(_last.player_count),
+    now_period(_last.now_period + 1),
+    setting(_last.setting),
+    decision()
+{
+    // nothing
+}
+
+void Period::exec() {
     for (int i = 0; i < player_count; ++i) {
         prod_rate[i] = decision.prod[i] / last.size[i];
         prod_cost_unit[i] = (
