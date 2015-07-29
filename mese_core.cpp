@@ -31,7 +31,8 @@ void Period::exec() {
         prod_rate[i] = decision.prod[i] / last.size[i];
         prod_cost_unit[i] = (
             setting.prod_cost_factor_rate
-                * (prod_rate[i] > 0.8 ? 0.5 : 1) * pow(prod_rate[i] - 0.8, 2)
+                * (prod_rate[i] > setting.prod_rate_balanced ? 0.5 : 1)
+                * pow(prod_rate[i] - setting.prod_rate_balanced, 2)
             + setting.prod_cost_factor_size
                 / player_count / last.capital[i]
             + setting.prod_cost_factor_const
@@ -50,7 +51,7 @@ void Period::exec() {
         balance_early[i] = last.cash[i] - last.loan[i] - spending[i];
         loan_early[i] = max(- balance_early[i], 0);
         interest[i] = (
-            (last.cash[i] > 0 && last.loan[i] == 0) ?
+            last.loan[i] == 0 ?
             - setting.interest_rate_cash * last.cash[i] :
             setting.interest_rate_loan * loan_early[i]
         );
@@ -83,7 +84,7 @@ void Period::exec() {
     );
 
     demand_effect_mk = setting.demand_mk * (
-        sqrt(sum_mk_compressed) / average_price_mixed
+        pow(sum_mk_compressed, 0.5) / average_price_mixed
     ); // 5.3
     demand_effect_rd = setting.demand_rd * (
         sum_history_rd / (now_period + 1)
@@ -127,11 +128,7 @@ void Period::exec() {
         );
 
         orders[i] = orders_demand * share[i];
-        sold[i] = (
-            (orders[i] > goods[i]) ?
-            goods[i] :
-            orders[i]
-        );
+        sold[i] = min(orders[i], goods[i]);
         inventory[i] = goods[i] - sold[i];
         unfilled[i] = orders[i] - sold[i];
 
@@ -144,9 +141,8 @@ void Period::exec() {
 
         sales[i] = decision.price[i] * sold[i];
 
-        inventory_charge[i] = (
-            last.inventory[i] < inventory[i] ?
-            last.inventory[i] :
+        inventory_charge[i] = min(
+            last.inventory[i],
             inventory[i]
         ) * setting.inventory_fee;
 
@@ -177,45 +173,46 @@ void Period::exec() {
     double sum_last_sales = sum(last.sales);
 
     for (int i = 0; i < player_count; ++i) {
-        mpi_a[i] = round(
+        mpi_a[i] = (
             setting.mpi_factor_a * player_count * (
                 retern[i] / (now_period + 1)
                 / setting.mpi_retern_factor
             )
         );
 
-        mpi_b[i] = round(
+        mpi_b[i] = (
             setting.mpi_factor_b * player_count * (
                 (history_rd[i] + history_mk[i])
                 / (sum_history_rd + sum_history_mk)
             )
         );
 
-        mpi_c[i] = round(
+        mpi_c[i] = (
             setting.mpi_factor_c * player_count * (
                 size[i] / sum_size
             )
         );
 
-        mpi_d[i] = round(
+        mpi_d[i] = (
             setting.mpi_factor_d * (
-                1 - fabs(80 - prod_rate[i])
+                1 - abs(prod_rate[i] - setting.prod_rate_balanced)
             )
         );
 
-        mpi_e[i] = round(
+        mpi_e[i] = (
             setting.mpi_factor_e * player_count * div(
                 sold[i], sum_sold, 0
             )
         );
 
-        mpi_f[i] = min(round(
+        mpi_f[i] = min(
             setting.mpi_factor_f * div(
                 div(sales[i], last.sales[i], 0),
                 div(sum_sales, sum_last_sales, 0),
                 0
-            )
-        ), 20);
+            ),
+            2 * setting.mpi_factor_f
+        );
 
         mpi[i] = mpi_a[i] + mpi_b[i] + mpi_c[i] + mpi_d[i] + mpi_e[i] + mpi_f[i];
     }

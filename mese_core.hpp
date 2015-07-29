@@ -19,6 +19,7 @@ struct Setting {
 
     // costs related
 
+    double prod_rate_balanced; // 0.8
     double prod_cost_factor_rate; // 138
     double prod_cost_factor_size; // 2520000 = 168000 * 15
     double prod_cost_factor_const; // 3
@@ -152,6 +153,14 @@ private:
 
     inline double div(double a, double b, double error) {
         return b == 0 ? error : a / b;
+    }
+
+    inline double pow(double a, double e) {
+        return ::pow(a, e);
+    }
+
+    inline double abs(double a) {
+        return a > 0 ? a : - a;
     }
 
     inline double min(double a, double b) {
