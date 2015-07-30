@@ -6,7 +6,6 @@ Period::Period(size_t count):
     PeriodDataEarly {},
     PeriodData {},
 
-    last {*static_cast<Period *>(nullptr)},
     player_count {count},
     now_period {0},
 
@@ -31,22 +30,21 @@ Period::Period(size_t count):
     average_price = setting.demand_ref_price;
 }
 
-Period::Period(size_t count, Period &_last):
+Period::Period(size_t count, size_t period):
     PeriodDataEarly {},
     PeriodData {},
 
-    last {_last},
     player_count {count},
-    now_period {_last.now_period + 1},
+    now_period {period},
 
-    setting {_last.setting},
+    setting {},
     decision {}
 {
     // nothing
 }
 
 bool Period::submit(
-    size_t i,
+    Period &last, size_t i,
     double price, double prod, double mk, double ci, double rd
 ) {
     decision.price[i] = price;
@@ -116,7 +114,7 @@ bool Period::submit(
     );
 }
 
-void Period::exec() {
+void Period::exec(Period &last) {
     double sum_mk = sum(decision.mk);
     double sum_mk_compressed = (
         sum_mk > setting.mk_overload ? (

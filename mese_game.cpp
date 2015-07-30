@@ -3,15 +3,16 @@
 namespace mese {
 
 Game::Game(size_t count):
-    player_count {count},
-    init {count}
+    player_count {count}
 {
-    period.push_back({player_count, init});
+    Period init {count};
+
+    period.push_back({player_count, 1});
     Period &current {period.back()};
 
     for (size_t i = 0; i < player_count; ++i) {
         if (!period.back().submit(
-            i,
+            init, i,
             current.setting.demand_ref_price,
             init.size[i] * current.setting.prod_rate_balanced,
             current.setting.demand_ref_mk / player_count,
@@ -22,7 +23,7 @@ Game::Game(size_t count):
         }
     }
 
-    current.exec();
+    current.exec(init);
 }
 
 }

@@ -229,8 +229,6 @@ private:
     }
 
 public:
-    Period &last;
-
     size_t player_count;
     size_t now_period;
 
@@ -240,14 +238,14 @@ public:
     // initial period
     Period(size_t count);
     // normal period
-    Period(size_t count, Period &_last);
+    Period(size_t count, size_t period);
 
     bool submit(
-        size_t i,
+        Period &last, size_t i,
         double price, double prod, double mk, double ci, double rd
     );
 
-    void exec();
+    void exec(Period &last);
 
     void debug(std::ostream &stream);
 };
@@ -258,7 +256,6 @@ public:
 
     std::string company_name[MAX_PLAYER];
 
-    Period init;
     std::vector<Period> period;
 
     Game(size_t count);
