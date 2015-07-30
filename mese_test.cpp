@@ -5,7 +5,7 @@ int main() {
 
     Game game {8};
 
-    game.period[0].debug(std::cout);
+    game.period[1].debug(std::cout);
 
     return 0;
 }

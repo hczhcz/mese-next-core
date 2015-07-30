@@ -258,12 +258,22 @@ public:
 class Game {
 public:
     size_t player_count;
+    size_t now_period;
 
     std::string company_name[MAX_PLAYER];
 
     std::vector<Period> period;
 
     Game(size_t count);
+
+    Period &alloc();
+
+    bool submit(
+        size_t i,
+        double price, double prod, double mk, double ci, double rd
+    );
+
+    bool close();
 };
 
 }
