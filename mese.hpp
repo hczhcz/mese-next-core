@@ -231,6 +231,7 @@ private:
 public:
     size_t player_count;
     size_t now_period;
+    size_t status;
 
     Setting setting;
     Decision decision;
@@ -244,6 +245,10 @@ public:
         Period &last, size_t i,
         double price, double prod, double mk, double ci, double rd
     );
+
+    inline bool ready() {
+        return status == (1 << player_count) - 1;
+    }
 
     void exec(Period &last);
 
