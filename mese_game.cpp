@@ -2,10 +2,13 @@
 
 namespace mese {
 
-Game::Game(size_t count):
+Game::Game(size_t count, Setting &&_setting):
     player_count {count},
     now_period {1},
-    period {Period {player_count}}
+    period {{
+        player_count,
+        std::move(_setting)
+    }}
 {
     Setting setting {alloc()};
 
@@ -25,10 +28,20 @@ Game::Game(size_t count):
     }
 }
 
-Setting &Game::alloc() {
-    period.push_back({player_count, period.size()});
+Setting &Game::alloc(Setting &&_setting) {
+    period.push_back({
+        player_count,
+        period.back(),
+        std::move(_setting)
+    });
 
     return period.back().setting;
+}
+
+Setting &Game::alloc() {
+    Setting setting {period.back().setting};
+
+    return alloc(std::move(setting));
 }
 
 bool Game::submit(

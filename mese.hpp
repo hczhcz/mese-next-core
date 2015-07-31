@@ -268,8 +268,9 @@ public:
 
     std::vector<Period> period;
 
-    Game(size_t count);
+    Game(size_t count, Setting &&_setting);
 
+    Setting &alloc(Setting &&_setting);
     Setting &alloc();
 
     bool submit(
