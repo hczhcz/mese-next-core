@@ -34,7 +34,7 @@ struct Setting {
     double prod_cost_factor_size {15};
     double prod_cost_factor_const {3};
 
-    double initial_cash {15600};
+    double initial_cash {14000};
     double initial_capital {168000};
     double deprecation_rate {0.05};
 
@@ -49,7 +49,7 @@ struct Setting {
     double mk_overload {16800};
     double mk_compression {0.25};
 
-    double demand {540}; // const + setting
+    double demand {560}; // const + setting
     double demand_price {1}; // 1 + 0.01 * setting
     double demand_mk {5}; // 159 / sqrt(8400) + 0.0053 * setting (?)
     double demand_rd {1}; // 1 + 0.01 * setting
@@ -72,7 +72,7 @@ struct Setting {
 
     // mpi related
 
-    double mpi_retern_factor {10296};
+    double mpi_retern_factor {12936};
     double mpi_factor_a {50};
     double mpi_factor_b {10};
     double mpi_factor_c {10};
@@ -245,6 +245,10 @@ public:
         Period &last, size_t i,
         double price, double prod, double mk, double ci, double rd
     );
+
+    inline bool ready(size_t i) {
+        return (status & (1 << i)) != 0;
+    }
 
     inline bool ready() {
         return status == (1 << player_count) - 1;

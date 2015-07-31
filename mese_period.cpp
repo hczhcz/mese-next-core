@@ -189,7 +189,7 @@ void Period::exec(Period &last) {
             ) : share[i]
         );
 
-        orders[i] = orders_demand * share[i];
+        orders[i] = orders_demand * share_compressed[i];
         sold[i] = min(orders[i], goods[i]);
         inventory[i] = goods[i] - sold[i];
         unfilled[i] = orders[i] - sold[i];
