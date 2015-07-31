@@ -237,9 +237,9 @@ public:
     Decision decision;
 
     // initial period
-    Period(size_t count);
+    Period(size_t count, Setting &&_setting);
     // normal period
-    Period(size_t count, size_t period);
+    Period(size_t count, Period &last, Setting &&_setting);
 
     bool submit(
         Period &last, size_t i,
