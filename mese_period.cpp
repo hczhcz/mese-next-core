@@ -19,10 +19,11 @@ Period::Period(size_t count, Setting &&_setting):
         history_mk[i] = 0;
         history_rd[i] = 0;
 
+        sold[i] = size[i] * setting.prod_rate_balanced;
         inventory[i] = 0;
         goods_cost_inventory[i] = 0;
 
-        sales[i] = setting.demand_ref_price * size[i] * setting.prod_rate_balanced;
+        sales[i] = setting.demand_ref_price * sold[i];
         loan[i] = 0;
         cash[i] = setting.initial_cash / player_count; // C + 168000 = 182700 + L
         retern[i] = 0;
@@ -209,7 +210,7 @@ void Period::exec(Period &last) {
         ) * setting.inventory_fee;
 
         cost_before_tax[i] = (
-            prod_cost[i]
+            goods_cost_sold[i]
             + deprecation[i]
             + decision.mk[i] + decision.rd[i]
             + interest[i] + inventory_charge[i]
@@ -271,7 +272,7 @@ void Period::exec(Period &last) {
 
         mpi_f[i] = min(
             setting.mpi_factor_f * div(
-                div(sales[i], last.sales[i], 0),
+                div(sold[i], last.sold[i], 0),
                 div(sum_sales, sum_last_sales, 0),
                 0
             ),

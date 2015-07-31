@@ -127,7 +127,7 @@ struct PeriodData {
     MESE_ARR(share_compressed);
 
     MESE_ARR(orders);
-    MESE_ARR(sold);
+    MESE_ARR(sold); // *
     MESE_ARR(inventory); // *
     MESE_ARR(unfilled);
 
@@ -264,7 +264,7 @@ public:
     size_t player_count;
     size_t now_period;
 
-    std::string company_name[MAX_PLAYER];
+    // std::string company_name[MAX_PLAYER];
 
     std::vector<Period> period;
 
