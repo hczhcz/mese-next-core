@@ -266,7 +266,7 @@ public:
 
     Game(size_t count);
 
-    Period &alloc();
+    Setting &alloc();
 
     bool submit(
         size_t i,
