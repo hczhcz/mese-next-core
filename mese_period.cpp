@@ -219,6 +219,12 @@ void Period::exec(Period &last) {
         tax_charge[i] = profit_before_tax[i] * setting.tax_rate;
         profit[i] = profit_before_tax[i] - tax_charge[i];
 
+        // balance[i] = (
+        //     last.cash[i] + loan_early[i] - last.loan[i]
+        //     + sales[i]
+        //     - spending[i] - deprecation[i]
+        //     - interest[i] - inventory_charge[i] - tax_charge[i]
+        // );
         balance[i] = (
             last.cash[i] + loan_early[i] - last.loan[i]
             + profit[i]
@@ -297,6 +303,7 @@ void Period::debug(std::ostream &stream) {
 
     debug_group(stream, "costs related");
 
+    debug_val(stream, "prod_rate_initial", setting.prod_rate_initial);
     debug_val(stream, "prod_rate_balanced", setting.prod_rate_balanced);
     debug_val(stream, "prod_rate_pow", setting.prod_rate_pow);
     debug_val(stream, "prod_cost_factor_rate_over", setting.prod_cost_factor_rate_over);

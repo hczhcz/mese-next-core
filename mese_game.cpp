@@ -16,7 +16,7 @@ Game::Game(size_t count, Setting &&_setting):
         submit(
             i,
             setting.demand_ref_price,
-            period[0].size[i] * setting.prod_rate_balanced,
+            period[0].size[i] * setting.prod_rate_initial,
             setting.demand_ref_mk / player_count,
             period[0].capital[i] * setting.deprecation_rate,
             setting.demand_ref_rd / player_count
