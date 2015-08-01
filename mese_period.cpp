@@ -10,7 +10,7 @@ Period::Period(size_t count, Setting &&_setting):
     now_period {0},
     status {0},
 
-    setting {std::move(_setting)},
+    setting(std::move(_setting)), // move
     decision {}
 {
     for (size_t i = 0; i < player_count; ++i) {
@@ -40,7 +40,7 @@ Period::Period(size_t count, Period &last, Setting &&_setting):
     now_period {last.now_period + 1},
     status {0},
 
-    setting {std::move(_setting)},
+    setting(std::move(_setting)), // move
     decision {}
 {
     // nothing

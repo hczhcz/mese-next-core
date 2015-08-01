@@ -10,7 +10,7 @@ Game::Game(size_t count, Setting &&_setting):
         std::move(_setting)
     }}
 {
-    Setting setting {alloc()};
+    Setting &setting {alloc()};
 
     for (size_t i = 0; i < player_count; ++i) {
         submit(
@@ -39,7 +39,7 @@ Setting &Game::alloc(Setting &&_setting) {
 }
 
 Setting &Game::alloc() {
-    Setting setting {period.back().setting};
+    Setting setting = period.back().setting; // copy
 
     return alloc(std::move(setting));
 }
