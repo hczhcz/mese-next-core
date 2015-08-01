@@ -4,7 +4,7 @@ namespace mese {
 
 #define MESE_PRINT [&](auto val, auto arr, auto doc)
 
-void Period::debug(std::ostream &stream) {
+void Period::print_full(std::ostream &stream) {
     print(stream, MESE_PRINT {
         doc("settings", MESE_PRINT {
             doc("limits", MESE_PRINT {
@@ -160,6 +160,145 @@ void Period::debug(std::ostream &stream) {
                 arr("mpi_d", mpi_d);
                 arr("mpi_e", mpi_e);
                 arr("mpi_f", mpi_f);
+                arr("mpi", mpi);
+            });
+        });
+    });
+}
+
+void Period::print_setting(std::ostream &stream) {
+    print(stream, MESE_PRINT {
+        doc("settings", MESE_PRINT {
+            doc("limits", MESE_PRINT {
+                val("price_max", setting.price_max);
+                val("price_min", setting.price_min);
+                val("mk_limit", setting.mk_limit);
+                val("ci_limit", setting.ci_limit);
+                val("rd_limit", setting.rd_limit);
+                val("loan_limit", setting.loan_limit);
+            });
+
+            doc("production", MESE_PRINT {
+                val("prod_rate_balanced", setting.prod_rate_balanced);
+                val("prod_rate_pow", setting.prod_rate_pow);
+                val("prod_cost_factor_rate_over", setting.prod_cost_factor_rate_over);
+                val("prod_cost_factor_rate_under", setting.prod_cost_factor_rate_under);
+                val("prod_cost_factor_size", setting.prod_cost_factor_size);
+                val("prod_cost_factor_const", setting.prod_cost_factor_const);
+
+                val("unit_fee", setting.unit_fee);
+                val("deprecation_rate", setting.deprecation_rate);
+            });
+
+            doc("balance", MESE_PRINT {
+                val("interest_rate_cash", setting.interest_rate_cash);
+                val("interest_rate_loan", setting.interest_rate_loan);
+                val("inventory_fee", setting.inventory_fee);
+                val("tax_rate", setting.tax_rate);
+            });
+        });
+    });
+}
+
+void Period::print_player_early(std::ostream &stream, size_t i) {
+    print(stream, MESE_PRINT {
+        doc("decisions", MESE_PRINT {
+            val("price", decision.price[i]);
+            val("prod", decision.prod[i]);
+            val("mk", decision.mk[i]);
+            val("ci", decision.ci[i]);
+            val("rd", decision.rd[i]);
+        });
+
+        doc("data_early", MESE_PRINT {
+            doc("production", MESE_PRINT {
+                val("prod_rate", prod_rate[i]);
+                val("prod_over", prod_over[i]);
+                val("prod_cost_unit", prod_cost_unit[i]);
+                val("prod_cost_marginal", prod_cost_marginal[i]);
+                val("prod_cost", prod_cost[i]);
+            });
+
+            doc("balance", MESE_PRINT {
+                val("deprecation", deprecation[i]);
+                val("capital", capital[i]);
+                val("size", size[i]);
+                val("spending", spending[i]);
+                val("balance_early", balance_early[i]);
+                val("loan_early", loan_early[i]);
+                val("interest", interest[i]);
+
+                val("goods", goods[i]);
+                val("goods_cost", goods_cost[i]);
+                val("goods_max_sales", goods_max_sales[i]);
+            });
+
+            doc("history", MESE_PRINT {
+                val("history_mk", history_mk[i]);
+                val("history_rd", history_rd[i]);
+            });
+        });
+    });
+}
+
+void Period::print_player(std::ostream &stream, size_t i) {
+    print(stream, MESE_PRINT {
+        doc("data", MESE_PRINT {
+            doc("orders", MESE_PRINT {
+                val("orders", orders[i]);
+                val("sold", sold[i]);
+                val("inventory", inventory[i]);
+                val("unfilled", unfilled[i]);
+            });
+
+            doc("balance", MESE_PRINT {
+                val("goods_cost_sold", goods_cost_sold[i]);
+                val("goods_cost_inventory", goods_cost_inventory[i]);
+
+                val("sales", sales[i]);
+                val("inventory_charge", inventory_charge[i]);
+                val("cost_before_tax", cost_before_tax[i]);
+                val("profit_before_tax", profit_before_tax[i]);
+                val("tax_charge", tax_charge[i]);
+                val("profit", profit[i]);
+
+                val("balance", balance[i]);
+                val("loan", loan[i]);
+                val("cash", cash[i]);
+                val("retern", retern[i]);
+            });
+        });
+    });
+}
+
+void Period::print_public(std::ostream &stream) {
+    print(stream, MESE_PRINT {
+        doc("decisions", MESE_PRINT {
+            arr("price", decision.price);
+        });
+
+        doc("data", MESE_PRINT {
+            doc("orders", MESE_PRINT {
+                val("average_price_given", average_price_given);
+
+                val("orders", sum(orders));
+                arr("sold", sold);
+                val("inventory", sum(inventory));
+                val("unfilled", sum(unfilled));
+            });
+
+            doc("balance", MESE_PRINT {
+                val("goods_cost_sold", sum(goods_cost_sold));
+
+                arr("sales", sales);
+                arr("profit", profit);
+
+                arr("retern", retern);
+
+                val("average_price", average_price);
+            });
+
+            doc("mpi", MESE_PRINT {
                 arr("mpi", mpi);
             });
         });

@@ -51,7 +51,7 @@ int main() {
     game.submit(7, 52, 654,    0, 10000,  6000);
     game.close();
 
-    game.period[3].debug(std::cout);
+    game.period[3].print_full(std::cout);
 
     return 0;
 }

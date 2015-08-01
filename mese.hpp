@@ -361,7 +361,11 @@ public:
 
     void exec(Period &last);
 
-    void debug(std::ostream &stream);
+    void print_full(std::ostream &stream);
+    void print_setting(std::ostream &stream);
+    void print_player_early(std::ostream &stream, size_t i);
+    void print_player(std::ostream &stream, size_t i);
+    void print_public(std::ostream &stream);
 };
 
 class Game {
