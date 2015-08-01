@@ -262,42 +262,27 @@ private:
         return a > b ? a : b;
     }
 
-    inline void debug_title(
+    void print_title(
         std::ostream &stream,
         std::string title
-    ) {
-        stream << title << std::endl;
-        //
-    }
+    );
 
-    inline void debug_group(
+    void print_group(
         std::ostream &stream,
         std::string name
-    ) {
-        stream << "    " << name << std::endl;
-    }
+    );
 
-    inline void debug_val(
+    void print_val(
         std::ostream &stream,
         std::string name,
         double value
-    ) {
-        stream << "        " << name << ": " << value << std::endl;
-    }
+    );
 
-    inline void debug_arr(
+    void print_arr(
         std::ostream &stream,
         std::string name,
         double (&member)[MAX_PLAYER]
-    ) {
-        stream << "        " << name << ": " << member[0];
-
-        for (size_t i = 1; i < player_count; ++i) {
-            stream << ", " << member[i];
-        }
-
-        stream << std::endl;
-    }
+    );
 
 public:
     size_t player_count;
