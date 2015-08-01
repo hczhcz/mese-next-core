@@ -267,6 +267,10 @@ void Period::print_player(std::ostream &stream, size_t i) {
                 val("cash", cash[i]);
                 val("retern", retern[i]);
             });
+
+            doc("mpi", MESE_PRINT {
+                val("mpi", mpi[i]);
+            });
         });
     });
 }
@@ -275,6 +279,21 @@ void Period::print_public(std::ostream &stream) {
     print(stream, MESE_PRINT {
         doc("decisions", MESE_PRINT {
             arr("price", decision.price);
+            val("prod", sum(decision.prod));
+        });
+
+        doc("data_early", MESE_PRINT {
+            doc("production", MESE_PRINT {
+                val("prod_cost_unit", sum(prod_cost_unit));
+                val("prod_cost", sum(prod_cost));
+            });
+
+            doc("balance", MESE_PRINT {
+                val("capital", sum(capital));
+                val("size", sum(size));
+
+                val("goods", sum(goods));
+            });
         });
 
         doc("data", MESE_PRINT {
@@ -291,6 +310,9 @@ void Period::print_public(std::ostream &stream) {
                 val("goods_cost_sold", sum(goods_cost_sold));
 
                 arr("sales", sales);
+                arr("cost_before_tax", cost_before_tax);
+                arr("profit_before_tax", profit_before_tax);
+                arr("tax_charge", tax_charge);
                 arr("profit", profit);
 
                 arr("retern", retern);
