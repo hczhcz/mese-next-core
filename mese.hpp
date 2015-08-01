@@ -37,14 +37,15 @@ struct Setting {
     double prod_cost_factor_size {15};
     double prod_cost_factor_const {3};
 
+    double unit_fee {40};
+    double deprecation_rate {0.05};
+
     double initial_cash {14000};
     double initial_capital {168000};
-    double deprecation_rate {0.05};
 
     double interest_rate_cash {0.0125}; // const - 0.0025 * setting
     double interest_rate_loan {0.025}; // const + 0.0025 * setting
     double inventory_fee {1};
-    double unit_fee {40};
     double tax_rate {0.25}; // 0.01 * setting
 
     // orders related
@@ -104,14 +105,15 @@ struct Setting {
     double prod_cost_factor_size {15};
     double prod_cost_factor_const {3};
 
+    double unit_fee {40};
+    double deprecation_rate {0.05};
+
     double initial_cash {14000};
     double initial_capital {168000};
-    double deprecation_rate {0.05};
 
     double interest_rate_cash {0.025}; // const - 0.0025 * setting
     double interest_rate_loan {0.05}; // const + 0.0025 * setting
     double inventory_fee {1};
-    double unit_fee {40};
     double tax_rate {0.25}; // 0.01 * setting
 
     // orders related
@@ -262,27 +264,74 @@ private:
         return a > b ? a : b;
     }
 
-    void print_title(
-        std::ostream &stream,
-        std::string title
-    );
+    template <class T>
+    void print(std::ostream &stream, T callback) {
+        size_t indent {0};
 
-    void print_group(
-        std::ostream &stream,
-        std::string name
-    );
+        auto print_indent = [&]() {
+            stream << std::endl;
+            for (size_t i = 0; i < indent; ++i) {
+                stream << "    ";
+            }
+        };
 
-    void print_val(
-        std::ostream &stream,
-        std::string name,
-        double value
-    );
+        auto val_handler = [&](double value) {
+            stream << value;
+        };
 
-    void print_arr(
-        std::ostream &stream,
-        std::string name,
-        double (&member)[MAX_PLAYER]
-    );
+        auto arr_handler = [&](double (&member)[MAX_PLAYER]) {
+            stream << '[' << member[0];
+
+            for (size_t i = 1; i < player_count; ++i) {
+                stream << ", " << member[i];
+            }
+
+            stream << ']';
+        };
+
+        auto doc_handler = [&](auto self, auto callback) {
+            stream << '{';
+            ++indent;
+
+            auto m_val_handler = [&](
+                const std::string &name,
+                double value
+            ) {
+                print_indent();
+                stream << name << ": ";
+                val_handler(value);
+                stream << ',';
+            };
+
+            auto m_arr_handler = [&](
+                const std::string &name,
+                double (&member)[MAX_PLAYER]
+            ) {
+                print_indent();
+                stream << name << ": ";
+                arr_handler(member);
+                stream << ',';
+            };
+
+            auto m_doc_handler = [&](
+                const std::string &name,
+                auto callback
+            ) {
+                print_indent();
+                stream << name << ": ";
+                self(self, callback);
+                stream << ',';
+            };
+
+            callback(m_val_handler, m_arr_handler, m_doc_handler);
+
+            --indent;
+            print_indent();
+            stream << '}';
+        };
+
+        doc_handler(doc_handler, callback);
+    }
 
 public:
     size_t player_count;
