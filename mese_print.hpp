@@ -1,11 +1,14 @@
+#pragma once
+
 #include "mese.hpp"
 
 namespace mese {
 
 #define MESE_PRINT [&](auto val, auto arr, auto doc)
 
-void Period::print_full(std::ostream &stream) {
-    print(stream, MESE_PRINT {
+template <class T>
+void Period::print_full(T callback) {
+    callback(MESE_PRINT {
         doc("settings", MESE_PRINT {
             doc("limits", MESE_PRINT {
                 val("price_max", setting.price_max);
@@ -166,8 +169,9 @@ void Period::print_full(std::ostream &stream) {
     });
 }
 
-void Period::print_setting(std::ostream &stream) {
-    print(stream, MESE_PRINT {
+template <class T>
+void Period::print_setting(T callback) {
+    callback(MESE_PRINT {
         doc("settings", MESE_PRINT {
             doc("limits", MESE_PRINT {
                 val("price_max", setting.price_max);
@@ -200,8 +204,9 @@ void Period::print_setting(std::ostream &stream) {
     });
 }
 
-void Period::print_player_early(std::ostream &stream, size_t i) {
-    print(stream, MESE_PRINT {
+template <class T>
+void Period::print_player_early(size_t i, T callback) {
+    callback(MESE_PRINT {
         doc("decisions", MESE_PRINT {
             val("price", decision.price[i]);
             val("prod", decision.prod[i]);
@@ -241,8 +246,9 @@ void Period::print_player_early(std::ostream &stream, size_t i) {
     });
 }
 
-void Period::print_player(std::ostream &stream, size_t i) {
-    print(stream, MESE_PRINT {
+template <class T>
+void Period::print_player(size_t i, T callback) {
+    callback(MESE_PRINT {
         doc("data", MESE_PRINT {
             doc("orders", MESE_PRINT {
                 val("orders", orders[i]);
@@ -275,24 +281,25 @@ void Period::print_player(std::ostream &stream, size_t i) {
     });
 }
 
-void Period::print_public(std::ostream &stream) {
-    print(stream, MESE_PRINT {
+template <class T>
+void Period::print_public(T callback) {
+    callback(MESE_PRINT {
         doc("decisions", MESE_PRINT {
             arr("price", decision.price);
-            val("prod", sum(decision.prod));
+            val("average_prod", sum(decision.prod) / player_count);
         });
 
         doc("data_early", MESE_PRINT {
             doc("production", MESE_PRINT {
-                val("prod_cost_unit", sum(prod_cost_unit));
-                val("prod_cost", sum(prod_cost));
+                val("average_prod_cost_unit", sum(prod_cost_unit) / player_count);
+                val("average_prod_cost", sum(prod_cost) / player_count);
             });
 
             doc("balance", MESE_PRINT {
-                val("capital", sum(capital));
-                val("size", sum(size));
+                val("average_capital", sum(capital) / player_count);
+                val("average_size", sum(size) / player_count);
 
-                val("goods", sum(goods));
+                val("average_goods", sum(goods) / player_count);
             });
         });
 
@@ -300,22 +307,29 @@ void Period::print_public(std::ostream &stream) {
             doc("orders", MESE_PRINT {
                 val("average_price_given", average_price_given);
 
-                val("orders", sum(orders));
+                val("average_orders", sum(orders) / player_count);
                 arr("sold", sold);
-                val("inventory", sum(inventory));
-                val("unfilled", sum(unfilled));
+                val("average_sold", sum(sold) / player_count);
+                val("average_inventory", sum(inventory) / player_count);
+                val("average_unfilled", sum(unfilled) / player_count);
             });
 
             doc("balance", MESE_PRINT {
-                val("goods_cost_sold", sum(goods_cost_sold));
+                val("average_goods_cost_sold", sum(goods_cost_sold) / player_count);
 
                 arr("sales", sales);
+                val("average_sales", sum(sales) / player_count);
                 arr("cost_before_tax", cost_before_tax);
+                val("average_cost_before_tax", sum(cost_before_tax) / player_count);
                 arr("profit_before_tax", profit_before_tax);
+                val("average_profit_before_tax", sum(profit_before_tax) / player_count);
                 arr("tax_charge", tax_charge);
+                val("average_tax_charge", sum(tax_charge) / player_count);
                 arr("profit", profit);
+                val("average_profit", sum(profit) / player_count);
 
                 arr("retern", retern);
+                val("average_retern", sum(retern) / player_count);
 
                 val("average_price", average_price);
             });

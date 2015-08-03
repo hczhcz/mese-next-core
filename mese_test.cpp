@@ -1,4 +1,5 @@
 #include "mese.hpp"
+#include "mese_print.hpp"
 
 int main() {
     using namespace mese;
@@ -51,7 +52,9 @@ int main() {
     game.submit(7, 52, 654,    0, 10000,  6000);
     game.close();
 
-    game.period[3].print_full(std::cout);
+    game.period[3].print_full([&](auto callback) {
+        print(std::cout, game.player_count, callback);
+    });
 
     return 0;
 }

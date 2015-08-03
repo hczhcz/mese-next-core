@@ -272,11 +272,16 @@ public:
 
     void exec(Period &last);
 
-    void print_full(std::ostream &stream);
-    void print_setting(std::ostream &stream);
-    void print_player_early(std::ostream &stream, size_t i);
-    void print_player(std::ostream &stream, size_t i);
-    void print_public(std::ostream &stream);
+    template <class T>
+    void print_full(T callback);
+    template <class T>
+    void print_setting(T callback);
+    template <class T>
+    void print_player_early(size_t i, T callback);
+    template <class T>
+    void print_player(size_t i, T callback);
+    template <class T>
+    void print_public(T callback);
 };
 
 class Game {
