@@ -304,6 +304,11 @@ public:
     );
 
     bool close();
+
+    void print_full(std::ostream &stream);
+    void print_player_early(std::ostream &stream, size_t i);
+    void print_player(std::ostream &stream, size_t i);
+    void print_public(std::ostream &stream);
 };
 
 }
