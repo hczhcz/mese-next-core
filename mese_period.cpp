@@ -8,7 +8,6 @@ Period::Period(size_t count, Setting &&_setting):
 
     player_count {count},
     now_period {0},
-    status {0},
 
     setting(std::move(_setting)), // move
     decision {}
@@ -38,7 +37,6 @@ Period::Period(size_t count, Period &last, Setting &&_setting):
 
     player_count {count},
     now_period {last.now_period + 1},
-    status {0},
 
     setting(std::move(_setting)), // move
     decision {}
@@ -102,7 +100,7 @@ bool Period::submit(
     history_mk[i] = last.history_mk[i] + decision.mk[i];
     history_rd[i] = last.history_rd[i] + decision.rd[i];
 
-    bool succeed {
+    return (
         decision.price[i] >= setting.price_min
         && decision.price[i] <= setting.price_max
         && decision.prod[i] >= 0
@@ -114,11 +112,7 @@ bool Period::submit(
         && decision.rd[i] >= 0
         && decision.rd[i] <= setting.rd_limit / player_count
         && loan_early[i] <= setting.loan_limit / player_count
-    };
-
-    status |= (succeed ? 1 : 0) << i;
-
-    return succeed;
+    );
 }
 
 void Period::exec(Period &last) {

@@ -9,6 +9,9 @@ namespace mese {
 template <class T>
 void Period::print_full(T callback) {
     callback(MESE_PRINT {
+        val("player_count", player_count);
+        val("now_period", now_period);
+
         doc("settings", MESE_PRINT {
             doc("limits", MESE_PRINT {
                 val("price_max", setting.price_max);
@@ -172,6 +175,9 @@ void Period::print_full(T callback) {
 template <class T>
 void Period::print_setting(T callback) {
     callback(MESE_PRINT {
+        val("player_count", player_count);
+        val("now_period", now_period);
+
         doc("settings", MESE_PRINT {
             doc("limits", MESE_PRINT {
                 val("price_max", setting.price_max);
@@ -207,6 +213,9 @@ void Period::print_setting(T callback) {
 template <class T>
 void Period::print_player_early(size_t i, T callback) {
     callback(MESE_PRINT {
+        val("player_count", player_count);
+        val("now_period", now_period);
+
         doc("decisions", MESE_PRINT {
             val("price", decision.price[i]);
             val("prod", decision.prod[i]);
@@ -249,6 +258,9 @@ void Period::print_player_early(size_t i, T callback) {
 template <class T>
 void Period::print_player(size_t i, T callback) {
     callback(MESE_PRINT {
+        val("player_count", player_count);
+        val("now_period", now_period);
+
         doc("data", MESE_PRINT {
             doc("orders", MESE_PRINT {
                 val("orders", orders[i]);
@@ -284,6 +296,9 @@ void Period::print_player(size_t i, T callback) {
 template <class T>
 void Period::print_public(T callback) {
     callback(MESE_PRINT {
+        val("player_count", player_count);
+        val("now_period", now_period);
+
         doc("decisions", MESE_PRINT {
             arr("price", decision.price);
             val("average_prod", sum(decision.prod) / player_count);

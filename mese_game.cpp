@@ -6,6 +6,7 @@ namespace mese {
 Game::Game(size_t count, Setting &&_setting):
     player_count {count},
     now_period {1},
+    status {0},
     period {{
         player_count,
         std::move(_setting)
@@ -49,16 +50,23 @@ bool Game::submit(
     size_t i,
     double price, double prod, double mk, double ci, double rd
 ) {
-    return period[now_period].submit(
+    if (period[now_period].submit(
         period[now_period - 1], i,
         price, prod, mk, ci, rd
-    );
+    )) {
+        set_status(i);
+
+        return true;
+    } else {
+        return false;
+    }
 }
 
 bool Game::close() {
-    if (period[now_period].ready()) {
+    if (ready()) {
         period[now_period].exec(period[now_period - 1]);
         ++now_period;
+        status = 0;
 
         return true;
     } else {
@@ -70,6 +78,7 @@ void Game::print_full(std::ostream &stream) {
     print(stream, player_count, MESE_PRINT {
         val("player_count", player_count);
         val("now_period", now_period);
+        val("status", status);
 
         for (size_t i = 1; i < period.size(); ++i) {
             // notice: period[0].setting == period[1].setting, see Game::Game
@@ -92,6 +101,7 @@ void Game::print_player(std::ostream &stream, size_t i) {
     print(stream, player_count, MESE_PRINT {
         val("player_count", player_count);
         val("now_period", now_period);
+        val("status", status);
 
         if (now_period >= 3) {
             period[now_period - 2].print_player_early(i, [&](auto callback) {
@@ -106,7 +116,7 @@ void Game::print_player(std::ostream &stream, size_t i) {
         }
 
         period[now_period - 1].print_setting([&](auto callback) {
-            doc("setting", callback);
+            doc("settings", callback);
         });
         period[now_period - 1].print_player_early(i, [&](auto callback) {
             doc("data_early", callback);
@@ -119,7 +129,7 @@ void Game::print_player(std::ostream &stream, size_t i) {
         });
 
         period[now_period].print_setting([&](auto callback) {
-            doc("next_setting", callback);
+            doc("next_settings", callback);
         });
     });
 }
@@ -128,6 +138,7 @@ void Game::print_public(std::ostream &stream) {
     print(stream, player_count, MESE_PRINT {
         val("player_count", player_count);
         val("now_period", now_period);
+        val("status", status);
 
         if (now_period >= 3) {
             period[now_period - 2].print_public([&](auto callback) {
@@ -136,14 +147,14 @@ void Game::print_public(std::ostream &stream) {
         }
 
         period[now_period - 1].print_setting([&](auto callback) {
-            doc("setting", callback);
+            doc("settings", callback);
         });
         period[now_period - 1].print_public([&](auto callback) {
             doc("data_public", callback);
         });
 
         period[now_period].print_setting([&](auto callback) {
-            doc("next_setting", callback);
+            doc("next_settings", callback);
         });
     });
 }

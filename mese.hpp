@@ -247,7 +247,6 @@ private:
 public:
     size_t player_count;
     size_t now_period;
-    size_t status;
 
     Setting setting;
     Decision decision;
@@ -261,14 +260,6 @@ public:
         Period &last, size_t i,
         double price, double prod, double mk, double ci, double rd
     );
-
-    inline bool ready(size_t i) {
-        return (status & (1 << i)) != 0;
-    }
-
-    inline bool ready() {
-        return status == (1 << player_count) - 1;
-    }
 
     void exec(Period &last);
 
@@ -288,12 +279,25 @@ class Game {
 public:
     size_t player_count;
     size_t now_period;
+    size_t status;
 
     // std::string company_name[MAX_PLAYER];
 
     std::vector<Period> period;
 
     Game(size_t count, Setting &&_setting);
+
+    inline bool get_status(size_t i) {
+        return (status & (1 << i)) != 0;
+    }
+
+    inline void set_status(size_t i) {
+        status |= 1 << i;
+    }
+
+    inline bool ready() {
+        return status == (1 << player_count) - 1;
+    }
 
     Setting &alloc(Setting &&_setting);
     Setting &alloc();
