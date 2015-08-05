@@ -7,9 +7,7 @@ namespace mese {
 
 template <class T>
 void print(std::ostream &stream, size_t arr_size, T callback) {
-    size_t indent {0};
-
-    auto print_indent = [&]() {
+    auto print_indent = [&](size_t indent) {
         stream << std::endl;
         for (size_t i = 0; i < indent; ++i) {
             stream << "    ";
@@ -30,15 +28,14 @@ void print(std::ostream &stream, size_t arr_size, T callback) {
         stream << ']';
     };
 
-    auto doc_handler = [&](auto self, auto callback) {
+    auto doc_handler = [&](auto self, size_t indent, auto callback) {
         stream << '{';
-        ++indent;
 
         auto m_val_handler = [&](
             const std::string &name,
             double value
         ) {
-            print_indent();
+            print_indent(indent + 1);
             stream << name << ": ";
             val_handler(value);
             stream << ',';
@@ -48,7 +45,7 @@ void print(std::ostream &stream, size_t arr_size, T callback) {
             const std::string &name,
             double *member
         ) {
-            print_indent();
+            print_indent(indent + 1);
             stream << name << ": ";
             arr_handler(member);
             stream << ',';
@@ -58,20 +55,19 @@ void print(std::ostream &stream, size_t arr_size, T callback) {
             const std::string &name,
             auto callback
         ) {
-            print_indent();
+            print_indent(indent + 1);
             stream << name << ": ";
-            self(self, callback);
+            self(self, indent + 1, callback);
             stream << ',';
         };
 
         callback(m_val_handler, m_arr_handler, m_doc_handler);
 
-        --indent;
-        print_indent();
+        print_indent(indent);
         stream << '}';
     };
 
-    doc_handler(doc_handler, callback);
+    doc_handler(doc_handler, 0, callback);
 }
 
 }
