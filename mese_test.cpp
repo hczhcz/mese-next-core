@@ -52,11 +52,13 @@ int main() {
     game.submit(7, 52, 654,    0, 10000,  6000);
     game.close();
 
-    // game.period[3].print_full([&](auto callback) {
-    //     print(std::cout, game.player_count, callback);
-    // });
     // game.print_full(std::cout);
     game.print_public(std::cout);
+
+    // game.serialize(std::cout);
+
+    // Game game2 {std::cin};
+    // game2.print_public(std::cout);
 
     return 0;
 }

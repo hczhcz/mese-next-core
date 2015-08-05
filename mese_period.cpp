@@ -44,6 +44,19 @@ Period::Period(size_t count, Period &last, Setting &&_setting):
     // nothing
 }
 
+Period::Period(std::istream &stream):
+    PeriodDataEarly {},
+    PeriodData {},
+
+    player_count {},
+    now_period {},
+
+    setting {},
+    decision {}
+{
+    stream.read(reinterpret_cast<char *>(this), sizeof(*this));
+}
+
 bool Period::submit(
     Period &last, size_t i,
     double price, double prod, double mk, double ci, double rd
@@ -281,6 +294,10 @@ void Period::exec(Period &last) {
 
         mpi[i] = mpi_a[i] + mpi_b[i] + mpi_c[i] + mpi_d[i] + mpi_e[i] + mpi_f[i];
     }
+}
+
+void Period::serialize(std::ostream &stream) {
+    stream.write(reinterpret_cast<const char *>(this), sizeof(*this));
 }
 
 }

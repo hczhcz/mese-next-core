@@ -30,6 +30,24 @@ Game::Game(size_t count, Setting &&_setting):
     }
 }
 
+Game::Game(std::istream &stream):
+    player_count {},
+    now_period {},
+    status {},
+    period {}
+{
+    size_t vsize;
+
+    stream.read(reinterpret_cast<char *>(&player_count), sizeof(player_count));
+    stream.read(reinterpret_cast<char *>(&now_period), sizeof(now_period));
+    stream.read(reinterpret_cast<char *>(&status), sizeof(status));
+    stream.read(reinterpret_cast<char *>(&vsize), sizeof(vsize));
+
+    for (; vsize > 0; --vsize) {
+        period.push_back({stream});
+    }
+}
+
 Setting &Game::alloc(Setting &&_setting) {
     period.push_back({
         player_count,
@@ -159,5 +177,17 @@ void Game::print_public(std::ostream &stream) {
     });
 }
 
+void Game::serialize(std::ostream &stream) {
+    size_t vsize {period.size()};
+
+    stream.write(reinterpret_cast<const char *>(&player_count), sizeof(player_count));
+    stream.write(reinterpret_cast<const char *>(&now_period), sizeof(now_period));
+    stream.write(reinterpret_cast<const char *>(&status), sizeof(status));
+    stream.write(reinterpret_cast<const char *>(&vsize), sizeof(vsize));
+
+    for (auto &i: period) {
+        i.serialize(stream);
+    }
+}
 
 }

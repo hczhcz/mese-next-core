@@ -255,6 +255,8 @@ public:
     Period(size_t count, Setting &&_setting);
     // normal period
     Period(size_t count, Period &last, Setting &&_setting);
+    // unserialize
+    Period(std::istream &stream);
 
     bool submit(
         Period &last, size_t i,
@@ -273,6 +275,8 @@ public:
     void print_player(size_t i, T callback);
     template <class T>
     void print_public(T callback);
+
+    void serialize(std::ostream &stream);
 };
 
 class Game {
@@ -285,7 +289,10 @@ public:
 
     std::vector<Period> period;
 
+    // new game
     Game(size_t count, Setting &&_setting);
+    // unserialize
+    Game(std::istream &stream);
 
     inline bool get_status(size_t i) {
         return (status & (1 << i)) != 0;
@@ -313,6 +320,8 @@ public:
     void print_player_early(std::ostream &stream, size_t i);
     void print_player(std::ostream &stream, size_t i);
     void print_public(std::ostream &stream);
+
+    void serialize(std::ostream &stream);
 };
 
 }
