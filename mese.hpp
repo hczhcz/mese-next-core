@@ -7,7 +7,7 @@
 
 namespace mese {
 
-const size_t MAX_PLAYER {16};
+const size_t MAX_PLAYER {32};
 
 #define MESE_VAL(name) double name {NAN}
 #define MESE_ARR(name) double name[MAX_PLAYER] { \
@@ -15,144 +15,81 @@ const size_t MAX_PLAYER {16};
     NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN, \
 }
 
-// #define MESE_CLASSIC
-#ifdef MESE_CLASSIC
 struct Settings {
     // decision limits
 
-    double price_max {99};
-    double price_min {12};
-    double mk_limit {15000 * 8}; // ref: on 8 player game
-    double ci_limit {15000 * 8}; // ref: on 8 player game
-    double rd_limit {15000 * 8}; // ref: on 8 player game
-    double loan_limit {50000 * 8}; // ref: on 8 player game
+    MESE_VAL(price_max);
+    MESE_VAL(price_min);
+    MESE_VAL(mk_limit); // ref: on 8 player game
+    MESE_VAL(ci_limit); // ref: on 8 player game
+    MESE_VAL(rd_limit); // ref: on 8 player game
+    MESE_VAL(loan_limit); // ref: on 8 player game
 
     // costs related
 
-    double prod_rate_initial {0.75};
-    double prod_rate_balanced {0.8};
-    double prod_rate_pow {2};
-    double prod_cost_factor_rate_over {69};
-    double prod_cost_factor_rate_under {138};
-    double prod_cost_factor_size {15};
-    double prod_cost_factor_const {3};
+    MESE_VAL(prod_rate_initial);
+    MESE_VAL(prod_rate_balanced);
+    MESE_VAL(prod_rate_pow);
+    MESE_VAL(prod_cost_factor_rate_over);
+    MESE_VAL(prod_cost_factor_rate_under);
+    MESE_VAL(prod_cost_factor_size);
+    MESE_VAL(prod_cost_factor_const);
 
-    double unit_fee {40};
-    double deprecation_rate {0.05};
+    MESE_VAL(unit_fee);
+    MESE_VAL(deprecation_rate);
 
-    double initial_cash {14000};
-    double initial_capital {168000};
+    MESE_VAL(initial_cash);
+    MESE_VAL(initial_capital);
 
-    double interest_rate_cash {0.0125}; // const - 0.0025 * setting
-    double interest_rate_loan {0.025}; // const + 0.0025 * setting
-    double inventory_fee {1};
-    double tax_rate {0.25}; // 0.01 * setting
-
-    // orders related
-
-    double mk_overload {16800};
-    double mk_compression {0.25};
-
-    double demand {500}; // const + setting
-    double demand_price {1}; // 1 + 0.01 * setting
-    double demand_mk {5.3}; // 159 / sqrt(8400) + 0.0053 * setting (?)
-    double demand_rd {1}; // 1 + 0.01 * setting
-
-    double demand_ref_price {30};
-    double demand_ref_mk {8400};
-    double demand_ref_rd {3150};
-    double demand_pow_price {1};
-    double demand_pow_mk {0.5};
-    double demand_pow_rd {1};
-
-    double share_price {0.4}; // 0.01 * setting
-    double share_mk {0.3}; // 0.01 * setting
-    double share_rd {0.3}; // 0.01 * setting
-    double share_pow_price {3};
-    double share_pow_mk {1.5};
-    double share_pow_rd {1};
-
-    double price_overload {40};
-
-    // mpi related
-
-    double mpi_retern_factor {11155};
-    double mpi_factor_a {50};
-    double mpi_factor_b {10};
-    double mpi_factor_c {10};
-    double mpi_factor_d {10};
-    double mpi_factor_e {10};
-    double mpi_factor_f {10};
-};
-#else
-struct Settings {
-    // decision limits
-
-    double price_max {99};
-    double price_min {12};
-    double mk_limit {15000 * 8}; // ref: on 8 player game
-    double ci_limit {15000 * 8}; // ref: on 8 player game
-    double rd_limit {15000 * 8}; // ref: on 8 player game
-    double loan_limit {30000 * 8}; // ref: on 8 player game
-
-    // costs related
-
-    double prod_rate_initial {0.8};
-    double prod_rate_balanced {0.8};
-    double prod_rate_pow {2};
-    double prod_cost_factor_rate_over {63};
-    double prod_cost_factor_rate_under {63};
-    double prod_cost_factor_size {15};
-    double prod_cost_factor_const {3};
-
-    double unit_fee {40};
-    double deprecation_rate {0.05};
-
-    double initial_cash {14000};
-    double initial_capital {168000};
-
-    double interest_rate_cash {0.025}; // const - 0.0025 * setting
-    double interest_rate_loan {0.05}; // const + 0.0025 * setting
-    double inventory_fee {1};
-    double tax_rate {0.25}; // 0.01 * setting
+    MESE_VAL(interest_rate_cash); // const - 0.0025 * setting
+    MESE_VAL(interest_rate_loan); // const + 0.0025 * setting
+    MESE_VAL(inventory_fee);
+    MESE_VAL(tax_rate); // 0.01 * setting
 
     // orders related
 
-    double mk_overload {16800};
-    double mk_compression {0.25};
+    MESE_VAL(mk_overload);
+    MESE_VAL(mk_compression);
 
-    double demand {560}; // const + setting
-    double demand_price {1}; // 1 + 0.01 * setting
-    double demand_mk {5}; // 159 / sqrt(8400) + 0.0053 * setting (?)
-    double demand_rd {1}; // 1 + 0.01 * setting
+    MESE_VAL(demand); // const + setting
+    MESE_VAL(demand_price); // 1 + 0.01 * setting
+    MESE_VAL(demand_mk); // 159 / sqrt(8400) + 0.0053 * setting (?)
+    MESE_VAL(demand_rd); // 1 + 0.01 * setting
 
-    double demand_ref_price {30};
-    double demand_ref_mk {8400};
-    double demand_ref_rd {3360};
-    double demand_pow_price {1};
-    double demand_pow_mk {0.5};
-    double demand_pow_rd {1};
+    MESE_VAL(demand_ref_price);
+    MESE_VAL(demand_ref_mk);
+    MESE_VAL(demand_ref_rd);
+    MESE_VAL(demand_pow_price);
+    MESE_VAL(demand_pow_mk);
+    MESE_VAL(demand_pow_rd);
 
-    double share_price {0.4}; // 0.01 * setting
-    double share_mk {0.3}; // 0.01 * setting
-    double share_rd {0.3}; // 0.01 * setting
-    double share_pow_price {3};
-    double share_pow_mk {1.5};
-    double share_pow_rd {1};
+    MESE_VAL(share_price); // 0.01 * setting
+    MESE_VAL(share_mk); // 0.01 * setting
+    MESE_VAL(share_rd); // 0.01 * setting
+    MESE_VAL(share_pow_price);
+    MESE_VAL(share_pow_mk);
+    MESE_VAL(share_pow_rd);
 
-    double price_overload {40};
+    MESE_VAL(price_overload);
 
     // mpi related
 
-    double mpi_retern_factor {12936};
-    double mpi_factor_a {50};
-    double mpi_factor_b {10};
-    double mpi_factor_c {10};
-    double mpi_factor_d {10};
-    double mpi_factor_e {10};
-    double mpi_factor_f {10};
+    MESE_VAL(mpi_retern_factor);
+    MESE_VAL(mpi_factor_a);
+    MESE_VAL(mpi_factor_b);
+    MESE_VAL(mpi_factor_c);
+    MESE_VAL(mpi_factor_d);
+    MESE_VAL(mpi_factor_e);
+    MESE_VAL(mpi_factor_f);
 };
-#endif
+
+enum class PresetId {
+    classic,
+    imese,
+    modern
+};
+
+Settings get_preset(PresetId id, size_t player_count);
 
 struct Decisions {
     MESE_ARR(price);

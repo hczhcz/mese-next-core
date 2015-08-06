@@ -4,33 +4,37 @@
 int main() {
     using namespace mese;
 
-    Game game {8, Settings {}};
+    Game game {8, get_preset(PresetId::modern, 8)};
+
+    game.print_full(std::cout);
 
     game.alloc();
     game.alloc();
     game.alloc().loan_limit = 50000 * 8;
 
-#ifdef MESE_CLASSIC
-    game.submit(0, 30, 393, 1050, 1050, 393);
-    game.submit(1, 30, 393, 1050, 1050, 393);
-    game.submit(2, 30, 393, 1050, 1050, 393);
-    game.submit(3, 30, 393, 1050, 1050, 393);
-    game.submit(4, 30, 393, 1050, 1050, 393);
-    game.submit(5, 30, 393, 1050, 1050, 393);
-    game.submit(6, 30, 393, 1050, 1050, 393);
-    game.submit(7, 30, 393, 1050, 1050, 393);
-    game.close();
-#else
-    game.submit(0, 30, 420, 1050, 1050, 420);
-    game.submit(1, 30, 420, 1050, 1050, 420);
-    game.submit(2, 30, 420, 1050, 1050, 420);
-    game.submit(3, 30, 420, 1050, 1050, 420);
-    game.submit(4, 30, 420, 1050, 1050, 420);
-    game.submit(5, 30, 420, 1050, 1050, 420);
-    game.submit(6, 30, 420, 1050, 1050, 420);
-    game.submit(7, 30, 420, 1050, 1050, 420);
-    game.close();
-#endif
+    if (false) {
+        // classic
+        game.submit(0, 30, 393, 1050, 1050, 393);
+        game.submit(1, 30, 393, 1050, 1050, 393);
+        game.submit(2, 30, 393, 1050, 1050, 393);
+        game.submit(3, 30, 393, 1050, 1050, 393);
+        game.submit(4, 30, 393, 1050, 1050, 393);
+        game.submit(5, 30, 393, 1050, 1050, 393);
+        game.submit(6, 30, 393, 1050, 1050, 393);
+        game.submit(7, 30, 393, 1050, 1050, 393);
+        game.close();
+    } else {
+        // modern
+        game.submit(0, 30, 420, 1050, 1050, 420);
+        game.submit(1, 30, 420, 1050, 1050, 420);
+        game.submit(2, 30, 420, 1050, 1050, 420);
+        game.submit(3, 30, 420, 1050, 1050, 420);
+        game.submit(4, 30, 420, 1050, 1050, 420);
+        game.submit(5, 30, 420, 1050, 1050, 420);
+        game.submit(6, 30, 420, 1050, 1050, 420);
+        game.submit(7, 30, 420, 1050, 1050, 420);
+        game.close();
+    }
 
     game.submit(0, 65, 472,    0, 11900, 15000);
     game.submit(1, 84, 462, 3200, 15000,  9000);
@@ -52,7 +56,6 @@ int main() {
     game.submit(7, 52, 654,    0, 10000,  6000);
     game.close();
 
-    // game.print_full(std::cout);
     game.print_public(std::cout);
 
     // game.serialize(std::cout);
