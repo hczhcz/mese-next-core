@@ -4,7 +4,7 @@
 int main() {
     using namespace mese;
 
-    Game game {8, Setting {}};
+    Game game {8, Settings {}};
 
     game.alloc();
     game.alloc();

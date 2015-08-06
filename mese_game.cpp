@@ -3,25 +3,25 @@
 
 namespace mese {
 
-Game::Game(size_t count, Setting &&_setting):
+Game::Game(size_t count, Settings &&_settings):
     player_count {count},
     now_period {1},
     status {0},
     period {{
         player_count,
-        std::move(_setting)
+        std::move(_settings)
     }}
 {
-    Setting &setting {alloc()};
+    Settings &settings {alloc()};
 
     for (size_t i = 0; i < player_count; ++i) {
         submit(
             i,
-            setting.demand_ref_price,
-            period[0].size[i] * setting.prod_rate_initial,
-            setting.demand_ref_mk / player_count,
-            period[0].capital[i] * setting.deprecation_rate,
-            setting.demand_ref_rd / player_count
+            settings.demand_ref_price,
+            period[0].size[i] * settings.prod_rate_initial,
+            settings.demand_ref_mk / player_count,
+            period[0].capital[i] * settings.deprecation_rate,
+            settings.demand_ref_rd / player_count
         );
     }
 
@@ -48,20 +48,20 @@ Game::Game(std::istream &stream):
     }
 }
 
-Setting &Game::alloc(Setting &&_setting) {
+Settings &Game::alloc(Settings &&_settings) {
     period.push_back({
         player_count,
         period.back(),
-        std::move(_setting)
+        std::move(_settings)
     });
 
-    return period.back().setting;
+    return period.back().settings;
 }
 
-Setting &Game::alloc() {
-    Setting setting = period.back().setting; // copy
+Settings &Game::alloc() {
+    Settings settings = period.back().settings; // copy
 
-    return alloc(std::move(setting));
+    return alloc(std::move(settings));
 }
 
 bool Game::submit(
@@ -99,7 +99,7 @@ void Game::print_full(std::ostream &stream) {
         val("status", status);
 
         for (size_t i = 1; i < period.size(); ++i) {
-            // notice: period[0].setting == period[1].setting, see Game::Game
+            // notice: period[0].settings == period[1].settings, see Game::Game
             period[i].print_full([&](auto callback) {
                 doc("period_" + std::to_string(i), callback);
             });
@@ -133,7 +133,7 @@ void Game::print_player(std::ostream &stream, size_t i) {
             });
         }
 
-        period[now_period - 1].print_setting([&](auto callback) {
+        period[now_period - 1].print_settings([&](auto callback) {
             doc("settings", callback);
         });
         period[now_period - 1].print_player_early(i, [&](auto callback) {
@@ -146,7 +146,7 @@ void Game::print_player(std::ostream &stream, size_t i) {
             doc("data_public", callback);
         });
 
-        period[now_period].print_setting([&](auto callback) {
+        period[now_period].print_settings([&](auto callback) {
             doc("next_settings", callback);
         });
     });
@@ -164,14 +164,14 @@ void Game::print_public(std::ostream &stream) {
             });
         }
 
-        period[now_period - 1].print_setting([&](auto callback) {
+        period[now_period - 1].print_settings([&](auto callback) {
             doc("settings", callback);
         });
         period[now_period - 1].print_public([&](auto callback) {
             doc("data_public", callback);
         });
 
-        period[now_period].print_setting([&](auto callback) {
+        period[now_period].print_settings([&](auto callback) {
             doc("next_settings", callback);
         });
     });

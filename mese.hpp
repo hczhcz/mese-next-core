@@ -17,7 +17,7 @@ const size_t MAX_PLAYER {16};
 
 // #define MESE_CLASSIC
 #ifdef MESE_CLASSIC
-struct Setting {
+struct Settings {
     // decision limits
 
     double price_max {99};
@@ -85,7 +85,7 @@ struct Setting {
     double mpi_factor_f {10};
 };
 #else
-struct Setting {
+struct Settings {
     // decision limits
 
     double price_max {99};
@@ -154,7 +154,7 @@ struct Setting {
 };
 #endif
 
-struct Decision {
+struct Decisions {
     MESE_ARR(price);
     MESE_ARR(prod);
     MESE_ARR(mk);
@@ -248,13 +248,13 @@ public:
     size_t player_count;
     size_t now_period;
 
-    Setting setting;
-    Decision decision;
+    Settings settings;
+    Decisions decisions;
 
     // initial period
-    Period(size_t count, Setting &&_setting);
+    Period(size_t count, Settings &&_settings);
     // normal period
-    Period(size_t count, Period &last, Setting &&_setting);
+    Period(size_t count, Period &last, Settings &&_settings);
     // unserialize
     Period(std::istream &stream);
 
@@ -268,7 +268,7 @@ public:
     template <class T>
     void print_full(T callback);
     template <class T>
-    void print_setting(T callback);
+    void print_settings(T callback);
     template <class T>
     void print_player_early(size_t i, T callback);
     template <class T>
@@ -290,7 +290,7 @@ public:
     std::vector<Period> period;
 
     // new game
-    Game(size_t count, Setting &&_setting);
+    Game(size_t count, Settings &&_settings);
     // unserialize
     Game(std::istream &stream);
 
@@ -306,8 +306,8 @@ public:
         return status == (1 << player_count) - 1;
     }
 
-    Setting &alloc(Setting &&_setting);
-    Setting &alloc();
+    Settings &alloc(Settings &&_settings);
+    Settings &alloc();
 
     bool submit(
         size_t i,

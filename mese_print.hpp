@@ -14,80 +14,80 @@ void Period::print_full(T callback) {
 
         doc("settings", MESE_PRINT {
             doc("limits", MESE_PRINT {
-                val("price_max", setting.price_max);
-                val("price_min", setting.price_min);
-                val("mk_limit", setting.mk_limit);
-                val("ci_limit", setting.ci_limit);
-                val("rd_limit", setting.rd_limit);
-                val("loan_limit", setting.loan_limit);
+                val("price_max", settings.price_max);
+                val("price_min", settings.price_min);
+                val("mk_limit", settings.mk_limit);
+                val("ci_limit", settings.ci_limit);
+                val("rd_limit", settings.rd_limit);
+                val("loan_limit", settings.loan_limit);
             });
 
             doc("production", MESE_PRINT {
-                val("prod_rate_initial", setting.prod_rate_initial);
-                val("prod_rate_balanced", setting.prod_rate_balanced);
-                val("prod_rate_pow", setting.prod_rate_pow);
-                val("prod_cost_factor_rate_over", setting.prod_cost_factor_rate_over);
-                val("prod_cost_factor_rate_under", setting.prod_cost_factor_rate_under);
-                val("prod_cost_factor_size", setting.prod_cost_factor_size);
-                val("prod_cost_factor_const", setting.prod_cost_factor_const);
+                val("prod_rate_initial", settings.prod_rate_initial);
+                val("prod_rate_balanced", settings.prod_rate_balanced);
+                val("prod_rate_pow", settings.prod_rate_pow);
+                val("prod_cost_factor_rate_over", settings.prod_cost_factor_rate_over);
+                val("prod_cost_factor_rate_under", settings.prod_cost_factor_rate_under);
+                val("prod_cost_factor_size", settings.prod_cost_factor_size);
+                val("prod_cost_factor_const", settings.prod_cost_factor_const);
 
-                val("unit_fee", setting.unit_fee);
-                val("deprecation_rate", setting.deprecation_rate);
+                val("unit_fee", settings.unit_fee);
+                val("deprecation_rate", settings.deprecation_rate);
             });
 
             doc("balance", MESE_PRINT {
-                val("initial_cash", setting.initial_cash);
-                val("initial_capital", setting.initial_capital);
+                val("initial_cash", settings.initial_cash);
+                val("initial_capital", settings.initial_capital);
 
-                val("interest_rate_cash", setting.interest_rate_cash);
-                val("interest_rate_loan", setting.interest_rate_loan);
-                val("inventory_fee", setting.inventory_fee);
-                val("tax_rate", setting.tax_rate);
+                val("interest_rate_cash", settings.interest_rate_cash);
+                val("interest_rate_loan", settings.interest_rate_loan);
+                val("inventory_fee", settings.inventory_fee);
+                val("tax_rate", settings.tax_rate);
             });
 
             doc("orders", MESE_PRINT {
-                val("mk_overload", setting.mk_overload);
-                val("mk_compression", setting.mk_compression);
+                val("mk_overload", settings.mk_overload);
+                val("mk_compression", settings.mk_compression);
 
-                val("demand", setting.demand);
-                val("demand_price", setting.demand_price);
-                val("demand_mk", setting.demand_mk);
-                val("demand_rd", setting.demand_rd);
+                val("demand", settings.demand);
+                val("demand_price", settings.demand_price);
+                val("demand_mk", settings.demand_mk);
+                val("demand_rd", settings.demand_rd);
 
-                val("demand_ref_price", setting.demand_ref_price);
-                val("demand_ref_mk", setting.demand_ref_mk);
-                val("demand_ref_rd", setting.demand_ref_rd);
-                val("demand_pow_price", setting.demand_pow_price);
-                val("demand_pow_mk", setting.demand_pow_mk);
-                val("demand_pow_rd", setting.demand_pow_rd);
+                val("demand_ref_price", settings.demand_ref_price);
+                val("demand_ref_mk", settings.demand_ref_mk);
+                val("demand_ref_rd", settings.demand_ref_rd);
+                val("demand_pow_price", settings.demand_pow_price);
+                val("demand_pow_mk", settings.demand_pow_mk);
+                val("demand_pow_rd", settings.demand_pow_rd);
 
-                val("share_price", setting.share_price);
-                val("share_mk", setting.share_mk);
-                val("share_rd", setting.share_rd);
-                val("share_pow_price", setting.share_pow_price);
-                val("share_pow_mk", setting.share_pow_mk);
-                val("share_pow_rd", setting.share_pow_rd);
+                val("share_price", settings.share_price);
+                val("share_mk", settings.share_mk);
+                val("share_rd", settings.share_rd);
+                val("share_pow_price", settings.share_pow_price);
+                val("share_pow_mk", settings.share_pow_mk);
+                val("share_pow_rd", settings.share_pow_rd);
 
-                val("price_overload", setting.price_overload);
+                val("price_overload", settings.price_overload);
             });
 
             doc("mpi", MESE_PRINT {
-                val("mpi_retern_factor", setting.mpi_retern_factor);
-                val("mpi_factor_a", setting.mpi_factor_a);
-                val("mpi_factor_b", setting.mpi_factor_b);
-                val("mpi_factor_c", setting.mpi_factor_c);
-                val("mpi_factor_d", setting.mpi_factor_d);
-                val("mpi_factor_e", setting.mpi_factor_e);
-                val("mpi_factor_f", setting.mpi_factor_f);
+                val("mpi_retern_factor", settings.mpi_retern_factor);
+                val("mpi_factor_a", settings.mpi_factor_a);
+                val("mpi_factor_b", settings.mpi_factor_b);
+                val("mpi_factor_c", settings.mpi_factor_c);
+                val("mpi_factor_d", settings.mpi_factor_d);
+                val("mpi_factor_e", settings.mpi_factor_e);
+                val("mpi_factor_f", settings.mpi_factor_f);
             });
         });
 
         doc("decisions", MESE_PRINT {
-            arr("price", decision.price);
-            arr("prod", decision.prod);
-            arr("mk", decision.mk);
-            arr("ci", decision.ci);
-            arr("rd", decision.rd);
+            arr("price", decisions.price);
+            arr("prod", decisions.prod);
+            arr("mk", decisions.mk);
+            arr("ci", decisions.ci);
+            arr("rd", decisions.rd);
         });
 
         doc("data_early", MESE_PRINT {
@@ -173,38 +173,38 @@ void Period::print_full(T callback) {
 }
 
 template <class T>
-void Period::print_setting(T callback) {
+void Period::print_settings(T callback) {
     callback(MESE_PRINT {
         val("player_count", player_count);
         val("now_period", now_period);
 
         doc("settings", MESE_PRINT {
             doc("limits", MESE_PRINT {
-                val("price_max", setting.price_max);
-                val("price_min", setting.price_min);
-                val("mk_limit", setting.mk_limit);
-                val("ci_limit", setting.ci_limit);
-                val("rd_limit", setting.rd_limit);
-                val("loan_limit", setting.loan_limit);
+                val("price_max", settings.price_max);
+                val("price_min", settings.price_min);
+                val("mk_limit", settings.mk_limit);
+                val("ci_limit", settings.ci_limit);
+                val("rd_limit", settings.rd_limit);
+                val("loan_limit", settings.loan_limit);
             });
 
             doc("production", MESE_PRINT {
-                val("prod_rate_balanced", setting.prod_rate_balanced);
-                val("prod_rate_pow", setting.prod_rate_pow);
-                val("prod_cost_factor_rate_over", setting.prod_cost_factor_rate_over);
-                val("prod_cost_factor_rate_under", setting.prod_cost_factor_rate_under);
-                val("prod_cost_factor_size", setting.prod_cost_factor_size);
-                val("prod_cost_factor_const", setting.prod_cost_factor_const);
+                val("prod_rate_balanced", settings.prod_rate_balanced);
+                val("prod_rate_pow", settings.prod_rate_pow);
+                val("prod_cost_factor_rate_over", settings.prod_cost_factor_rate_over);
+                val("prod_cost_factor_rate_under", settings.prod_cost_factor_rate_under);
+                val("prod_cost_factor_size", settings.prod_cost_factor_size);
+                val("prod_cost_factor_const", settings.prod_cost_factor_const);
 
-                val("unit_fee", setting.unit_fee);
-                val("deprecation_rate", setting.deprecation_rate);
+                val("unit_fee", settings.unit_fee);
+                val("deprecation_rate", settings.deprecation_rate);
             });
 
             doc("balance", MESE_PRINT {
-                val("interest_rate_cash", setting.interest_rate_cash);
-                val("interest_rate_loan", setting.interest_rate_loan);
-                val("inventory_fee", setting.inventory_fee);
-                val("tax_rate", setting.tax_rate);
+                val("interest_rate_cash", settings.interest_rate_cash);
+                val("interest_rate_loan", settings.interest_rate_loan);
+                val("inventory_fee", settings.inventory_fee);
+                val("tax_rate", settings.tax_rate);
             });
         });
     });
@@ -217,11 +217,11 @@ void Period::print_player_early(size_t i, T callback) {
         val("now_period", now_period);
 
         doc("decisions", MESE_PRINT {
-            val("price", decision.price[i]);
-            val("prod", decision.prod[i]);
-            val("mk", decision.mk[i]);
-            val("ci", decision.ci[i]);
-            val("rd", decision.rd[i]);
+            val("price", decisions.price[i]);
+            val("prod", decisions.prod[i]);
+            val("mk", decisions.mk[i]);
+            val("ci", decisions.ci[i]);
+            val("rd", decisions.rd[i]);
         });
 
         doc("data_early", MESE_PRINT {
@@ -300,8 +300,8 @@ void Period::print_public(T callback) {
         val("now_period", now_period);
 
         doc("decisions", MESE_PRINT {
-            arr("price", decision.price);
-            val("average_prod", sum(decision.prod) / player_count);
+            arr("price", decisions.price);
+            val("average_prod", sum(decisions.prod) / player_count);
         });
 
         doc("data_early", MESE_PRINT {
