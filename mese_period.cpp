@@ -148,16 +148,16 @@ void Period::exec(Period &last) {
         + (1 - settings.demand_price) * last.average_price
     );
 
-    demand_effect_mk = settings.demand_mk * (
-        pow(sum_mk_compressed, settings.demand_pow_mk)
-        / pow(settings.demand_ref_mk, settings.demand_pow_mk)
-    ) / (
-        pow(average_price_mixed, settings.demand_pow_price)
-        / pow(settings.demand_ref_price, settings.demand_pow_price)
+    demand_effect_mk = settings.demand_mk * pow(
+        sum_mk_compressed / settings.demand_ref_mk,
+        settings.demand_pow_mk
+    ) / pow(
+        average_price_mixed / settings.demand_ref_price,
+        settings.demand_pow_price
     );
-    demand_effect_rd = settings.demand_rd * (
-        pow(sum_history_rd / now_period, settings.demand_pow_rd)
-        / pow(settings.demand_ref_rd, settings.demand_pow_rd)
+    demand_effect_rd = settings.demand_rd * pow(
+        sum_history_rd / now_period / settings.demand_ref_rd,
+        settings.demand_pow_rd
     );
     orders_demand = settings.demand * (
         demand_effect_rd + demand_effect_mk

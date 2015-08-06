@@ -89,6 +89,8 @@ enum class PresetId {
     modern
 };
 
+// player_count == 8 -> classic mode
+// player_count == actual value -> 8p-feeling mode
 Settings get_preset(PresetId id, size_t player_count);
 
 struct Decisions {
