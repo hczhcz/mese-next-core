@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "mese.hpp"
 #include "mese_print.hpp"
 
@@ -65,6 +67,8 @@ void test() {
 }
 
 int main(int argc, char *argv[]) {
+    using namespace mese;
+
     if (argc < 2) {
         std::cout << "Commands:" << std::endl;
         std::cout << "    test()" << std::endl;
@@ -77,44 +81,69 @@ int main(int argc, char *argv[]) {
 
         return 0;
     } else {
-        std::string command {argv[1]};
-
-        if (command == "test") {
+        if (strcmp(argv[1], "test") == 0) {
             test();
 
             return 0;
-        } else if (command == "submit") {
+        } else if (strcmp(argv[1], "submit") == 0) {
             Game game {std::cin};
 
             if (argc < 8) {
                 throw 1; // TODO
             }
 
-            game.serialize {std::cout};
-        } else if (command == "close") {
+            if (game.submit(
+                strtoul(argv[2], nullptr, 10),
+                strtod(argv[3], nullptr),
+                strtod(argv[4], nullptr),
+                strtod(argv[5], nullptr),
+                strtod(argv[6], nullptr),
+                strtod(argv[7], nullptr)
+            )) {
+                game.serialize(std::cout);
+
+                return 0;
+            } else {
+                game.serialize(std::cout);
+
+                return 1;
+            }
+        } else if (strcmp(argv[1], "close") == 0) {
             Game game {std::cin};
 
-            game.serialize {std::cout};
-        } else if (command == "print_full") {
+            if (game.close()) {
+                game.serialize(std::cout);
+
+                return 0;
+            } else {
+                game.serialize(std::cout);
+
+                return 1;
+            }
+        } else if (strcmp(argv[1], "print_full") == 0) {
             Game game {std::cin};
 
-        } else if (command == "print_player_early") {
+            game.print_full(std::cout);
+        } else if (strcmp(argv[1], "print_player_early") == 0) {
             Game game {std::cin};
 
             if (argc < 3) {
                 throw 1; // TODO
             }
 
-        } else if (command == "print_player") {
+            game.print_player_early(std::cout, strtoul(argv[2], nullptr, 10));
+        } else if (strcmp(argv[1], "print_player") == 0) {
             Game game {std::cin};
 
             if (argc < 3) {
                 throw 1; // TODO
             }
 
-        } else if (command == "print_public") {
+            game.print_player(std::cout, strtoul(argv[2], nullptr, 10));
+        } else if (strcmp(argv[1], "print_public") == 0) {
             Game game {std::cin};
 
+            game.print_public(std::cout);
         }
     }
 }
