@@ -12,6 +12,10 @@ Game::Game(size_t count, Settings &&_settings):
         std::move(_settings)
     }}
 {
+    if (player_count > MAX_PLAYER) {
+        throw 1; // TODO
+    }
+
     Settings &settings {alloc()};
 
     for (size_t i = 0; i < player_count; ++i) {
@@ -68,6 +72,14 @@ bool Game::submit(
     size_t i,
     double price, double prod, double mk, double ci, double rd
 ) {
+    if (i >= player_count) {
+        throw 1; // TODO
+    }
+
+    if (now_period >= period.size()) {
+        throw 1; // TODO
+    }
+
     if (period[now_period].submit(
         period[now_period - 1], i,
         price, prod, mk, ci, rd
@@ -81,6 +93,10 @@ bool Game::submit(
 }
 
 bool Game::close() {
+    if (now_period >= period.size()) {
+        throw 1; // TODO
+    }
+
     if (ready()) {
         period[now_period].exec(period[now_period - 1]);
         ++now_period;
@@ -108,6 +124,14 @@ void Game::print_full(std::ostream &stream) {
 }
 
 void Game::print_player_early(std::ostream &stream, size_t i) {
+    if (i >= player_count) {
+        throw 1; // TODO
+    }
+
+    if (now_period >= period.size()) {
+        throw 1; // TODO
+    }
+
     print(stream, player_count, MESE_PRINT {
         val("status", status);
 
@@ -118,6 +142,14 @@ void Game::print_player_early(std::ostream &stream, size_t i) {
 }
 
 void Game::print_player(std::ostream &stream, size_t i) {
+    if (i >= player_count) {
+        throw 1; // TODO
+    }
+
+    if (now_period - 1 >= period.size()) {
+        throw 1; // TODO
+    }
+
     print(stream, player_count, MESE_PRINT {
         val("player_count", player_count);
         val("now_period", now_period);
@@ -148,13 +180,19 @@ void Game::print_player(std::ostream &stream, size_t i) {
             doc("data_public", callback);
         });
 
-        period[now_period].print_settings([&](auto callback) {
-            doc("next_settings", callback);
-        });
+        if (now_period < period.size()) {
+            period[now_period].print_settings([&](auto callback) {
+                doc("next_settings", callback);
+            });
+        }
     });
 }
 
 void Game::print_public(std::ostream &stream) {
+    if (now_period - 1 >= period.size()) {
+        throw 1; // TODO
+    }
+
     print(stream, player_count, MESE_PRINT {
         val("player_count", player_count);
         val("now_period", now_period);
@@ -173,9 +211,11 @@ void Game::print_public(std::ostream &stream) {
             doc("data_public", callback);
         });
 
-        period[now_period].print_settings([&](auto callback) {
-            doc("next_settings", callback);
-        });
+        if (now_period < period.size()) {
+            period[now_period].print_settings([&](auto callback) {
+                doc("next_settings", callback);
+            });
+        }
     });
 }
 

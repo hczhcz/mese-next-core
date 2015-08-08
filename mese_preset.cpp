@@ -14,6 +14,10 @@ namespace mese {
     )
 
 Settings get_preset(PresetId id, size_t player_count) {
+    if (player_count > MAX_PLAYER) {
+        throw 1; // TODO
+    }
+
     Settings settings {};
 
     settings.price_max = 99;
