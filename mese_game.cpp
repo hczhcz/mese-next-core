@@ -109,6 +109,8 @@ void Game::print_full(std::ostream &stream) {
 
 void Game::print_player_early(std::ostream &stream, size_t i) {
     print(stream, player_count, MESE_PRINT {
+        val("status", status);
+
         period[now_period].print_player_early(i, [&](auto callback) {
             doc("data_early", callback);
         });

@@ -1,7 +1,7 @@
 #include "mese.hpp"
 #include "mese_print.hpp"
 
-int main() {
+void test() {
     using namespace mese;
 
     Game game {8, get_preset(PresetId::modern, 8)};
@@ -62,6 +62,59 @@ int main() {
 
     // Game game2 {std::cin};
     // game2.print_public(std::cout);
+}
 
-    return 0;
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        std::cout << "Commands:" << std::endl;
+        std::cout << "    test()" << std::endl;
+        std::cout << "    submit(player, price, prod, mk, ci, rd) -> bool" << std::endl;
+        std::cout << "    close() -> bool" << std::endl;
+        std::cout << "    print_full()" << std::endl;
+        std::cout << "    print_player_early(player)" << std::endl;
+        std::cout << "    print_player(player)" << std::endl;
+        std::cout << "    print_public()" << std::endl;
+
+        return 0;
+    } else {
+        std::string command {argv[1]};
+
+        if (command == "test") {
+            test();
+
+            return 0;
+        } else if (command == "submit") {
+            Game game {std::cin};
+
+            if (argc < 8) {
+                throw 1; // TODO
+            }
+
+            game.serialize {std::cout};
+        } else if (command == "close") {
+            Game game {std::cin};
+
+            game.serialize {std::cout};
+        } else if (command == "print_full") {
+            Game game {std::cin};
+
+        } else if (command == "print_player_early") {
+            Game game {std::cin};
+
+            if (argc < 3) {
+                throw 1; // TODO
+            }
+
+        } else if (command == "print_player") {
+            Game game {std::cin};
+
+            if (argc < 3) {
+                throw 1; // TODO
+            }
+
+        } else if (command == "print_public") {
+            Game game {std::cin};
+
+        }
+    }
 }
