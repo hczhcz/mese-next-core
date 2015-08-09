@@ -66,12 +66,14 @@ void test() {
     // game2.print_public(std::cout);
 }
 
-int main(int argc, char *argv[]) {
+int frontend(int argc, char *argv[]) {
     using namespace mese;
 
     if (argc < 2) {
         std::cout << "Commands:" << std::endl;
         std::cout << "    test()" << std::endl;
+        std::cout << "    init(player_count, preset, [name, value]...)" << std::endl;
+        std::cout << "    alloc([name, value]...)" << std::endl;
         std::cout << "    submit(player, price, prod, mk, ci, rd) -> bool" << std::endl;
         std::cout << "    close() -> bool" << std::endl;
         std::cout << "    print_full()" << std::endl;
@@ -83,6 +85,45 @@ int main(int argc, char *argv[]) {
     } else {
         if (strcmp(argv[1], "test") == 0) {
             test();
+
+            return 0;
+        } else if (strcmp(argv[1], "init") == 0) {
+            if (argc < 4) {
+                throw 1; // TODO
+            }
+
+            size_t player_count {strtoul(argv[2], nullptr, 10)};
+
+            PresetId id;
+            if (strcmp(argv[3], "classic") == 0) {
+                id = PresetId::classic;
+            } else if (strcmp(argv[3], "imese") == 0) {
+                id = PresetId::imese;
+            } else if (strcmp(argv[3], "modern") == 0) {
+                id = PresetId::modern;
+            } else {
+                throw 1;
+            }
+
+            Settings settings = get_preset(id, player_count);
+
+            // TODO: set values?
+
+            Game game {player_count, std::move(settings)};
+
+            game.serialize(std::cout);
+
+            return 0;
+        } else if (strcmp(argv[1], "alloc") == 0) {
+            Game game {std::cin};
+
+            Settings settings = game.period.back().settings; // copy
+
+            // TODO: set values?
+
+            game.alloc(std::move(settings));
+
+            game.serialize(std::cout);
 
             return 0;
         } else if (strcmp(argv[1], "submit") == 0) {
@@ -124,6 +165,8 @@ int main(int argc, char *argv[]) {
             Game game {std::cin};
 
             game.print_full(std::cout);
+
+            return 0;
         } else if (strcmp(argv[1], "print_player_early") == 0) {
             Game game {std::cin};
 
@@ -132,6 +175,8 @@ int main(int argc, char *argv[]) {
             }
 
             game.print_player_early(std::cout, strtoul(argv[2], nullptr, 10));
+
+            return 0;
         } else if (strcmp(argv[1], "print_player") == 0) {
             Game game {std::cin};
 
@@ -140,10 +185,20 @@ int main(int argc, char *argv[]) {
             }
 
             game.print_player(std::cout, strtoul(argv[2], nullptr, 10));
+
+            return 0;
         } else if (strcmp(argv[1], "print_public") == 0) {
             Game game {std::cin};
 
             game.print_public(std::cout);
+
+            return 0;
+        } else {
+            throw 1; // TODO: unknown command
         }
     }
+}
+
+int main(int argc, char *argv[]) {
+    return frontend(argc, argv);
 }
