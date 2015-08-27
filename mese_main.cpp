@@ -74,7 +74,7 @@ int frontend(int argc, char *argv[]) {
         std::cout << "    test()" << std::endl;
         std::cout << "    init(player_count, preset, [name, value]...)" << std::endl;
         std::cout << "    alloc([name, value]...)" << std::endl;
-        std::cout << "    submit(player, price, prod, mk, ci, rd) -> bool" << std::endl;
+        std::cout << "    submit(player, period, price, prod, mk, ci, rd) -> bool" << std::endl;
         std::cout << "    close() -> bool" << std::endl;
         std::cout << "    print_full()" << std::endl;
         std::cout << "    print_player_early(player)" << std::endl;
@@ -133,14 +133,17 @@ int frontend(int argc, char *argv[]) {
                 throw 1; // TODO
             }
 
-            if (game.submit(
-                strtoul(argv[2], nullptr, 10),
-                strtod(argv[3], nullptr),
-                strtod(argv[4], nullptr),
-                strtod(argv[5], nullptr),
-                strtod(argv[6], nullptr),
-                strtod(argv[7], nullptr)
-            )) {
+            if (
+                strtod(argv[3], nullptr) == game.now_period
+                && game.submit(
+                    strtoul(argv[2], nullptr, 10),
+                    strtod(argv[4], nullptr),
+                    strtod(argv[5], nullptr),
+                    strtod(argv[6], nullptr),
+                    strtod(argv[7], nullptr),
+                    strtod(argv[8], nullptr)
+                )
+            ) {
                 game.serialize(std::cout);
 
                 return 0;
