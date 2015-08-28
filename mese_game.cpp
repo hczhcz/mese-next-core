@@ -160,7 +160,7 @@ void Game::print_player(std::ostream &stream, size_t i) {
 
         if (now_period >= 3) {
             period[now_period - 2].print_decisions(i, [&](auto callback) {
-                doc("decisions", callback);
+                doc("last_decisions", callback);
             });
             period[now_period - 2].print_player_early(i, [&](auto callback) {
                 doc("last_data_early", callback);

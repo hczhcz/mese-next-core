@@ -284,8 +284,8 @@ void Period::print_player(size_t i, T callback) {
 template <class T>
 void Period::print_public(T callback) {
     callback(MESE_PRINT {
-        val("player_count", player_count);
-        val("now_period", now_period);
+        // val("player_count", player_count);
+        // val("now_period", now_period);
 
         doc("decisions", MESE_PRINT {
             arr("price", decisions.price);
