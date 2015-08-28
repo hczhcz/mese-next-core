@@ -209,6 +209,8 @@ public:
     template <class T>
     void print_settings(T callback);
     template <class T>
+    void print_decisions(size_t i, T callback);
+    template <class T>
     void print_player_early(size_t i, T callback);
     template <class T>
     void print_player(size_t i, T callback);

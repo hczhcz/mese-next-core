@@ -175,82 +175,75 @@ void Period::print_full(T callback) {
 template <class T>
 void Period::print_settings(T callback) {
     callback(MESE_PRINT {
-        val("player_count", player_count);
-        val("now_period", now_period);
-
-        doc("settings", MESE_PRINT {
-            doc("limits", MESE_PRINT {
-                val("price_max", settings.price_max);
-                val("price_min", settings.price_min);
-                val("mk_limit", settings.mk_limit);
-                val("ci_limit", settings.ci_limit);
-                val("rd_limit", settings.rd_limit);
-                val("loan_limit", settings.loan_limit);
-            });
-
-            doc("production", MESE_PRINT {
-                val("prod_rate_balanced", settings.prod_rate_balanced);
-                val("prod_rate_pow", settings.prod_rate_pow);
-                val("prod_cost_factor_rate_over", settings.prod_cost_factor_rate_over);
-                val("prod_cost_factor_rate_under", settings.prod_cost_factor_rate_under);
-                val("prod_cost_factor_size", settings.prod_cost_factor_size);
-                val("prod_cost_factor_const", settings.prod_cost_factor_const);
-
-                val("unit_fee", settings.unit_fee);
-                val("deprecation_rate", settings.deprecation_rate);
-            });
-
-            doc("balance", MESE_PRINT {
-                val("interest_rate_cash", settings.interest_rate_cash);
-                val("interest_rate_loan", settings.interest_rate_loan);
-                val("inventory_fee", settings.inventory_fee);
-                val("tax_rate", settings.tax_rate);
-            });
+        doc("limits", MESE_PRINT {
+            val("price_max", settings.price_max);
+            val("price_min", settings.price_min);
+            val("mk_limit", settings.mk_limit);
+            val("ci_limit", settings.ci_limit);
+            val("rd_limit", settings.rd_limit);
+            val("loan_limit", settings.loan_limit);
         });
+
+        doc("production", MESE_PRINT {
+            val("prod_rate_balanced", settings.prod_rate_balanced);
+            val("prod_rate_pow", settings.prod_rate_pow);
+            val("prod_cost_factor_rate_over", settings.prod_cost_factor_rate_over);
+            val("prod_cost_factor_rate_under", settings.prod_cost_factor_rate_under);
+            val("prod_cost_factor_size", settings.prod_cost_factor_size);
+            val("prod_cost_factor_const", settings.prod_cost_factor_const);
+
+            val("unit_fee", settings.unit_fee);
+            val("deprecation_rate", settings.deprecation_rate);
+        });
+
+        doc("balance", MESE_PRINT {
+            val("interest_rate_cash", settings.interest_rate_cash);
+            val("interest_rate_loan", settings.interest_rate_loan);
+            val("inventory_fee", settings.inventory_fee);
+            val("tax_rate", settings.tax_rate);
+        });
+    });
+}
+
+template <class T>
+void Period::print_decisions(size_t i, T callback) {
+    callback(MESE_PRINT {
+        val("price", decisions.price[i]);
+        val("prod", decisions.prod[i]);
+        val("mk", decisions.mk[i]);
+        val("ci", decisions.ci[i]);
+        val("rd", decisions.rd[i]);
     });
 }
 
 template <class T>
 void Period::print_player_early(size_t i, T callback) {
     callback(MESE_PRINT {
-        val("player_count", player_count);
-        val("now_period", now_period);
-
-        doc("decisions", MESE_PRINT {
-            val("price", decisions.price[i]);
-            val("prod", decisions.prod[i]);
-            val("mk", decisions.mk[i]);
-            val("ci", decisions.ci[i]);
-            val("rd", decisions.rd[i]);
+        doc("production", MESE_PRINT {
+            val("prod_rate", prod_rate[i]);
+            val("prod_over", prod_over[i]);
+            val("prod_cost_unit", prod_cost_unit[i]);
+            val("prod_cost_marginal", prod_cost_marginal[i]);
+            val("prod_cost", prod_cost[i]);
         });
 
-        doc("data_early", MESE_PRINT {
-            doc("production", MESE_PRINT {
-                val("prod_rate", prod_rate[i]);
-                val("prod_over", prod_over[i]);
-                val("prod_cost_unit", prod_cost_unit[i]);
-                val("prod_cost_marginal", prod_cost_marginal[i]);
-                val("prod_cost", prod_cost[i]);
-            });
+        doc("balance", MESE_PRINT {
+            val("deprecation", deprecation[i]);
+            val("capital", capital[i]);
+            val("size", size[i]);
+            val("spending", spending[i]);
+            val("balance_early", balance_early[i]);
+            val("loan_early", loan_early[i]);
+            val("interest", interest[i]);
 
-            doc("balance", MESE_PRINT {
-                val("deprecation", deprecation[i]);
-                val("capital", capital[i]);
-                val("size", size[i]);
-                val("spending", spending[i]);
-                val("balance_early", balance_early[i]);
-                val("loan_early", loan_early[i]);
-                val("interest", interest[i]);
+            val("goods", goods[i]);
+            val("goods_cost", goods_cost[i]);
+            val("goods_max_sales", goods_max_sales[i]);
+        });
 
-                val("goods", goods[i]);
-                val("goods_cost", goods_cost[i]);
-                val("goods_max_sales", goods_max_sales[i]);
-            });
-
-            doc("history", MESE_PRINT {
-                val("history_mk", history_mk[i]);
-                val("history_rd", history_rd[i]);
-            });
+        doc("history", MESE_PRINT {
+            val("history_mk", history_mk[i]);
+            val("history_rd", history_rd[i]);
         });
     });
 }
@@ -258,37 +251,32 @@ void Period::print_player_early(size_t i, T callback) {
 template <class T>
 void Period::print_player(size_t i, T callback) {
     callback(MESE_PRINT {
-        val("player_count", player_count);
-        val("now_period", now_period);
+        doc("orders", MESE_PRINT {
+            val("orders", orders[i]);
+            val("sold", sold[i]);
+            val("inventory", inventory[i]);
+            val("unfilled", unfilled[i]);
+        });
 
-        doc("data", MESE_PRINT {
-            doc("orders", MESE_PRINT {
-                val("orders", orders[i]);
-                val("sold", sold[i]);
-                val("inventory", inventory[i]);
-                val("unfilled", unfilled[i]);
-            });
+        doc("balance", MESE_PRINT {
+            val("goods_cost_sold", goods_cost_sold[i]);
+            val("goods_cost_inventory", goods_cost_inventory[i]);
 
-            doc("balance", MESE_PRINT {
-                val("goods_cost_sold", goods_cost_sold[i]);
-                val("goods_cost_inventory", goods_cost_inventory[i]);
+            val("sales", sales[i]);
+            val("inventory_charge", inventory_charge[i]);
+            val("cost_before_tax", cost_before_tax[i]);
+            val("profit_before_tax", profit_before_tax[i]);
+            val("tax_charge", tax_charge[i]);
+            val("profit", profit[i]);
 
-                val("sales", sales[i]);
-                val("inventory_charge", inventory_charge[i]);
-                val("cost_before_tax", cost_before_tax[i]);
-                val("profit_before_tax", profit_before_tax[i]);
-                val("tax_charge", tax_charge[i]);
-                val("profit", profit[i]);
+            val("balance", balance[i]);
+            val("loan", loan[i]);
+            val("cash", cash[i]);
+            val("retern", retern[i]);
+        });
 
-                val("balance", balance[i]);
-                val("loan", loan[i]);
-                val("cash", cash[i]);
-                val("retern", retern[i]);
-            });
-
-            doc("mpi", MESE_PRINT {
-                val("mpi", mpi[i]);
-            });
+        doc("mpi", MESE_PRINT {
+            val("mpi", mpi[i]);
         });
     });
 }
