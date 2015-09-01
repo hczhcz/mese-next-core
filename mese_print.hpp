@@ -178,19 +178,19 @@ void Period::print_settings(T callback) {
         doc("limits", MESE_PRINT {
             val("price_max", settings.price_max);
             val("price_min", settings.price_min);
-            val("mk_limit", settings.mk_limit);
-            val("ci_limit", settings.ci_limit);
-            val("rd_limit", settings.rd_limit);
-            val("loan_limit", settings.loan_limit);
+            val("mk_limit", settings.mk_limit / player_count); // per player
+            val("ci_limit", settings.ci_limit / player_count); // per player
+            val("rd_limit", settings.rd_limit / player_count); // per player
+            val("loan_limit", settings.loan_limit / player_count); // per player
         });
 
         doc("production", MESE_PRINT {
             val("prod_rate_balanced", settings.prod_rate_balanced);
-            val("prod_rate_pow", settings.prod_rate_pow);
-            val("prod_cost_factor_rate_over", settings.prod_cost_factor_rate_over);
-            val("prod_cost_factor_rate_under", settings.prod_cost_factor_rate_under);
-            val("prod_cost_factor_size", settings.prod_cost_factor_size);
-            val("prod_cost_factor_const", settings.prod_cost_factor_const);
+            // val("prod_rate_pow", settings.prod_rate_pow);
+            // val("prod_cost_factor_rate_over", settings.prod_cost_factor_rate_over);
+            // val("prod_cost_factor_rate_under", settings.prod_cost_factor_rate_under);
+            // val("prod_cost_factor_size", settings.prod_cost_factor_size);
+            // val("prod_cost_factor_const", settings.prod_cost_factor_const);
 
             val("unit_fee", settings.unit_fee);
             val("deprecation_rate", settings.deprecation_rate);
