@@ -289,6 +289,8 @@ void Period::print_public(T callback) {
 
         doc("decisions", MESE_PRINT {
             arr("price", decisions.price);
+            val("average_price_given", average_price_given); // special
+            val("average_price", average_price); // special
             val("average_prod", sum(decisions.prod) / player_count);
         });
 
@@ -308,7 +310,7 @@ void Period::print_public(T callback) {
 
         doc("data", MESE_PRINT {
             doc("orders", MESE_PRINT {
-                val("average_price_given", average_price_given);
+                // val("average_price_given", average_price_given);
 
                 val("average_orders", sum(orders) / player_count);
                 arr("sold", sold);
@@ -334,11 +336,12 @@ void Period::print_public(T callback) {
                 arr("retern", retern);
                 val("average_retern", sum(retern) / player_count);
 
-                val("average_price", average_price);
+                // val("average_price", average_price);
             });
 
             doc("mpi", MESE_PRINT {
                 arr("mpi", mpi);
+                val("average_mpi", sum(mpi) / player_count);
             });
         });
     });
