@@ -291,7 +291,6 @@ void Period::print_public(T callback) {
             arr("price", decisions.price);
             val("average_price_given", average_price_given); // special
             val("average_price", average_price); // special
-            val("average_prod", sum(decisions.prod) / player_count);
         });
 
         doc("data_early", MESE_PRINT {
