@@ -69,6 +69,9 @@ void test() {
 int frontend(int argc, char *argv[]) {
     using namespace mese;
 
+    std::cout.precision(2);
+    std::cout.setf(std::ios::fixed);
+
     if (argc < 2) {
         std::cout << "Commands:" << std::endl;
         std::cout << "    test()" << std::endl;
