@@ -15,6 +15,11 @@ const size_t MAX_PLAYER {32};
     NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN, \
 }
 
+#define MESE_UNIT(value) trunc(value)
+#define MESE_CASH(value) (0.01 * round(100 * (value)))
+#define MESE_RATE(value) (value)
+#define MESE_INDEX(value) round(value)
+
 struct Settings {
     // decision limits
 

@@ -13,22 +13,22 @@ Period::Period(size_t count, Settings &&_settings):
     decisions {}
 {
     for (size_t i = 0; i < player_count; ++i) {
-        capital[i] = settings.initial_capital / player_count;
-        size[i] = capital[i] / settings.unit_fee;
+        capital[i] = MESE_CASH(settings.initial_capital / player_count);
+        size[i] = MESE_UNIT(capital[i] / settings.unit_fee);
         history_mk[i] = 0;
         history_rd[i] = 0;
 
-        sold[i] = size[i] * settings.prod_rate_balanced;
+        sold[i] = MESE_UNIT(size[i] * settings.prod_rate_balanced);
         inventory[i] = 0;
         goods_cost_inventory[i] = 0;
 
-        sales[i] = settings.demand_ref_price * sold[i];
+        sales[i] = MESE_CASH(settings.demand_ref_price * sold[i]);
         loan[i] = 0;
-        cash[i] = settings.initial_cash / player_count; // C + 168000 = 182700 + L
+        cash[i] = MESE_CASH(settings.initial_cash / player_count); // C + 168000 = 182700 + L
         retern[i] = 0;
     }
 
-    average_price = settings.demand_ref_price;
+    average_price = MESE_CASH(settings.demand_ref_price);
 }
 
 Period::Period(size_t count, Period &last, Settings &&_settings):
@@ -61,57 +61,63 @@ bool Period::submit(
     Period &last, size_t i,
     double price, double prod, double mk, double ci, double rd
 ) {
-    decisions.price[i] = price;
-    decisions.prod[i] = prod;
-    decisions.mk[i] = mk;
-    decisions.ci[i] = ci;
-    decisions.rd[i] = rd;
+    decisions.price[i] = MESE_CASH(price);
+    decisions.prod[i] = MESE_UNIT(prod);
+    decisions.mk[i] = MESE_CASH(mk);
+    decisions.ci[i] = MESE_CASH(ci);
+    decisions.rd[i] = MESE_CASH(rd);
 
-    prod_rate[i] = decisions.prod[i] / last.size[i];
-    prod_over[i] = prod_rate[i] - settings.prod_rate_balanced;
+    prod_rate[i] = MESE_RATE(decisions.prod[i] / last.size[i]);
+    prod_over[i] = MESE_RATE(prod_rate[i] - settings.prod_rate_balanced);
 
     double prod_cost_factor_rate = (
         prod_over[i] > 0 ?
         settings.prod_cost_factor_rate_over :
         settings.prod_cost_factor_rate_under
     );
-    prod_cost_unit[i] = (
+    prod_cost_unit[i] = MESE_CASH(
         prod_cost_factor_rate * pow(prod_over[i], settings.prod_rate_pow)
         + settings.prod_cost_factor_size
             * settings.initial_capital / player_count / last.capital[i]
         + settings.prod_cost_factor_const
     );
-    prod_cost_marginal[i] = ( // D(prod_cost(prod), prod)
+    prod_cost_marginal[i] = MESE_CASH( // D(prod_cost(prod), prod)
         prod_cost_factor_rate
             * settings.prod_rate_pow
             * prod_rate[i] * pow(prod_over[i], settings.prod_rate_pow - 1)
         + prod_cost_unit[i]
     );
-    prod_cost[i] = prod_cost_unit[i] * decisions.prod[i];
+    prod_cost[i] = MESE_CASH(
+        prod_cost_unit[i] * decisions.prod[i]
+    );
 
-    deprecation[i] = last.capital[i] * settings.deprecation_rate;
-    capital[i] = last.capital[i] + decisions.ci[i] - deprecation[i];
-    size[i] = capital[i] / settings.unit_fee;
+    deprecation[i] = MESE_CASH(last.capital[i] * settings.deprecation_rate);
+    capital[i] = MESE_CASH(last.capital[i] + decisions.ci[i] - deprecation[i]);
+    size[i] = MESE_UNIT(capital[i] / settings.unit_fee);
 
-    spending[i] = (
+    spending[i] = MESE_CASH(
         prod_cost[i]
         + decisions.ci[i] - deprecation[i]
         + decisions.mk[i] + decisions.rd[i]
     );
-    balance_early[i] = last.cash[i] - last.loan[i] - spending[i];
-    loan_early[i] = max(- balance_early[i], 0);
-    interest[i] = (
+    balance_early[i] = MESE_CASH(
+        last.cash[i] - last.loan[i] - spending[i]
+    );
+    loan_early[i] = MESE_CASH(
+        max(- balance_early[i], 0)
+    );
+    interest[i] = MESE_CASH(
         loan_early[i] == 0 ?
         - settings.interest_rate_cash * last.cash[i] :
         settings.interest_rate_loan * loan_early[i]
     );
 
-    goods[i] = last.inventory[i] + decisions.prod[i];
-    goods_cost[i] = last.goods_cost_inventory[i] + prod_cost[i];
-    goods_max_sales[i] = decisions.price[i] * goods[i];
+    goods[i] = MESE_UNIT(last.inventory[i] + decisions.prod[i]);
+    goods_cost[i] = MESE_CASH(last.goods_cost_inventory[i] + prod_cost[i]);
+    goods_max_sales[i] = MESE_CASH(decisions.price[i] * goods[i]);
 
-    history_mk[i] = last.history_mk[i] + decisions.mk[i];
-    history_rd[i] = last.history_rd[i] + decisions.rd[i];
+    history_mk[i] = MESE_CASH(last.history_mk[i] + decisions.mk[i]);
+    history_rd[i] = MESE_CASH(last.history_rd[i] + decisions.rd[i]);
 
     return (
         decisions.price[i] >= settings.price_min
@@ -139,11 +145,13 @@ void Period::exec(Period &last) {
     double sum_history_mk = sum(history_mk);
     double sum_history_rd = sum(history_rd);
 
-    average_price_given = sum(decisions.price) / player_count;
-    average_price_planned = div(
-        sum(goods_max_sales), sum(goods), average_price_given
+    average_price_given = MESE_CASH(
+        sum(decisions.price) / player_count
     );
-    average_price_mixed = (
+    average_price_planned = MESE_CASH(
+        div(sum(goods_max_sales), sum(goods), average_price_given)
+    );
+    average_price_mixed = MESE_CASH(
         settings.demand_price * average_price_planned
         + (1 - settings.demand_price) * last.average_price
     );
@@ -159,8 +167,8 @@ void Period::exec(Period &last) {
         sum_history_rd / now_period / settings.demand_ref_rd,
         settings.demand_pow_rd
     );
-    orders_demand = settings.demand * (
-        demand_effect_rd + demand_effect_mk
+    orders_demand = MESE_UNIT(
+        settings.demand * (demand_effect_rd + demand_effect_mk)
     );
 
     for (size_t i = 0; i < player_count; ++i) {
@@ -185,65 +193,85 @@ void Period::exec(Period &last) {
     for (size_t i = 0; i < player_count; ++i) {
         // orders
 
-        share[i] = (
+        share[i] = MESE_RATE(
             settings.share_price * div(share_effect_price[i], sum_share_effect_price, 0)
             + settings.share_mk * div(share_effect_mk[i], sum_share_effect_mk, 0)
             + settings.share_rd * div(share_effect_rd[i], sum_share_effect_rd, 0)
         );
 
-        share_compressed[i] =  (
+        share_compressed[i] = MESE_RATE(
             decisions.price[i] > settings.price_overload ? (
                 share[i] * settings.price_overload / decisions.price[i]
             ) : share[i]
         );
 
-        orders[i] = orders_demand * share_compressed[i];
-        sold[i] = min(orders[i], goods[i]);
-        inventory[i] = goods[i] - sold[i];
-        unfilled[i] = orders[i] - sold[i];
+        orders[i] = MESE_UNIT(orders_demand * share_compressed[i]);
+        sold[i] = MESE_UNIT(min(orders[i], goods[i]));
+        inventory[i] = MESE_UNIT(goods[i] - sold[i]);
+        unfilled[i] = MESE_UNIT(orders[i] - sold[i]);
 
         // goods
 
-        goods_cost_sold[i] = goods_cost[i] * div(sold[i], goods[i], 0);
-        goods_cost_inventory[i] = goods_cost[i] - goods_cost_sold[i];
+        goods_cost_sold[i] = MESE_CASH(
+            goods_cost[i] * div(sold[i], goods[i], 0)
+        );
+        goods_cost_inventory[i] = MESE_CASH(
+            goods_cost[i] - goods_cost_sold[i]
+        );
 
         // cash flow
 
-        sales[i] = decisions.price[i] * sold[i];
+        sales[i] = MESE_CASH(decisions.price[i] * sold[i]);
 
-        inventory_charge[i] = min(
-            last.inventory[i],
-            inventory[i]
-        ) * settings.inventory_fee;
+        inventory_charge[i] = MESE_CASH(
+            min(
+                last.inventory[i],
+                inventory[i]
+            ) * settings.inventory_fee
+        );
 
-        cost_before_tax[i] = (
+        cost_before_tax[i] = MESE_CASH(
             goods_cost_sold[i]
             + deprecation[i]
             + decisions.mk[i] + decisions.rd[i]
             + interest[i] + inventory_charge[i]
         );
-        profit_before_tax[i] = sales[i] - cost_before_tax[i];
-        tax_charge[i] = profit_before_tax[i] * settings.tax_rate;
-        profit[i] = profit_before_tax[i] - tax_charge[i];
+        profit_before_tax[i] = MESE_CASH(
+            sales[i] - cost_before_tax[i]
+        );
+        tax_charge[i] = MESE_CASH(
+            profit_before_tax[i] * settings.tax_rate
+        );
+        profit[i] = MESE_CASH(
+            profit_before_tax[i] - tax_charge[i]
+        );
 
-        // balance[i] = (
+        // balance[i] = MESE_CASH(
         //     last.cash[i] + loan_early[i] - last.loan[i]
         //     + sales[i]
         //     - spending[i] - deprecation[i]
         //     - interest[i] - inventory_charge[i] - tax_charge[i]
         // );
-        balance[i] = (
+        balance[i] = MESE_CASH(
             last.cash[i] + loan_early[i] - last.loan[i]
             + profit[i]
             - decisions.ci[i] + deprecation[i]
             + goods_cost_sold[i] - prod_cost[i]
         );
-        loan[i] = max(loan_early[i], loan_early[i] - balance[i]);
-        cash[i] = max(balance[i], 0);
-        retern[i] = last.retern[i] + profit[i];
+        loan[i] = MESE_CASH(
+            max(loan_early[i], loan_early[i] - balance[i])
+        );
+        cash[i] = MESE_CASH(
+            max(balance[i], 0)
+        );
+        retern[i] = MESE_CASH(
+            last.retern[i] + profit[i]
+        );
     }
 
-    average_price = div(sum(sales), sum(sold), average_price_given);
+    average_price = MESE_CASH(
+        div(sum(sales), sum(sold), average_price_given)
+    );
 
     double sum_size = sum(size);
     double sum_sold = sum(sold);
@@ -251,48 +279,52 @@ void Period::exec(Period &last) {
     double sum_last_sales = sum(last.sales);
 
     for (size_t i = 0; i < player_count; ++i) {
-        mpi_a[i] = (
+        mpi_a[i] = MESE_INDEX(
             settings.mpi_factor_a * player_count * (
                 retern[i] / now_period
                 / settings.mpi_retern_factor
             )
         );
 
-        mpi_b[i] = (
+        mpi_b[i] = MESE_INDEX(
             settings.mpi_factor_b * player_count * (
                 (history_rd[i] + history_mk[i])
                 / (sum_history_rd + sum_history_mk)
             )
         );
 
-        mpi_c[i] = (
+        mpi_c[i] = MESE_INDEX(
             settings.mpi_factor_c * player_count * (
                 size[i] / sum_size
             )
         );
 
-        mpi_d[i] = (
+        mpi_d[i] = MESE_INDEX(
             settings.mpi_factor_d * (
                 1 - abs(prod_over[i])
             )
         );
 
-        mpi_e[i] = (
+        mpi_e[i] = MESE_INDEX(
             settings.mpi_factor_e * player_count * div(
                 sold[i], sum_sold, 0
             )
         );
 
-        mpi_f[i] = min(
-            settings.mpi_factor_f * div(
-                div(sold[i], last.sold[i], 0),
-                div(sum_sales, sum_last_sales, 0),
-                0
-            ),
-            2 * settings.mpi_factor_f
+        mpi_f[i] = MESE_INDEX(
+            min(
+                settings.mpi_factor_f * div(
+                    div(sold[i], last.sold[i], 0),
+                    div(sum_sales, sum_last_sales, 0),
+                    0
+                ),
+                2 * settings.mpi_factor_f
+            )
         );
 
-        mpi[i] = mpi_a[i] + mpi_b[i] + mpi_c[i] + mpi_d[i] + mpi_e[i] + mpi_f[i];
+        mpi[i] = MESE_INDEX(
+            mpi_a[i] + mpi_b[i] + mpi_c[i] + mpi_d[i] + mpi_e[i] + mpi_f[i]
+        );
     }
 }
 
