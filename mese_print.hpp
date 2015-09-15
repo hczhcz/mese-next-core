@@ -186,11 +186,6 @@ void Period::print_settings(T callback) {
 
         doc("production", MESE_PRINT {
             val("prod_rate_balanced", settings.prod_rate_balanced);
-            // val("prod_rate_pow", settings.prod_rate_pow);
-            // val("prod_cost_factor_rate_over", settings.prod_cost_factor_rate_over);
-            // val("prod_cost_factor_rate_under", settings.prod_cost_factor_rate_under);
-            // val("prod_cost_factor_size", settings.prod_cost_factor_size);
-            // val("prod_cost_factor_const", settings.prod_cost_factor_const);
 
             val("unit_fee", settings.unit_fee);
             val("deprecation_rate", settings.deprecation_rate);
