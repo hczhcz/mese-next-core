@@ -206,5 +206,9 @@ int frontend(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-    return frontend(argc, argv);
+    try {
+        return frontend(argc, argv);
+    } catch (...) {
+        return -1;
+    }
 }
