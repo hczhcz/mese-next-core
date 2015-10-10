@@ -42,10 +42,18 @@ Game::Game(std::istream &stream):
 {
     uint64_t vsize;
 
-    stream.read(reinterpret_cast<char *>(&player_count), sizeof(player_count));
-    stream.read(reinterpret_cast<char *>(&now_period), sizeof(now_period));
-    stream.read(reinterpret_cast<char *>(&status), sizeof(status));
-    stream.read(reinterpret_cast<char *>(&vsize), sizeof(vsize));
+    stream.read(
+        reinterpret_cast<char *>(&player_count), sizeof(player_count)
+    );
+    stream.read(
+        reinterpret_cast<char *>(&now_period), sizeof(now_period)
+    );
+    stream.read(
+        reinterpret_cast<char *>(&status), sizeof(status)
+    );
+    stream.read(
+        reinterpret_cast<char *>(&vsize), sizeof(vsize)
+    );
 
     for (; vsize > 0; --vsize) {
         period.push_back({stream});

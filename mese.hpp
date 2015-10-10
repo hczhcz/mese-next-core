@@ -245,7 +245,7 @@ public:
     }
 
     inline bool ready() {
-        return status == (1 << player_count) - 1;
+        return status + 1 == (1u << player_count);
     }
 
     Settings &alloc(Settings &&_settings);

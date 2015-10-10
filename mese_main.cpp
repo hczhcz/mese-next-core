@@ -173,7 +173,7 @@ int frontend(int argc, char *argv[]) {
             uint64_t player_count {strtoul(argv[2], nullptr, 10)};
 
             Settings settings = get_preset(argv[3], player_count);
-            for (size_t i = 4; i < argc - 1; i += 2) {
+            for (int i = 4; i < argc - 1; i += 2) {
                 change_setting(settings, argv[i], strtod(argv[i + 1], nullptr));
             }
 
@@ -186,7 +186,7 @@ int frontend(int argc, char *argv[]) {
             Game game {std::cin};
 
             Settings settings = game.period.back().settings; // copy
-            for (size_t i = 2; i < argc - 1; i += 2) {
+            for (int i = 2; i < argc - 1; i += 2) {
                 change_setting(settings, argv[i], strtod(argv[i + 1], nullptr));
             }
 
