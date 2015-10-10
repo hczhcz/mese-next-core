@@ -95,7 +95,7 @@ int frontend(int argc, char *argv[]) {
                 throw 1; // TODO
             }
 
-            size_t player_count {strtoul(argv[2], nullptr, 10)};
+            uint64_t player_count {strtoul(argv[2], nullptr, 10)};
 
             PresetId id;
             if (strcmp(argv[3], "classic") == 0) {

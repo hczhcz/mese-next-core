@@ -6,7 +6,7 @@
 namespace mese {
 
 template <class T>
-void print(std::ostream &stream, size_t arr_size, T callback) {
+void print(std::ostream &stream, uint64_t arr_size, T callback) {
     auto print_indent = [&](size_t indent) {
         stream << std::endl;
         for (size_t i = 0; i < indent; ++i) {
@@ -21,7 +21,7 @@ void print(std::ostream &stream, size_t arr_size, T callback) {
     auto arr_handler = [&](double *member) {
         stream << '[' << member[0];
 
-        for (size_t i = 1; i < arr_size; ++i) {
+        for (uint64_t i = 1; i < arr_size; ++i) {
             stream << ", " << member[i];
         }
 

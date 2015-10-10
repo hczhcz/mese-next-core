@@ -201,7 +201,7 @@ void Period::print_settings(T callback) {
 }
 
 template <class T>
-void Period::print_decisions(size_t i, T callback) {
+void Period::print_decisions(uint64_t i, T callback) {
     callback(MESE_PRINT {
         val("price", decisions.price[i]);
         val("prod", decisions.prod[i]);
@@ -212,7 +212,7 @@ void Period::print_decisions(size_t i, T callback) {
 }
 
 template <class T>
-void Period::print_player_early(size_t i, T callback) {
+void Period::print_player_early(uint64_t i, T callback) {
     callback(MESE_PRINT {
         doc("production", MESE_PRINT {
             val("prod_rate", prod_rate[i]);
@@ -244,7 +244,7 @@ void Period::print_player_early(size_t i, T callback) {
 }
 
 template <class T>
-void Period::print_player(size_t i, T callback) {
+void Period::print_player(uint64_t i, T callback) {
     callback(MESE_PRINT {
         doc("orders", MESE_PRINT {
             val("orders", orders[i]);

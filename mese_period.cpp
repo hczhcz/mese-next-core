@@ -2,7 +2,7 @@
 
 namespace mese {
 
-Period::Period(size_t count, Settings &&_settings):
+Period::Period(uint64_t count, Settings &&_settings):
     PeriodDataEarly {},
     PeriodData {},
 
@@ -12,7 +12,7 @@ Period::Period(size_t count, Settings &&_settings):
     settings(std::move(_settings)), // move
     decisions {}
 {
-    for (size_t i = 0; i < player_count; ++i) {
+    for (uint64_t i = 0; i < player_count; ++i) {
         capital[i] = MESE_CASH(settings.initial_capital / player_count);
         size[i] = MESE_UNIT(capital[i] / settings.unit_fee);
         history_mk[i] = 0;
@@ -31,7 +31,7 @@ Period::Period(size_t count, Settings &&_settings):
     average_price = MESE_CASH(settings.demand_ref_price);
 }
 
-Period::Period(size_t count, Period &last, Settings &&_settings):
+Period::Period(uint64_t count, Period &last, Settings &&_settings):
     PeriodDataEarly {},
     PeriodData {},
 
@@ -58,7 +58,7 @@ Period::Period(std::istream &stream):
 }
 
 bool Period::submit(
-    Period &last, size_t i,
+    Period &last, uint64_t i,
     double price, double prod, double mk, double ci, double rd
 ) {
     decisions.price[i] = MESE_CASH(price);
@@ -171,7 +171,7 @@ void Period::exec(Period &last) {
         settings.demand * (demand_effect_rd + demand_effect_mk)
     );
 
-    for (size_t i = 0; i < player_count; ++i) {
+    for (uint64_t i = 0; i < player_count; ++i) {
         share_effect_price[i] = pow(
             average_price_mixed / decisions.price[i],
             settings.share_pow_price
@@ -190,7 +190,7 @@ void Period::exec(Period &last) {
     double sum_share_effect_mk = sum(share_effect_mk);
     double sum_share_effect_rd = sum(share_effect_rd);
 
-    for (size_t i = 0; i < player_count; ++i) {
+    for (uint64_t i = 0; i < player_count; ++i) {
         // orders
 
         share[i] = MESE_RATE(
@@ -278,7 +278,7 @@ void Period::exec(Period &last) {
     double sum_sales = sum(sales);
     double sum_last_sales = sum(last.sales);
 
-    for (size_t i = 0; i < player_count; ++i) {
+    for (uint64_t i = 0; i < player_count; ++i) {
         mpi_a[i] = MESE_INDEX(
             settings.mpi_factor_a * player_count * (
                 retern[i] / now_period

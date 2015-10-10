@@ -13,7 +13,7 @@ namespace mese {
         ) \
     )
 
-Settings get_preset(PresetId id, size_t player_count) {
+Settings get_preset(PresetId id, uint64_t player_count) {
     if (player_count > MAX_PLAYER) {
         throw 1; // TODO
     }

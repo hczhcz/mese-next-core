@@ -3,7 +3,7 @@
 
 namespace mese {
 
-Game::Game(size_t count, Settings &&_settings):
+Game::Game(uint64_t count, Settings &&_settings):
     player_count {count},
     now_period {1},
     status {0},
@@ -18,7 +18,7 @@ Game::Game(size_t count, Settings &&_settings):
 
     Settings &settings {alloc()};
 
-    for (size_t i = 0; i < player_count; ++i) {
+    for (uint64_t i = 0; i < player_count; ++i) {
         submit(
             i,
             settings.demand_ref_price,
@@ -40,7 +40,7 @@ Game::Game(std::istream &stream):
     status {},
     period {}
 {
-    size_t vsize;
+    uint64_t vsize;
 
     stream.read(reinterpret_cast<char *>(&player_count), sizeof(player_count));
     stream.read(reinterpret_cast<char *>(&now_period), sizeof(now_period));
@@ -69,7 +69,7 @@ Settings &Game::alloc() {
 }
 
 bool Game::submit(
-    size_t i,
+    uint64_t i,
     double price, double prod, double mk, double ci, double rd
 ) {
     if (i >= player_count) {
@@ -114,7 +114,7 @@ void Game::print_full(std::ostream &stream) {
         val("now_period", now_period);
         val("status", status);
 
-        for (size_t i = 1; i < period.size(); ++i) {
+        for (uint64_t i = 1; i < period.size(); ++i) {
             // notice: period[0].settings == period[1].settings, see Game::Game
             period[i].print_full([&](auto callback) {
                 doc("period_" + std::to_string(i), callback);
@@ -123,7 +123,7 @@ void Game::print_full(std::ostream &stream) {
     });
 }
 
-void Game::print_player_early(std::ostream &stream, size_t i) {
+void Game::print_player_early(std::ostream &stream, uint64_t i) {
     if (i >= player_count) {
         throw 1; // TODO
     }
@@ -144,7 +144,7 @@ void Game::print_player_early(std::ostream &stream, size_t i) {
     });
 }
 
-void Game::print_player(std::ostream &stream, size_t i) {
+void Game::print_player(std::ostream &stream, uint64_t i) {
     if (i >= player_count) {
         throw 1; // TODO
     }
@@ -229,7 +229,11 @@ void Game::print_public(std::ostream &stream) {
 }
 
 void Game::serialize(std::ostream &stream) {
-    size_t vsize {period.size()};
+    static_assert(sizeof(uint64_t) == 8, "");
+    static_assert(sizeof(double) == 8, "");
+    static_assert(sizeof(Period) == 13248, "");
+
+    uint64_t vsize {period.size()};
 
     stream.write(reinterpret_cast<const char *>(&player_count), sizeof(player_count));
     stream.write(reinterpret_cast<const char *>(&now_period), sizeof(now_period));

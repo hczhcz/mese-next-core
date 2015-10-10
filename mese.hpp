@@ -7,7 +7,7 @@
 
 namespace mese {
 
-const size_t MAX_PLAYER {32};
+const uint64_t MAX_PLAYER {32};
 
 #define MESE_VAL(name) double name {NAN}
 #define MESE_ARR(name) double name[MAX_PLAYER] { \
@@ -96,7 +96,7 @@ enum class PresetId {
 
 // player_count == 8 -> classic mode
 // player_count == actual value -> 8p-feeling mode
-Settings get_preset(PresetId id, size_t player_count);
+Settings get_preset(PresetId id, uint64_t player_count);
 
 struct Decisions {
     MESE_ARR(price);
@@ -181,7 +181,7 @@ private:
     inline double sum(double *member) {
         double result = 0;
 
-        for (size_t i = 0; i < player_count; ++i) {
+        for (uint64_t i = 0; i < player_count; ++i) {
             result += member[i];
         }
 
@@ -189,21 +189,21 @@ private:
     }
 
 public:
-    size_t player_count;
-    size_t now_period;
+    uint64_t player_count;
+    uint64_t now_period;
 
     Settings settings;
     Decisions decisions;
 
     // initial period
-    Period(size_t count, Settings &&_settings);
+    Period(uint64_t count, Settings &&_settings);
     // normal period
-    Period(size_t count, Period &last, Settings &&_settings);
+    Period(uint64_t count, Period &last, Settings &&_settings);
     // unserialize
     Period(std::istream &stream);
 
     bool submit(
-        Period &last, size_t i,
+        Period &last, uint64_t i,
         double price, double prod, double mk, double ci, double rd
     );
 
@@ -214,11 +214,11 @@ public:
     template <class T>
     void print_settings(T callback);
     template <class T>
-    void print_decisions(size_t i, T callback);
+    void print_decisions(uint64_t i, T callback);
     template <class T>
-    void print_player_early(size_t i, T callback);
+    void print_player_early(uint64_t i, T callback);
     template <class T>
-    void print_player(size_t i, T callback);
+    void print_player(uint64_t i, T callback);
     template <class T>
     void print_public(T callback);
 
@@ -227,24 +227,24 @@ public:
 
 class Game {
 public:
-    size_t player_count;
-    size_t now_period;
-    size_t status;
+    uint64_t player_count;
+    uint64_t now_period;
+    uint64_t status;
 
     // std::string company_name[MAX_PLAYER];
 
     std::vector<Period> period;
 
     // new game
-    Game(size_t count, Settings &&_settings);
+    Game(uint64_t count, Settings &&_settings);
     // unserialize
     Game(std::istream &stream);
 
-    inline bool get_status(size_t i) {
+    inline bool get_status(uint64_t i) {
         return (status & (1 << i)) != 0;
     }
 
-    inline void set_status(size_t i) {
+    inline void set_status(uint64_t i) {
         status |= 1 << i;
     }
 
@@ -256,15 +256,15 @@ public:
     Settings &alloc();
 
     bool submit(
-        size_t i,
+        uint64_t i,
         double price, double prod, double mk, double ci, double rd
     );
 
     bool close();
 
     void print_full(std::ostream &stream);
-    void print_player_early(std::ostream &stream, size_t i);
-    void print_player(std::ostream &stream, size_t i);
+    void print_player_early(std::ostream &stream, uint64_t i);
+    void print_player(std::ostream &stream, uint64_t i);
     void print_public(std::ostream &stream);
 
     void serialize(std::ostream &stream);
