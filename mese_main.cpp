@@ -73,6 +73,67 @@ int frontend(int argc, char *argv[]) {
     std::cout.setf(std::ios::fixed);
 
     if (argc < 2) {
+        const char indent[] {"    "};
+        const char highlight0[] {"\x1b[1m"};
+        const char highlight1[] {"\x1b[1;7m"};
+        const char highlight2[] {"\x1b[1;34m"};
+        const char normal[] {"\x1b[0m"};
+
+        std::cout << std::endl;
+        std::cout << highlight0 << "    =>                                 <=    " << normal << std::endl;
+        std::cout << highlight0 << "    =>            MESE-Next            <=    " << normal << std::endl;
+        std::cout << highlight0 << "    =>    The modern remake of MESE    <=    " << normal << std::endl;
+        std::cout << highlight0 << "    =>                                 <=    " << normal << std::endl;
+        system(
+            "echo '\n"
+                " Throw out your pens,          \n"
+                "     your pencils,             \n"
+                "       your typewriters,       \n"
+                "         your word processors, \n"
+                "   and get your hands on...    \n"
+                "                               \n"
+                "          * ECHOPEN *          \n"
+            "' | cowsay -n 2> /dev/null"
+        );
+        std::cout << std::endl;
+
+        std::cout << highlight1 << "  System Information  " << normal << std::endl;
+        std::cout << indent
+            << highlight2 << "build date" << normal
+            << "  " << __DATE__ /* << " " << __TIME__ */ << std::endl;
+        std::cout << indent
+            << highlight2 << "build mode" << normal
+            << "  c++ " << __cplusplus << std::endl;
+        std::cout << indent
+            << highlight2 << "compiler" << normal
+            #if defined(__clang__)
+                << "  clang " << __clang_major__ << "." << __clang_minor__ << "." << __clang_patchlevel__ << std::endl;
+            #elif defined(__GNUC__)
+                << "  gcc " << __GNUC__ << "." << __GNUC_MINOR__ << "." << __GNUC_PATCHLEVEL__ << std::endl;
+            #else
+                << "  unknown" << std::endl;
+            #endif
+        std::cout << indent
+            << highlight2 << "target system" << normal
+            #if defined(__linux__)
+                << "  linux"
+            #else
+                << "  unknown os"
+            #endif
+            #if defined(__amd64__)
+                << " amd64" << std::endl;
+            #elif defined(__i386__)
+                << " i386" << std::endl;
+            #else
+                << " unknown arch" << std::endl;
+            #endif
+        std::cout << indent
+            << highlight2 << "byte width" << normal
+            << "  u64: " << sizeof(uint64_t)
+            << ", fp: " << sizeof(double)
+            << ", total: " << sizeof(Period) << "n" << " + " << 4 * sizeof(uint64_t) << std::endl;
+        std::cout << std::endl;
+
         std::cout << highlight1 << "  Command List  " << normal << std::endl;
         std::cout << indent
             << highlight2 << "test" << normal
