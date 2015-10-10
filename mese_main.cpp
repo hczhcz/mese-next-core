@@ -66,35 +66,30 @@ void test() {
     // game2.print_public(std::cout);
 }
 
-int frontend(int argc, char *argv[]) {
-    using namespace mese;
+void print_info(bool info, bool help, bool cow) {
+    const char indent[] {"    "};
+    #if defined(__linux__)
+        const char highlight0[] {"\x1b[1m"};
+        const char highlight1[] {"\x1b[1;7m"};
+        const char highlight2[] {"\x1b[1;34m"};
+        const char normal[] {"\x1b[0m"};
+    #else
+        const char highlight0[] {""};
+        const char highlight1[] {""};
+        const char highlight2[] {""};
+        const char normal[] {""};
+    #endif
 
-    std::cout.precision(2);
-    std::cout.setf(std::ios::fixed);
+    #define MESE_HL0(...) highlight0 << __VA_ARGS__ << normal
+    #define MESE_HL1(...) highlight1 << __VA_ARGS__ << normal
+    #define MESE_HL2(...) indent << highlight2 << __VA_ARGS__ << normal
 
-    if (argc < 2) {
-        const char indent[] {"    "};
-        #if defined(__linux__)
-            const char highlight0[] {"\x1b[1m"};
-            const char highlight1[] {"\x1b[1;7m"};
-            const char highlight2[] {"\x1b[1;34m"};
-            const char normal[] {"\x1b[0m"};
-        #else
-            const char highlight0[] {""};
-            const char highlight1[] {""};
-            const char highlight2[] {""};
-            const char normal[] {""};
-        #endif
-
-        #define MESE_HL0(...) highlight0 << __VA_ARGS__ << normal
-        #define MESE_HL1(...) highlight1 << __VA_ARGS__ << normal
-        #define MESE_HL2(...) indent << highlight2 << __VA_ARGS__ << normal
-
-        std::cout << std::endl;
-        std::cout << MESE_HL0("    =>                                 <=    ") << std::endl;
-        std::cout << MESE_HL0("    =>            MESE-Next            <=    ") << std::endl;
-        std::cout << MESE_HL0("    =>    The modern remake of MESE    <=    ") << std::endl;
-        std::cout << MESE_HL0("    =>                                 <=    ") << std::endl;
+    std::cout << std::endl;
+    std::cout << MESE_HL0("    =>                                 <=    ") << std::endl;
+    std::cout << MESE_HL0("    =>            MESE-Next            <=    ") << std::endl;
+    std::cout << MESE_HL0("    =>    The modern remake of MESE    <=    ") << std::endl;
+    std::cout << MESE_HL0("    =>                                 <=    ") << std::endl;
+    if (cow) {
         system(
             "echo '\n"
                 " Throw out your pens,          \n"
@@ -106,8 +101,10 @@ int frontend(int argc, char *argv[]) {
                 "          * ECHOPEN *          \n"
             "' | cowsay -n 2> /dev/null"
         );
-        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 
+    if (info) {
         std::cout << MESE_HL1("  System Information  ") << std::endl;
         std::cout << MESE_HL2("build date")
             << "  " << __DATE__ /* << " " << __TIME__ */ << std::endl;
@@ -143,13 +140,13 @@ int frontend(int argc, char *argv[]) {
         std::cout << MESE_HL2("byte width")
             << "  u64: " << sizeof(uint64_t)
                 << ", fp: " << sizeof(double)
-                << ", total: " << sizeof(Period) << "n"
+                << ", total: " << sizeof(mese::Period) << "n"
                     << " + " << 4 * sizeof(uint64_t) << std::endl;
         std::cout << std::endl;
+    }
 
+    if (help) {
         std::cout << MESE_HL1("  Command List  ") << std::endl;
-        std::cout << MESE_HL2("test")
-            << std::endl;
         std::cout << MESE_HL2("init")
             << "  player_count preset [name value]..." << std::endl;
         std::cout << MESE_HL2("alloc")
@@ -166,15 +163,26 @@ int frontend(int argc, char *argv[]) {
             << "  player" << std::endl;
         std::cout << MESE_HL2("print_public")
             << std::endl;
+        std::cout << MESE_HL2("test")
+            << std::endl;
+        std::cout << MESE_HL2("help")
+            << std::endl;
         std::cout << std::endl;
+    }
+}
+
+int frontend(int argc, char *argv[]) {
+    using namespace mese;
+
+    std::cout.precision(2);
+    std::cout.setf(std::ios::fixed);
+
+    if (argc < 2) {
+        print_info(true, true, false);
 
         return 0;
     } else {
-        if (strcmp(argv[1], "test") == 0) {
-            test();
-
-            return 0;
-        } else if (strcmp(argv[1], "init") == 0) {
+        if (strcmp(argv[1], "init") == 0) {
             if (argc < 4) {
                 throw 1; // TODO
             }
@@ -274,8 +282,22 @@ int frontend(int argc, char *argv[]) {
             game.print_public(std::cout);
 
             return 0;
+        } else if (strcmp(argv[1], "test") == 0) {
+            test();
+
+            return 0;
+        } else if (strcmp(argv[1], "help") == 0) {
+            print_info(false, true, false);
+
+            return 0;
+        } else if (strcmp(argv[1], "echopen") == 0) {
+            print_info(true, false, true);
+
+            return 0;
         } else {
-            throw 1; // TODO: unknown command
+            print_info(false, true, false);
+
+            return 0;
         }
     }
 }
