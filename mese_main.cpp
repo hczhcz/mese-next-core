@@ -6,7 +6,7 @@
 void test() {
     using namespace mese;
 
-    Game game {8, get_preset(PresetId::modern, 8)};
+    Game game {8, get_preset("modern", 8)};
 
     game.print_full(std::cout);
 
@@ -177,18 +177,7 @@ int frontend(int argc, char *argv[]) {
 
             uint64_t player_count {strtoul(argv[2], nullptr, 10)};
 
-            PresetId id;
-            if (strcmp(argv[3], "classic") == 0) {
-                id = PresetId::classic;
-            } else if (strcmp(argv[3], "imese") == 0) {
-                id = PresetId::imese;
-            } else if (strcmp(argv[3], "modern") == 0) {
-                id = PresetId::modern;
-            } else {
-                throw 1;
-            }
-
-            Settings settings = get_preset(id, player_count);
+            Settings settings = get_preset(argv[3], player_count);
 
             // TODO: set values?
 

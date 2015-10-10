@@ -1,6 +1,8 @@
 #pragma once
 
+#include <string>
 #include <vector>
+#include <map>
 
 #include "util_math.hpp"
 #include "util_print.hpp"
@@ -88,15 +90,9 @@ struct Settings {
     MESE_VAL(mpi_factor_f);
 };
 
-enum class PresetId {
-    classic,
-    imese,
-    modern
-};
-
 // player_count == 8 -> classic mode
 // player_count == actual value -> 8p-feeling mode
-Settings get_preset(PresetId id, uint64_t player_count);
+Settings get_preset(const std::string &name, uint64_t player_count);
 
 struct Decisions {
     MESE_ARR(price);

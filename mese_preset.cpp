@@ -2,6 +2,12 @@
 
 namespace mese {
 
+enum class PresetId {
+    classic,
+    imese,
+    modern
+};
+
 #define MESE_SETTING(v_classic, v_imese, v_modern) \
     ( \
         id == PresetId::classic ? v_classic : ( \
@@ -13,10 +19,18 @@ namespace mese {
         ) \
     )
 
-Settings get_preset(PresetId id, uint64_t player_count) {
+Settings get_preset(const std::string &name, uint64_t player_count) {
     if (player_count > MAX_PLAYER) {
         throw 1; // TODO
     }
+
+    static const std::map<const std::string, PresetId> id_map {
+        {"classic", PresetId::classic},
+        {"imese", PresetId::imese},
+        {"modern", PresetId::modern}
+    };
+
+    PresetId id {id_map.at(name)};
 
     Settings settings {};
 
