@@ -74,10 +74,17 @@ int frontend(int argc, char *argv[]) {
 
     if (argc < 2) {
         const char indent[] {"    "};
-        const char highlight0[] {"\x1b[1m"};
-        const char highlight1[] {"\x1b[1;7m"};
-        const char highlight2[] {"\x1b[1;34m"};
-        const char normal[] {"\x1b[0m"};
+        #if defined(__linux__)
+            const char highlight0[] {"\x1b[1m"};
+            const char highlight1[] {"\x1b[1;7m"};
+            const char highlight2[] {"\x1b[1;34m"};
+            const char normal[] {"\x1b[0m"};
+        #else
+            const char highlight0[] {""};
+            const char highlight1[] {""};
+            const char highlight2[] {""};
+            const char normal[] {""};
+        #endif
 
         #define MESE_HL0(...) highlight0 << __VA_ARGS__ << normal
         #define MESE_HL1(...) highlight1 << __VA_ARGS__ << normal
@@ -121,6 +128,8 @@ int frontend(int argc, char *argv[]) {
         std::cout << MESE_HL2("target system")
             #if defined(__linux__)
                 << "  linux"
+            #elif defined(_WIN32) || defined(_WIN64)
+                << "  windows"
             #else
                 << "  unknown os"
             #endif
