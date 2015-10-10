@@ -94,6 +94,8 @@ struct Settings {
 // player_count == actual value -> 8p-feeling mode
 Settings get_preset(const std::string &name, uint64_t player_count);
 
+void change_setting(Settings &settings, const std::string &name, double value);
+
 struct Decisions {
     MESE_ARR(price);
     MESE_ARR(prod);
@@ -226,8 +228,6 @@ public:
     uint64_t player_count;
     uint64_t now_period;
     uint64_t status;
-
-    // std::string company_name[MAX_PLAYER];
 
     std::vector<Period> period;
 

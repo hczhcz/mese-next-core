@@ -95,4 +95,68 @@ Settings get_preset(const std::string &name, uint64_t player_count) {
     return std::move(settings);
 }
 
+void change_setting(Settings &settings, const std::string &name, double value) {
+    static const std::map<const std::string, double Settings::*> name_map {
+        {"price_max", &Settings::price_max},
+        {"price_min", &Settings::price_min},
+        {"mk_limit", &Settings::mk_limit},
+        {"ci_limit", &Settings::ci_limit},
+        {"rd_limit", &Settings::rd_limit},
+        {"loan_limit", &Settings::loan_limit},
+
+        {"prod_rate_initial", &Settings::prod_rate_initial},
+        {"prod_rate_balanced", &Settings::prod_rate_balanced},
+        {"prod_rate_pow", &Settings::prod_rate_pow},
+        {"prod_cost_factor_rate_over", &Settings::prod_cost_factor_rate_over},
+        {"prod_cost_factor_rate_under", &Settings::prod_cost_factor_rate_under},
+        {"prod_cost_factor_size", &Settings::prod_cost_factor_size},
+        {"prod_cost_factor_const", &Settings::prod_cost_factor_const},
+
+        {"unit_fee", &Settings::unit_fee},
+        {"deprecation_rate", &Settings::deprecation_rate},
+
+        {"initial_cash", &Settings::initial_cash},
+        {"initial_capital", &Settings::initial_capital},
+
+        {"interest_rate_cash", &Settings::interest_rate_cash},
+        {"interest_rate_loan", &Settings::interest_rate_loan},
+        {"inventory_fee", &Settings::inventory_fee},
+        {"tax_rate", &Settings::tax_rate},
+
+        {"mk_overload", &Settings::mk_overload},
+        {"mk_compression", &Settings::mk_compression},
+
+        {"demand", &Settings::demand},
+        {"demand_price", &Settings::demand_price},
+        {"demand_mk", &Settings::demand_mk},
+        {"demand_rd", &Settings::demand_rd},
+
+        {"demand_ref_price", &Settings::demand_ref_price},
+        {"demand_ref_mk", &Settings::demand_ref_mk},
+        {"demand_ref_rd", &Settings::demand_ref_rd},
+        {"demand_pow_price", &Settings::demand_pow_price},
+        {"demand_pow_mk", &Settings::demand_pow_mk},
+        {"demand_pow_rd", &Settings::demand_pow_rd},
+
+        {"share_price", &Settings::share_price},
+        {"share_mk", &Settings::share_mk},
+        {"share_rd", &Settings::share_rd},
+        {"share_pow_price", &Settings::share_pow_price},
+        {"share_pow_mk", &Settings::share_pow_mk},
+        {"share_pow_rd", &Settings::share_pow_rd},
+
+        {"price_overload", &Settings::price_overload},
+
+        {"mpi_retern_factor", &Settings::mpi_retern_factor},
+        {"mpi_factor_a", &Settings::mpi_factor_a},
+        {"mpi_factor_b", &Settings::mpi_factor_b},
+        {"mpi_factor_c", &Settings::mpi_factor_c},
+        {"mpi_factor_d", &Settings::mpi_factor_d},
+        {"mpi_factor_e", &Settings::mpi_factor_e},
+        {"mpi_factor_f", &Settings::mpi_factor_f}
+    };
+
+    settings.*(name_map.at(name)) = value;
+}
+
 }

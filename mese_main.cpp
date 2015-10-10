@@ -179,7 +179,9 @@ int frontend(int argc, char *argv[]) {
 
             Settings settings = get_preset(argv[3], player_count);
 
-            // TODO: set values?
+            for (size_t i = 4; i < argc - 1; i += 2) {
+                change_setting(settings, argv[i], strtod(argv[i + 1], nullptr));
+            }
 
             Game game {player_count, std::move(settings)};
 
@@ -191,7 +193,9 @@ int frontend(int argc, char *argv[]) {
 
             Settings settings = game.period.back().settings; // copy
 
-            // TODO: set values?
+            for (size_t i = 2; i < argc - 1; i += 2) {
+                change_setting(settings, argv[i], strtod(argv[i + 1], nullptr));
+            }
 
             game.alloc(std::move(settings));
 
