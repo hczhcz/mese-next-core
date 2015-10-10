@@ -235,10 +235,18 @@ void Game::serialize(std::ostream &stream) {
 
     uint64_t vsize {period.size()};
 
-    stream.write(reinterpret_cast<const char *>(&player_count), sizeof(player_count));
-    stream.write(reinterpret_cast<const char *>(&now_period), sizeof(now_period));
-    stream.write(reinterpret_cast<const char *>(&status), sizeof(status));
-    stream.write(reinterpret_cast<const char *>(&vsize), sizeof(vsize));
+    stream.write(
+        reinterpret_cast<const char *>(&player_count), sizeof(player_count)
+    );
+    stream.write(
+        reinterpret_cast<const char *>(&now_period), sizeof(now_period)
+    );
+    stream.write(
+        reinterpret_cast<const char *>(&status), sizeof(status)
+    );
+    stream.write(
+        reinterpret_cast<const char *>(&vsize), sizeof(vsize)
+    );
 
     for (auto &i: period) {
         i.serialize(stream);

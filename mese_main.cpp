@@ -79,11 +79,15 @@ int frontend(int argc, char *argv[]) {
         const char highlight2[] {"\x1b[1;34m"};
         const char normal[] {"\x1b[0m"};
 
+        #define MESE_HL0(...) highlight0 << __VA_ARGS__ << normal
+        #define MESE_HL1(...) highlight1 << __VA_ARGS__ << normal
+        #define MESE_HL2(...) indent << highlight2 << __VA_ARGS__ << normal
+
         std::cout << std::endl;
-        std::cout << highlight0 << "    =>                                 <=    " << normal << std::endl;
-        std::cout << highlight0 << "    =>            MESE-Next            <=    " << normal << std::endl;
-        std::cout << highlight0 << "    =>    The modern remake of MESE    <=    " << normal << std::endl;
-        std::cout << highlight0 << "    =>                                 <=    " << normal << std::endl;
+        std::cout << MESE_HL0("    =>                                 <=    ") << std::endl;
+        std::cout << MESE_HL0("    =>            MESE-Next            <=    ") << std::endl;
+        std::cout << MESE_HL0("    =>    The modern remake of MESE    <=    ") << std::endl;
+        std::cout << MESE_HL0("    =>                                 <=    ") << std::endl;
         system(
             "echo '\n"
                 " Throw out your pens,          \n"
@@ -97,24 +101,24 @@ int frontend(int argc, char *argv[]) {
         );
         std::cout << std::endl;
 
-        std::cout << highlight1 << "  System Information  " << normal << std::endl;
-        std::cout << indent
-            << highlight2 << "build date" << normal
+        std::cout << MESE_HL1("  System Information  ") << std::endl;
+        std::cout << MESE_HL2("build date")
             << "  " << __DATE__ /* << " " << __TIME__ */ << std::endl;
-        std::cout << indent
-            << highlight2 << "build mode" << normal
+        std::cout << MESE_HL2("build mode")
             << "  c++ " << __cplusplus << std::endl;
-        std::cout << indent
-            << highlight2 << "compiler" << normal
+        std::cout << MESE_HL2("compiler")
             #if defined(__clang__)
-                << "  clang " << __clang_major__ << "." << __clang_minor__ << "." << __clang_patchlevel__ << std::endl;
+                << "  clang " << __clang_major__
+                    << "." << __clang_minor__
+                    << "." << __clang_patchlevel__ << std::endl;
             #elif defined(__GNUC__)
-                << "  gcc " << __GNUC__ << "." << __GNUC_MINOR__ << "." << __GNUC_PATCHLEVEL__ << std::endl;
+                << "  gcc " << __GNUC__
+                    << "." << __GNUC_MINOR__
+                    << "." << __GNUC_PATCHLEVEL__ << std::endl;
             #else
                 << "  unknown" << std::endl;
             #endif
-        std::cout << indent
-            << highlight2 << "target system" << normal
+        std::cout << MESE_HL2("target system")
             #if defined(__linux__)
                 << "  linux"
             #else
@@ -127,40 +131,31 @@ int frontend(int argc, char *argv[]) {
             #else
                 << " unknown arch" << std::endl;
             #endif
-        std::cout << indent
-            << highlight2 << "byte width" << normal
+        std::cout << MESE_HL2("byte width")
             << "  u64: " << sizeof(uint64_t)
-            << ", fp: " << sizeof(double)
-            << ", total: " << sizeof(Period) << "n" << " + " << 4 * sizeof(uint64_t) << std::endl;
+                << ", fp: " << sizeof(double)
+                << ", total: " << sizeof(Period) << "n"
+                    << " + " << 4 * sizeof(uint64_t) << std::endl;
         std::cout << std::endl;
 
-        std::cout << highlight1 << "  Command List  " << normal << std::endl;
-        std::cout << indent
-            << highlight2 << "test" << normal
+        std::cout << MESE_HL1("  Command List  ") << std::endl;
+        std::cout << MESE_HL2("test")
             << std::endl;
-        std::cout << indent
-            << highlight2 << "init" << normal
+        std::cout << MESE_HL2("init")
             << "  player_count preset [name value]..." << std::endl;
-        std::cout << indent
-            << highlight2 << "alloc" << normal
+        std::cout << MESE_HL2("alloc")
             << "  [name value]..." << std::endl;
-        std::cout << indent
-            << highlight2 << "submit" << normal
+        std::cout << MESE_HL2("submit")
             << "  player period price prod mk ci rd -> bool" << std::endl;
-        std::cout << indent
-            << highlight2 << "close" << normal
+        std::cout << MESE_HL2("close")
             << "  -> bool" << std::endl;
-        std::cout << indent
-            << highlight2 << "print_full" << normal
+        std::cout << MESE_HL2("print_full")
             << std::endl;
-        std::cout << indent
-            << highlight2 << "print_player_early" << normal
+        std::cout << MESE_HL2("print_player_early")
             << "  player" << std::endl;
-        std::cout << indent
-            << highlight2 << "print_player" << normal
+        std::cout << MESE_HL2("print_player")
             << "  player" << std::endl;
-        std::cout << indent
-            << highlight2 << "print_public" << normal
+        std::cout << MESE_HL2("print_public")
             << std::endl;
         std::cout << std::endl;
 
@@ -178,7 +173,6 @@ int frontend(int argc, char *argv[]) {
             uint64_t player_count {strtoul(argv[2], nullptr, 10)};
 
             Settings settings = get_preset(argv[3], player_count);
-
             for (size_t i = 4; i < argc - 1; i += 2) {
                 change_setting(settings, argv[i], strtod(argv[i + 1], nullptr));
             }
@@ -192,7 +186,6 @@ int frontend(int argc, char *argv[]) {
             Game game {std::cin};
 
             Settings settings = game.period.back().settings; // copy
-
             for (size_t i = 2; i < argc - 1; i += 2) {
                 change_setting(settings, argv[i], strtod(argv[i + 1], nullptr));
             }
