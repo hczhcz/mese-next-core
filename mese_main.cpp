@@ -73,16 +73,35 @@ int frontend(int argc, char *argv[]) {
     std::cout.setf(std::ios::fixed);
 
     if (argc < 2) {
-        std::cout << "Commands:" << std::endl;
-        std::cout << "    test()" << std::endl;
-        std::cout << "    init(player_count, preset, [name, value]...)" << std::endl;
-        std::cout << "    alloc([name, value]...)" << std::endl;
-        std::cout << "    submit(player, period, price, prod, mk, ci, rd) -> bool" << std::endl;
-        std::cout << "    close() -> bool" << std::endl;
-        std::cout << "    print_full()" << std::endl;
-        std::cout << "    print_player_early(player)" << std::endl;
-        std::cout << "    print_player(player)" << std::endl;
-        std::cout << "    print_public()" << std::endl;
+        std::cout << highlight1 << "  Command List  " << normal << std::endl;
+        std::cout << indent
+            << highlight2 << "test" << normal
+            << std::endl;
+        std::cout << indent
+            << highlight2 << "init" << normal
+            << "  player_count preset [name value]..." << std::endl;
+        std::cout << indent
+            << highlight2 << "alloc" << normal
+            << "  [name value]..." << std::endl;
+        std::cout << indent
+            << highlight2 << "submit" << normal
+            << "  player period price prod mk ci rd -> bool" << std::endl;
+        std::cout << indent
+            << highlight2 << "close" << normal
+            << "  -> bool" << std::endl;
+        std::cout << indent
+            << highlight2 << "print_full" << normal
+            << std::endl;
+        std::cout << indent
+            << highlight2 << "print_player_early" << normal
+            << "  player" << std::endl;
+        std::cout << indent
+            << highlight2 << "print_player" << normal
+            << "  player" << std::endl;
+        std::cout << indent
+            << highlight2 << "print_public" << normal
+            << std::endl;
+        std::cout << std::endl;
 
         return 0;
     } else {
