@@ -237,11 +237,11 @@ public:
     Game(std::istream &stream);
 
     inline bool get_status(uint64_t i) {
-        return (status & (1 << i)) != 0;
+        return (status & (1u << i)) != 0;
     }
 
     inline void set_status(uint64_t i) {
-        status |= 1 << i;
+        status |= 1u << i;
     }
 
     inline bool ready() {

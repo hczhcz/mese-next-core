@@ -80,15 +80,15 @@ void print_info(bool info, bool help, bool cow) {
         const char normal[] {""};
     #endif
 
-    #define MESE_HL0(...) highlight0 << __VA_ARGS__ << normal
+    #define MESE_HL0(...) highlight0 << indent << __VA_ARGS__ << indent << normal
     #define MESE_HL1(...) highlight1 << __VA_ARGS__ << normal
     #define MESE_HL2(...) indent << highlight2 << __VA_ARGS__ << normal
 
     std::cout << std::endl;
-    std::cout << MESE_HL0("    =>                                 <=    ") << std::endl;
-    std::cout << MESE_HL0("    =>            MESE-Next            <=    ") << std::endl;
-    std::cout << MESE_HL0("    =>    The modern remake of MESE    <=    ") << std::endl;
-    std::cout << MESE_HL0("    =>                                 <=    ") << std::endl;
+    std::cout << MESE_HL0("=>                                 <=") << std::endl;
+    std::cout << MESE_HL0("=>            MESE-Next            <=") << std::endl;
+    std::cout << MESE_HL0("=>    The modern remake of MESE    <=") << std::endl;
+    std::cout << MESE_HL0("=>                                 <=") << std::endl;
     if (cow) {
         system(
             "echo '\n"
@@ -106,6 +106,7 @@ void print_info(bool info, bool help, bool cow) {
 
     if (info) {
         std::cout << MESE_HL1("  System Information  ") << std::endl;
+        std::cout << std::endl;
         std::cout << MESE_HL2("build date")
             << "  " << __DATE__ /* << " " << __TIME__ */ << std::endl;
         std::cout << MESE_HL2("build mode")
@@ -147,6 +148,7 @@ void print_info(bool info, bool help, bool cow) {
 
     if (help) {
         std::cout << MESE_HL1("  Command List  ") << std::endl;
+        std::cout << std::endl;
         std::cout << MESE_HL2("init")
             << "  player_count preset [name value]..." << std::endl;
         std::cout << MESE_HL2("alloc")
