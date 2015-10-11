@@ -96,6 +96,8 @@ bool Game::submit(
 
         return true;
     } else {
+        unset_status(i);
+
         return false;
     }
 }

@@ -244,6 +244,10 @@ public:
         status |= 1u << i;
     }
 
+    inline void unset_status(uint64_t i) {
+        status &= ~(1u << i);
+    }
+
     inline bool ready() {
         return status + 1 == (1u << player_count);
     }
