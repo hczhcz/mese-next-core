@@ -19,11 +19,21 @@ enum class PresetId {
         ) \
     )
 
+const std::vector<std::string> &list_presets() {
+    // notice: keep id_map updated
+    static const std::vector<std::string> id_list {
+        "classic", "imese", "modern"
+    };
+
+    return id_list;
+}
+
 Settings get_preset(const std::string &name, uint64_t player_count) {
     if (player_count > MAX_PLAYER) {
         throw 1; // TODO
     }
 
+    // notice: keep id_list updated
     static const std::map<const std::string, PresetId> id_map {
         {"classic", PresetId::classic},
         {"imese", PresetId::imese},
@@ -95,7 +105,43 @@ Settings get_preset(const std::string &name, uint64_t player_count) {
     return std::move(settings);
 }
 
+const std::vector<std::string> &list_settings() {
+    // notice: keep name_map updated
+    static const std::vector<std::string> name_list {
+        "price_max", "price_min", "mk_limit", "ci_limit", "rd_limit", "loan_limit",
+
+        "prod_rate_initial", "prod_rate_balanced", "prod_rate_pow",
+        "prod_cost_factor_rate_over", "prod_cost_factor_rate_under",
+        "prod_cost_factor_size", "prod_cost_factor_const",
+
+        "unit_fee", "deprecation_rate",
+
+        "initial_cash", "initial_capital",
+
+        "interest_rate_cash", "interest_rate_loan", "inventory_fee", "tax_rate",
+
+        "mk_overload", "mk_compression",
+
+        "demand", "demand_price", "demand_mk", "demand_rd",
+
+        "demand_ref_price", "demand_ref_mk", "demand_ref_rd",
+        "demand_pow_price", "demand_pow_mk", "demand_pow_rd",
+
+        "share_price", "share_mk", "share_rd",
+        "share_pow_price", "share_pow_mk", "share_pow_rd",
+
+        "price_overload",
+
+        "mpi_retern_factor",
+        "mpi_factor_a", "mpi_factor_b", "mpi_factor_c",
+        "mpi_factor_d", "mpi_factor_e", "mpi_factor_f"
+    };
+
+    return name_list;
+}
+
 void change_setting(Settings &settings, const std::string &name, double value) {
+    // notice: keep name_list updated
     static const std::map<const std::string, double Settings::*> name_map {
         {"price_max", &Settings::price_max},
         {"price_min", &Settings::price_min},
