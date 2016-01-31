@@ -66,7 +66,7 @@ void test() {
     // game2.print_public(std::cout);
 }
 
-void print_info(bool info, bool help, bool cow) {
+void print_info(bool info, bool help, bool list, bool cow) {
     const char indent[] {"    "};
     #if defined(__linux__)
         const char highlight0[] {"\x1b[1m"};
@@ -171,6 +171,22 @@ void print_info(bool info, bool help, bool cow) {
             << std::endl;
         std::cout << std::endl;
     }
+
+    if (list) {
+        std::cout << MESE_HL1("  Presets  ") << std::endl;
+        std::cout << std::endl;
+        for (auto &i: mese::list_presets()) {
+            std::cout << MESE_HL2(i) << std::endl;
+        }
+        std::cout << std::endl;
+
+        std::cout << MESE_HL1("  Settings  ") << std::endl;
+        std::cout << std::endl;
+        for (auto &i: mese::list_settings()) {
+            std::cout << MESE_HL2(i) << std::endl;
+        }
+        std::cout << std::endl;
+    }
 }
 
 int frontend(int argc, char *argv[]) {
@@ -180,7 +196,7 @@ int frontend(int argc, char *argv[]) {
     std::cout.setf(std::ios::fixed);
 
     if (argc < 2) {
-        print_info(true, true, false);
+        print_info(true, true, false, false);
 
         return 0;
     } else {
@@ -289,17 +305,15 @@ int frontend(int argc, char *argv[]) {
 
             return 0;
         } else if (strcmp(argv[1], "help") == 0) {
-            print_info(false, true, false);
+            print_info(false, true, true, false);
 
             return 0;
         } else if (strcmp(argv[1], "echopen") == 0) {
-            print_info(true, false, true);
+            print_info(true, false, false, true);
 
             return 0;
         } else {
-            print_info(false, true, false);
-
-            return 0;
+            throw 1; // TODO
         }
     }
 }
@@ -308,6 +322,8 @@ int main(int argc, char *argv[]) {
     try {
         return frontend(argc, argv);
     } catch (...) {
+        std::cerr << "ERROR!" << std::endl; // TODO
+
         return -1;
     }
 }
