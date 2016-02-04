@@ -83,12 +83,13 @@ void print_info(bool info, bool help, bool list, bool cow) {
     #define MESE_HL0(...) highlight0 << indent << __VA_ARGS__ << indent << normal
     #define MESE_HL1(...) highlight1 << __VA_ARGS__ << normal
     #define MESE_HL2(...) indent << highlight2 << __VA_ARGS__ << normal
+    #define MESE_HL3(...) indent << indent << __VA_ARGS__
 
     std::cout << std::endl;
-    std::cout << MESE_HL0("=>                                 <=") << std::endl;
-    std::cout << MESE_HL0("=>            MESE-Next            <=") << std::endl;
-    std::cout << MESE_HL0("=>    The modern remake of MESE    <=") << std::endl;
-    std::cout << MESE_HL0("=>                                 <=") << std::endl;
+    std::cout << MESE_HL0(">>                                 <<") << std::endl;
+    std::cout << MESE_HL0(">>            MESE-Next            <<") << std::endl;
+    std::cout << MESE_HL0(">>    The modern remake of MESE    <<") << std::endl;
+    std::cout << MESE_HL0(">>                                 <<") << std::endl;
     if (cow) {
         system(
             "echo '\n"
@@ -107,6 +108,7 @@ void print_info(bool info, bool help, bool list, bool cow) {
     if (info) {
         std::cout << MESE_HL1("  System Information  ") << std::endl;
         std::cout << std::endl;
+
         std::cout << MESE_HL2("build date")
             << "  " << __DATE__ /* << " " << __TIME__ */ << std::endl;
         std::cout << MESE_HL2("build mode")
@@ -149,14 +151,24 @@ void print_info(bool info, bool help, bool list, bool cow) {
     if (help) {
         std::cout << MESE_HL1("  Command List  ") << std::endl;
         std::cout << std::endl;
+
         std::cout << MESE_HL2("init")
             << "  player_count preset [name value]..." << std::endl;
+        std::cout << MESE_HL3("output:") << " binary data" << std::endl << std::endl;
+
         std::cout << MESE_HL2("alloc")
             << "  [name value]..." << std::endl;
+        std::cout << MESE_HL3("input:") << " binary data" << std::endl
+            << MESE_HL3("output:") << " binary data" << std::endl << std::endl;
+
         std::cout << MESE_HL2("submit")
-            << "  player period price prod mk ci rd -> bool" << std::endl;
+            << "  player period price prod mk ci rd" << std::endl;
         std::cout << MESE_HL2("close")
-            << "  -> bool" << std::endl;
+            << std::endl;
+        std::cout << MESE_HL3("input:") << " binary data" << std::endl
+            << MESE_HL3("output:") << " binary data" << std::endl
+            << MESE_HL3("error number:") << " declined=1" << std::endl << std::endl;
+
         std::cout << MESE_HL2("print_full")
             << std::endl;
         std::cout << MESE_HL2("print_player_early")
@@ -165,8 +177,9 @@ void print_info(bool info, bool help, bool list, bool cow) {
             << "  player" << std::endl;
         std::cout << MESE_HL2("print_public")
             << std::endl;
-        std::cout << MESE_HL2("test")
-            << std::endl;
+        std::cout << MESE_HL3("input:") << " binary data" << std::endl
+            << MESE_HL3("output:") << " report" << std::endl << std::endl;
+
         std::cout << MESE_HL2("help")
             << std::endl;
         std::cout << std::endl;
@@ -175,6 +188,7 @@ void print_info(bool info, bool help, bool list, bool cow) {
     if (list) {
         std::cout << MESE_HL1("  Presets  ") << std::endl;
         std::cout << std::endl;
+
         for (auto &i: mese::list_presets()) {
             std::cout << MESE_HL2(i) << std::endl;
         }
@@ -182,6 +196,7 @@ void print_info(bool info, bool help, bool list, bool cow) {
 
         std::cout << MESE_HL1("  Settings  ") << std::endl;
         std::cout << std::endl;
+
         for (auto &i: mese::list_settings()) {
             std::cout << MESE_HL2(i) << std::endl;
         }
@@ -300,12 +315,12 @@ int frontend(int argc, char *argv[]) {
             game.print_public(std::cout);
 
             return 0;
-        } else if (strcmp(argv[1], "test") == 0) {
-            test();
-
-            return 0;
         } else if (strcmp(argv[1], "help") == 0) {
             print_info(false, true, true, false);
+
+            return 0;
+        } else if (strcmp(argv[1], "test") == 0) {
+            test();
 
             return 0;
         } else if (strcmp(argv[1], "echopen") == 0) {
