@@ -24,6 +24,8 @@ const uint64_t MAX_PLAYER {32};
 #define MESE_RATE(value) (value)
 #define MESE_INDEX(value) round(value)
 
+// data structs
+
 struct Settings {
     // decision limits
 
@@ -91,14 +93,6 @@ struct Settings {
     MESE_VAL(mpi_factor_e);
     MESE_VAL(mpi_factor_f);
 };
-
-const std::vector<std::string> &list_presets();
-// player_count == 8 -> classic mode
-// player_count == actual value -> 8p-feeling mode
-Settings get_preset(const std::string &name, uint64_t player_count);
-
-const std::vector<std::string> &list_settings();
-void change_setting(Settings &settings, const std::string &name, double value);
 
 struct Decisions {
     MESE_ARR(price);
@@ -176,6 +170,8 @@ struct PeriodData {
     MESE_ARR(mpi);
 };
 
+// class Period
+
 class Game;
 
 class Period: public PeriodDataEarly, public PeriodData {
@@ -227,6 +223,8 @@ public:
     void serialize(std::ostream &stream);
 };
 
+// class Game
+
 class Game {
 public:
     uint64_t player_count;
@@ -273,5 +271,15 @@ public:
 
     void serialize(std::ostream &stream);
 };
+
+// extra functions
+
+const std::vector<std::string> &list_presets();
+// player_count == 8 -> classic mode
+// player_count == actual value -> 8p-feeling mode
+Settings get_preset(const std::string &name, uint64_t player_count);
+
+const std::vector<std::string> &list_settings();
+void change_setting(Settings &settings, const std::string &name, double value);
 
 }
