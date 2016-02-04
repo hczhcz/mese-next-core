@@ -15,6 +15,8 @@ const uint64_t MAX_PLAYER {32};
 #define MESE_ARR(name) double name[MAX_PLAYER] { \
     NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN, \
     NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN, \
+    NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN, \
+    NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN, \
 }
 
 #define MESE_UNIT(value) trunc(value)
