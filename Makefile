@@ -1,24 +1,25 @@
 CFLAGS = -std=c++14 -Wall -pedantic
+HEADERS = $(wildcard *.hpp)
 FILES = $(wildcard *.cpp)
 
 default: mese
 
-mese: $(FILES) mese.hpp
+mese: $(HEADERS) $(FILES)
 	clang++ $(CFLAGS) $(FILES) -o $@
 
-mese32: $(FILES) mese.hpp
+mese32: $(HEADERS) $(FILES)
 	clang++ -m32 $(CFLAGS) $(FILES) -o $@
 
-mese-gcc: $(FILES) mese.hpp
+mese-gcc: $(HEADERS) $(FILES)
 	g++ $(CFLAGS) $(FILES) -o $@
 
-mese32-gcc: $(FILES) mese.hpp
+mese32-gcc: $(HEADERS) $(FILES)
 	g++ -m32 $(CFLAGS) $(FILES) -o $@
 
-mese.exe: $(FILES) mese.hpp
+mese.exe: $(HEADERS) $(FILES)
 	x86_64-w64-mingw32-g++ -static-libstdc++ -static-libgcc $(CFLAGS) $(FILES) -o $@
 
-mese32.exe: $(FILES) mese.hpp
+mese32.exe: $(HEADERS) $(FILES)
 	i686-w64-mingw32-g++ -static-libstdc++ -static-libgcc $(CFLAGS) $(FILES) -o $@
 
 all: mese mese32 mese-gcc mese32-gcc mese.exe mese32.exe
