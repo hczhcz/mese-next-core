@@ -7,6 +7,9 @@ namespace mese {
 
 template <class T>
 void print(std::ostream &stream, uint64_t arr_size, T callback) {
+    stream.precision(2);
+    stream.setf(std::ios::fixed);
+
     auto print_indent = [&](size_t indent) {
         stream << std::endl;
         for (size_t i = 0; i < indent; ++i) {

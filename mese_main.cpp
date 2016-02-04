@@ -207,9 +207,6 @@ void print_info(bool info, bool help, bool list, bool cow) {
 int frontend(int argc, char *argv[]) {
     using namespace mese;
 
-    std::cout.precision(2);
-    std::cout.setf(std::ios::fixed);
-
     if (argc < 2) {
         print_info(true, true, false, false);
 
@@ -268,6 +265,7 @@ int frontend(int argc, char *argv[]) {
                 return 0;
             } else {
                 game.serialize(std::cout);
+                std::cerr << "ERROR: Decision declined" << std::endl;
 
                 return 1;
             }
@@ -280,6 +278,7 @@ int frontend(int argc, char *argv[]) {
                 return 0;
             } else {
                 game.serialize(std::cout);
+                std::cerr << "ERROR: Period not finished" << std::endl;
 
                 return 1;
             }
@@ -337,7 +336,7 @@ int main(int argc, char *argv[]) {
     try {
         return frontend(argc, argv);
     } catch (...) {
-        std::cerr << "ERROR!" << std::endl; // TODO
+        std::cerr << "ERROR: Internal error" << std::endl;
 
         return -1;
     }
