@@ -175,9 +175,9 @@ void Game::print_player(std::ostream &stream, uint64_t i) {
             // period[now_period - 2].print_player_early(i, [&](auto callback) {
             //     doc("last_data_early", callback);
             // });
-            // period[now_period - 2].print_player(i, [&](auto callback) {
-            //     doc("last_data", callback);
-            // });
+            period[now_period - 2].print_player(i, [&](auto callback) {
+                doc("last_data", callback);
+            });
             period[now_period - 2].print_public([&](auto callback) {
                 doc("last_data_public", callback);
             });
