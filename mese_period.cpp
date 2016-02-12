@@ -106,10 +106,11 @@ bool Period::submit(
     loan_early[i] = MESE_CASH(
         max(- balance_early[i], 0)
     );
+    // notice: probably a bug in MESE, use balance_early instead?
     interest[i] = MESE_CASH(
         loan_early[i] == 0 ?
-        - settings.interest_rate_cash * last.cash[i] :
-        settings.interest_rate_loan * loan_early[i]
+        settings.interest_rate_cash * last.cash[i] :
+        - settings.interest_rate_loan * loan_early[i]
     );
 
     goods[i] = MESE_UNIT(last.inventory[i] + decisions.prod[i]);
@@ -234,7 +235,7 @@ void Period::exec(Period &last) {
             goods_cost_sold[i]
             + deprecation[i]
             + decisions.mk[i] + decisions.rd[i]
-            + interest[i] + inventory_charge[i]
+            - interest[i] + inventory_charge[i]
         );
         profit_before_tax[i] = MESE_CASH(
             sales[i] - cost_before_tax[i]
@@ -250,7 +251,7 @@ void Period::exec(Period &last) {
         //     last.cash[i] + loan_early[i] - last.loan[i]
         //     + sales[i]
         //     - spending[i] - deprecation[i]
-        //     - interest[i] - inventory_charge[i] - tax_charge[i]
+        //     + interest[i] - inventory_charge[i] - tax_charge[i]
         // );
         balance[i] = MESE_CASH(
             last.cash[i] + loan_early[i] - last.loan[i]
