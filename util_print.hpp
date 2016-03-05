@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <string>
 #include <iostream>
 
@@ -10,6 +11,16 @@ void print(std::ostream &stream, uint64_t arr_size, T callback) {
     stream.precision(2);
     stream.setf(std::ios::fixed);
 
+    auto double_format = [](double value) -> std::string {
+        if (std::isnan(value)) {
+            return std::signbit(value) ? "-0/0" : "0/0";
+        } else if (std::isinf(value)) {
+            return std::signbit(value) ? "-1/0" : "1/0";
+        } else {
+            return std::to_string(value);
+        }
+    };
+
     auto print_indent = [&](size_t indent) {
         stream << std::endl;
         for (size_t i = 0; i < indent; ++i) {
@@ -18,14 +29,14 @@ void print(std::ostream &stream, uint64_t arr_size, T callback) {
     };
 
     auto val_handler = [&](double value) {
-        stream << value;
+        stream << double_format(value);
     };
 
     auto arr_handler = [&](double *member) {
-        stream << '[' << member[0];
+        stream << '[' << double_format(member[0]);
 
         for (uint64_t i = 1; i < arr_size; ++i) {
-            stream << ", " << member[i];
+            stream << ", " << double_format(member[i]);
         }
 
         stream << ']';
