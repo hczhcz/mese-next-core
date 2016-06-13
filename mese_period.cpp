@@ -108,11 +108,11 @@ bool Period::submit(
     loan_early[i] = MESE_CASH(
         max(- balance_early[i], 0)
     );
-    // notice: probably a bug in MESE, use balance_early instead?
     interest[i] = MESE_CASH(
-        loan_early[i] == 0 ?
-        settings.interest_rate_cash * last.cash[i] :
-        - settings.interest_rate_loan * loan_early[i]
+        (
+            balance_early[i] >= 0 ?
+            settings.interest_rate_cash : settings.interest_rate_loan
+        ) * balance_early[i]
     );
 
     goods[i] = MESE_UNIT(last.inventory[i] + decisions.prod[i]);
@@ -139,11 +139,10 @@ bool Period::submit(
 
 void Period::exec(Period &last) {
     double sum_mk = sum(decisions.mk);
-    double sum_mk_compressed = (
-        sum_mk > settings.mk_overload ? (
-            (sum_mk - settings.mk_overload) * settings.mk_compression
-            + settings.mk_overload
-        ) : sum_mk
+    double sum_mk_compressed = min(
+        (sum_mk - settings.mk_overload) * settings.mk_compression
+        + settings.mk_overload,
+        sum_mk
     );
     double sum_history_mk = sum(history_mk);
     double sum_history_rd = sum(history_rd);
@@ -209,9 +208,7 @@ void Period::exec(Period &last) {
         );
 
         share_compressed[i] = MESE_RATE(
-            decisions.price[i] > settings.price_overload ? (
-                share[i] * settings.price_overload / decisions.price[i]
-            ) : share[i]
+            min(share[i] * settings.price_overload / decisions.price[i], share[i])
         );
 
         orders[i] = MESE_UNIT(orders_demand * share_compressed[i]);
