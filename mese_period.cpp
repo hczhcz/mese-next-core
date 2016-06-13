@@ -92,7 +92,9 @@ bool Period::submit(
     );
 
     deprecation[i] = MESE_CASH(last.capital[i] * settings.deprecation_rate);
-    capital[i] = MESE_CASH(last.capital[i] + decisions.ci[i] - deprecation[i]);
+    capital[i] = MESE_CASH(
+        last.capital[i] + decisions.ci[i] - deprecation[i]
+    );
     size[i] = MESE_UNIT(capital[i] / settings.unit_fee);
 
     spending[i] = MESE_CASH(
@@ -195,9 +197,15 @@ void Period::exec(Period &last) {
         // orders
 
         share[i] = MESE_RATE(
-            settings.share_price * div(share_effect_price[i], sum_share_effect_price, 0)
-            + settings.share_mk * div(share_effect_mk[i], sum_share_effect_mk, 0)
-            + settings.share_rd * div(share_effect_rd[i], sum_share_effect_rd, 0)
+            settings.share_price * div(
+                share_effect_price[i], sum_share_effect_price, 0
+            )
+            + settings.share_mk * div(
+                share_effect_mk[i], sum_share_effect_mk, 0
+            )
+            + settings.share_rd * div(
+                share_effect_rd[i], sum_share_effect_rd, 0
+            )
         );
 
         share_compressed[i] = MESE_RATE(
@@ -226,8 +234,7 @@ void Period::exec(Period &last) {
 
         inventory_charge[i] = MESE_CASH(
             min(
-                last.inventory[i],
-                inventory[i]
+                last.inventory[i], inventory[i]
             ) * settings.inventory_fee
         );
 
