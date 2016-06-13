@@ -102,7 +102,7 @@ Settings get_preset(const std::string &name, uint64_t player_count) {
     settings.mpi_factor_e = 10;
     settings.mpi_factor_f = 10;
 
-    return std::move(settings);
+    return settings; // RVO
 }
 
 const std::vector<std::string> &list_settings() {
