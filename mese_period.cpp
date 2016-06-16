@@ -91,6 +91,10 @@ bool Period::submit(
         prod_cost_unit[i] * decisions.prod[i]
     );
 
+    goods[i] = MESE_UNIT(last.inventory[i] + decisions.prod[i]);
+    goods_cost[i] = MESE_CASH(last.goods_cost_inventory[i] + prod_cost[i]);
+    goods_max_sales[i] = MESE_CASH(decisions.price[i] * goods[i]);
+
     deprecation[i] = MESE_CASH(last.capital[i] * settings.deprecation_rate);
     capital[i] = MESE_CASH(
         last.capital[i] + decisions.ci[i] - deprecation[i]
@@ -114,10 +118,6 @@ bool Period::submit(
             settings.interest_rate_cash : settings.interest_rate_loan
         ) * balance_early[i]
     );
-
-    goods[i] = MESE_UNIT(last.inventory[i] + decisions.prod[i]);
-    goods_cost[i] = MESE_CASH(last.goods_cost_inventory[i] + prod_cost[i]);
-    goods_max_sales[i] = MESE_CASH(decisions.price[i] * goods[i]);
 
     history_mk[i] = MESE_CASH(last.history_mk[i] + decisions.mk[i]);
     history_rd[i] = MESE_CASH(last.history_rd[i] + decisions.rd[i]);

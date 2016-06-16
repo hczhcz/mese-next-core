@@ -99,6 +99,12 @@ void Period::print_full(T callback) {
                 arr("prod_cost", prod_cost);
             });
 
+            doc("goods", MESE_PRINT {
+                arr("goods", goods);
+                arr("goods_cost", goods_cost);
+                arr("goods_max_sales", goods_max_sales);
+            });
+
             doc("balance", MESE_PRINT {
                 arr("deprecation", deprecation);
                 arr("capital", capital);
@@ -107,10 +113,6 @@ void Period::print_full(T callback) {
                 arr("balance_early", balance_early);
                 arr("loan_early", loan_early);
                 arr("interest", interest);
-
-                arr("goods", goods);
-                arr("goods_cost", goods_cost);
-                arr("goods_max_sales", goods_max_sales);
             });
 
             doc("history", MESE_PRINT {
@@ -222,6 +224,12 @@ void Period::print_player_early(uint64_t i, T callback) {
             val("prod_cost", prod_cost[i]);
         });
 
+        doc("goods", MESE_PRINT {
+            val("goods", goods[i]);
+            val("goods_cost", goods_cost[i]);
+            val("goods_max_sales", goods_max_sales[i]);
+        });
+
         doc("balance", MESE_PRINT {
             val("deprecation", deprecation[i]);
             val("capital", capital[i]);
@@ -230,10 +238,6 @@ void Period::print_player_early(uint64_t i, T callback) {
             val("balance_early", balance_early[i]);
             val("loan_early", loan_early[i]);
             val("interest", interest[i]);
-
-            val("goods", goods[i]);
-            val("goods_cost", goods_cost[i]);
-            val("goods_max_sales", goods_max_sales[i]);
         });
 
         doc("history", MESE_PRINT {

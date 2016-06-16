@@ -109,6 +109,10 @@ struct PeriodDataEarly {
     MESE_ARR(prod_cost_marginal);
     MESE_ARR(prod_cost);
 
+    MESE_ARR(goods);
+    MESE_ARR(goods_cost);
+    MESE_ARR(goods_max_sales);
+
     MESE_ARR(deprecation);
     MESE_ARR(capital); // *
     MESE_ARR(size); // *
@@ -116,10 +120,6 @@ struct PeriodDataEarly {
     MESE_ARR(balance_early);
     MESE_ARR(loan_early);
     MESE_ARR(interest);
-
-    MESE_ARR(goods);
-    MESE_ARR(goods_cost);
-    MESE_ARR(goods_max_sales);
 
     MESE_ARR(history_mk); // *
     MESE_ARR(history_rd); // *
