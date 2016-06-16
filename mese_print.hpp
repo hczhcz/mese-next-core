@@ -142,10 +142,12 @@ void Period::print_full(T callback) {
                 arr("unfilled", unfilled);
             });
 
-            doc("balance", MESE_PRINT {
+            doc("goods", MESE_PRINT {
                 arr("goods_cost_sold", goods_cost_sold);
                 arr("goods_cost_inventory", goods_cost_inventory);
+            });
 
+            doc("balance", MESE_PRINT {
                 arr("sales", sales);
                 arr("inventory_charge", inventory_charge);
                 arr("cost_before_tax", cost_before_tax);
@@ -257,10 +259,12 @@ void Period::print_player(uint64_t i, T callback) {
             val("unfilled", unfilled[i]);
         });
 
-        doc("balance", MESE_PRINT {
+        doc("goods", MESE_PRINT {
             val("goods_cost_sold", goods_cost_sold[i]);
             val("goods_cost_inventory", goods_cost_inventory[i]);
+        });
 
+        doc("balance", MESE_PRINT {
             val("sales", sales[i]);
             val("inventory_charge", inventory_charge[i]);
             val("cost_before_tax", cost_before_tax[i]);
@@ -298,11 +302,13 @@ void Period::print_public(T callback) {
                 val("average_prod_cost", sum(prod_cost) / player_count);
             });
 
+            doc("goods", MESE_PRINT {
+                val("average_goods", sum(goods) / player_count);
+            });
+
             doc("balance", MESE_PRINT {
                 val("average_capital", sum(capital) / player_count);
                 val("average_size", sum(size) / player_count);
-
-                val("average_goods", sum(goods) / player_count);
             });
         });
 
@@ -317,9 +323,11 @@ void Period::print_public(T callback) {
                 val("average_unfilled", sum(unfilled) / player_count);
             });
 
-            doc("balance", MESE_PRINT {
+            doc("goods", MESE_PRINT {
                 val("average_goods_cost_sold", sum(goods_cost_sold) / player_count);
+            });
 
+            doc("balance", MESE_PRINT {
                 arr("sales", sales);
                 val("average_sales", sum(sales) / player_count);
                 arr("cost_before_tax", cost_before_tax);
