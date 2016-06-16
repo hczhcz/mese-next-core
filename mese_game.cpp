@@ -40,8 +40,12 @@ Game::Game(std::istream &stream):
     status {},
     period {}
 {
+    uint64_t vtag;
     uint64_t vsize;
 
+    stream.read(
+        reinterpret_cast<char *>(&vtag), sizeof(vtag)
+    );
     stream.read(
         reinterpret_cast<char *>(&player_count), sizeof(player_count)
     );
@@ -57,6 +61,10 @@ Game::Game(std::istream &stream):
 
     for (; vsize > 0; --vsize) {
         period.push_back({stream});
+    }
+
+    if (vtag != BINARY_VER) {
+        throw 1; // TODO
     }
 }
 
@@ -243,8 +251,12 @@ void Game::serialize(std::ostream &stream) {
     static_assert(sizeof(double) == 8, "");
     static_assert(sizeof(Period) == 13248, "");
 
+    uint64_t vtag {BINARY_VER};
     uint64_t vsize {period.size()};
 
+    stream.write(
+        reinterpret_cast<const char *>(&vtag), sizeof(vtag)
+    );
     stream.write(
         reinterpret_cast<const char *>(&player_count), sizeof(player_count)
     );
