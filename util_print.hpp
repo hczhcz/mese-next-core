@@ -11,13 +11,13 @@ void print(std::ostream &stream, uint64_t arr_size, T callback) {
     stream.precision(2);
     stream.setf(std::ios::fixed);
 
-    auto double_format = [](double value) -> std::string {
+    auto double_format = [&](double value) {
         if (std::isnan(value)) {
-            return std::signbit(value) ? "-0/0" : "0/0";
+            stream << (std::signbit(value) ? "-0/0" : "0/0");
         } else if (std::isinf(value)) {
-            return std::signbit(value) ? "-1/0" : "1/0";
+            stream << (std::signbit(value) ? "-1/0" : "1/0");
         } else {
-            return std::to_string(value);
+            stream << value;
         }
     };
 
@@ -29,14 +29,16 @@ void print(std::ostream &stream, uint64_t arr_size, T callback) {
     };
 
     auto val_handler = [&](double value) {
-        stream << double_format(value);
+        double_format(value);
     };
 
     auto arr_handler = [&](double *member) {
-        stream << '[' << double_format(member[0]);
+        stream << '[';
+        double_format(member[0]);
 
         for (uint64_t i = 1; i < arr_size; ++i) {
-            stream << ", " << double_format(member[i]);
+            stream << ", ";
+            double_format(member[i]);
         }
 
         stream << ']';
