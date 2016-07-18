@@ -18,7 +18,7 @@ Period::Period(uint64_t count, Settings &&_settings):
         history_mk[i] = 0;
         history_rd[i] = 0;
 
-        sold[i] = MESE_UNIT(size[i] * settings.prod_rate_balanced);
+        sold[i] = MESE_UNIT(settings.prod_rate_balanced * size[i]);
         inventory[i] = 0;
         goods_cost_inventory[i] = 0;
 
@@ -95,7 +95,7 @@ bool Period::submit(
     goods_cost[i] = MESE_CASH(last.goods_cost_inventory[i] + prod_cost[i]);
     goods_max_sales[i] = MESE_CASH(decisions.price[i] * goods[i]);
 
-    deprecation[i] = MESE_CASH(last.capital[i] * settings.deprecation_rate);
+    deprecation[i] = MESE_CASH(settings.deprecation_rate * last.capital[i]);
     capital[i] = MESE_CASH(
         last.capital[i] + decisions.ci[i] - deprecation[i]
     );
@@ -140,7 +140,7 @@ bool Period::submit(
 void Period::exec(Period &last) {
     double sum_mk = sum(decisions.mk);
     double sum_mk_compressed = min(
-        (sum_mk - settings.mk_overload) * settings.mk_compression
+        settings.mk_compression * (sum_mk - settings.mk_overload)
         + settings.mk_overload,
         sum_mk
     );
@@ -230,9 +230,9 @@ void Period::exec(Period &last) {
         sales[i] = MESE_CASH(decisions.price[i] * sold[i]);
 
         inventory_charge[i] = MESE_CASH(
-            min(
+            settings.inventory_fee * min(
                 last.inventory[i], inventory[i]
-            ) * settings.inventory_fee
+            )
         );
 
         cost_before_tax[i] = MESE_CASH(
@@ -245,7 +245,7 @@ void Period::exec(Period &last) {
             sales[i] - cost_before_tax[i]
         );
         tax_charge[i] = MESE_CASH(
-            profit_before_tax[i] * settings.tax_rate
+            settings.tax_rate * profit_before_tax[i]
         );
         profit[i] = MESE_CASH(
             profit_before_tax[i] - tax_charge[i]
