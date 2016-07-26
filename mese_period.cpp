@@ -252,13 +252,12 @@ void Period::exec(Period &last) {
         );
 
         // balance[i] = MESE_CASH(
-        //     last.cash[i] + loan_early[i] - last.loan[i]
-        //     + sales[i]
-        //     - spending[i] - deprecation[i]
+        //     balance_early[i] + loan_early[i]
+        //     + sales[i] - deprecation[i]
         //     + interest[i] - inventory_charge[i] - tax_charge[i]
         // );
         balance[i] = MESE_CASH(
-            last.cash[i] + loan_early[i] - last.loan[i]
+            last.cash[i] - last.loan[i] + loan_early[i]
             + profit[i]
             - decisions.ci[i] + deprecation[i]
             + goods_cost_sold[i] - prod_cost[i]
