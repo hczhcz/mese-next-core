@@ -126,6 +126,63 @@ bool Game::close() {
     }
 }
 
+void Game::close_force() {
+    if (now_period >= period.size()) {
+        throw 1; // TODO
+    }
+
+    for (uint64_t i = 0; i < player_count; ++i) {
+        if (!get_status(i)) {
+            submit(
+                i,
+                period[now_period - 1].decisions.price[i],
+                period[now_period - 1].size[i]
+                    * period[now_period - 1].settings.prod_rate_initial,
+                period[now_period - 1].decisions.mk[i],
+                period[now_period - 1].decisions.ci[i],
+                period[now_period - 1].decisions.rd[i]
+            ) || submit(
+                i,
+                period[now_period - 1].decisions.price[i],
+                period[now_period - 1].size[i]
+                    * period[now_period - 1].settings.prod_rate_initial,
+                period[now_period - 1].decisions.mk[i],
+                period[now_period - 1].decisions.ci[i],
+                0
+            ) || submit(
+                i,
+                period[now_period - 1].decisions.price[i],
+                period[now_period - 1].size[i]
+                    * period[now_period - 1].settings.prod_rate_initial,
+                period[now_period - 1].decisions.mk[i],
+                period[0].capital[i]
+                    * period[now_period - 1].settings.deprecation_rate,
+                0
+            ) || submit(
+                i,
+                period[now_period - 1].decisions.price[i],
+                period[now_period - 1].size[i]
+                    * period[now_period - 1].settings.prod_rate_initial,
+                0,
+                period[0].capital[i]
+                    * period[now_period - 1].settings.deprecation_rate,
+                0
+            ) || submit(
+                i,
+                period[now_period - 1].decisions.price[i],
+                0,
+                0,
+                0,
+                0
+            );
+        }
+    }
+
+    period[now_period].exec(period[now_period - 1]);
+    ++now_period;
+    status = 0;
+}
+
 void Game::print_full(std::ostream &stream) {
     print(stream, player_count, MESE_PRINT {
         val("player_count", player_count);

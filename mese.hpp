@@ -264,6 +264,7 @@ public:
     );
 
     bool close();
+    void close_force();
 
     void print_full(std::ostream &stream);
     void print_player_early(std::ostream &stream, uint64_t i);

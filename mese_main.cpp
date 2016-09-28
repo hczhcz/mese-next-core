@@ -165,6 +165,8 @@ void print_info(bool info, bool help, bool list, bool cow) {
             << "  player period price prod mk ci rd" << std::endl;
         std::cout << MESE_HL2("close")
             << std::endl;
+        std::cout << MESE_HL2("close_force")
+            << std::endl;
         std::cout << MESE_HL3("input:") << " binary data" << std::endl
             << MESE_HL3("output:") << " binary data" << std::endl
             << MESE_HL3("error number:") << " declined=1" << std::endl << std::endl;
@@ -282,6 +284,14 @@ int frontend(int argc, char *argv[]) {
 
                 return 1;
             }
+        } else if (strcmp(argv[1], "close_force") == 0) {
+            Game game {std::cin};
+
+            game.close_force();
+
+            game.serialize(std::cout);
+
+            return 0;
         } else if (strcmp(argv[1], "print_full") == 0) {
             Game game {std::cin};
 
