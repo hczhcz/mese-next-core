@@ -252,8 +252,10 @@ int frontend(int argc, char *argv[]) {
             }
 
             if (
-                strtod(argv[3], nullptr) == game.now_period
-                && game.submit(
+                (
+                    strtod(argv[3], nullptr) == game.now_period
+                    || strtod(argv[3], nullptr) == -1
+                ) && game.submit(
                     strtoul(argv[2], nullptr, 10),
                     strtod(argv[4], nullptr),
                     strtod(argv[5], nullptr),
