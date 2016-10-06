@@ -282,6 +282,9 @@ const std::vector<std::string> &list_presets();
 Settings get_preset(const std::string &name, uint64_t player_count);
 
 const std::vector<std::string> &list_settings();
-void change_setting(Settings &settings, const std::string &name, double value);
+void change_setting(
+    Settings &settings, const std::string &name,
+    uint64_t player_count, double value
+);
 
 }

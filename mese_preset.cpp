@@ -140,69 +140,79 @@ const std::vector<std::string> &list_settings() {
     return name_list;
 }
 
-void change_setting(Settings &settings, const std::string &name, double value) {
+void change_setting(
+    Settings &settings, const std::string &name,
+    uint64_t player_count, double value
+) {
     // notice: keep name_list updated
-    static const std::map<const std::string, double Settings::*> name_map {
-        {"price_max", &Settings::price_max},
-        {"price_min", &Settings::price_min},
-        {"mk_limit", &Settings::mk_limit},
-        {"ci_limit", &Settings::ci_limit},
-        {"rd_limit", &Settings::rd_limit},
-        {"loan_limit", &Settings::loan_limit},
+    static const std::map<
+        const std::string,
+        std::pair<double Settings::*, bool>
+    > name_map {
+        {"price_max", {&Settings::price_max, false}},
+        {"price_min", {&Settings::price_min, false}},
+        {"mk_limit", {&Settings::mk_limit, true}},
+        {"ci_limit", {&Settings::ci_limit, true}},
+        {"rd_limit", {&Settings::rd_limit, true}},
+        {"loan_limit", {&Settings::loan_limit, true}},
 
-        {"prod_rate_initial", &Settings::prod_rate_initial},
-        {"prod_rate_balanced", &Settings::prod_rate_balanced},
-        {"prod_rate_pow", &Settings::prod_rate_pow},
-        {"prod_cost_factor_rate_over", &Settings::prod_cost_factor_rate_over},
-        {"prod_cost_factor_rate_under", &Settings::prod_cost_factor_rate_under},
-        {"prod_cost_factor_size", &Settings::prod_cost_factor_size},
-        {"prod_cost_factor_const", &Settings::prod_cost_factor_const},
+        {"prod_rate_initial", {&Settings::prod_rate_initial, false}},
+        {"prod_rate_balanced", {&Settings::prod_rate_balanced, false}},
+        {"prod_rate_pow", {&Settings::prod_rate_pow, false}},
+        {"prod_cost_factor_rate_over", {&Settings::prod_cost_factor_rate_over, false}},
+        {"prod_cost_factor_rate_under", {&Settings::prod_cost_factor_rate_under, false}},
+        {"prod_cost_factor_size", {&Settings::prod_cost_factor_size, false}},
+        {"prod_cost_factor_const", {&Settings::prod_cost_factor_const, false}},
 
-        {"unit_fee", &Settings::unit_fee},
-        {"deprecation_rate", &Settings::deprecation_rate},
+        {"unit_fee", {&Settings::unit_fee, false}},
+        {"deprecation_rate", {&Settings::deprecation_rate, false}},
 
-        {"initial_cash", &Settings::initial_cash},
-        {"initial_capital", &Settings::initial_capital},
+        {"initial_cash", {&Settings::initial_cash, true}},
+        {"initial_capital", {&Settings::initial_capital, true}},
 
-        {"interest_rate_cash", &Settings::interest_rate_cash},
-        {"interest_rate_loan", &Settings::interest_rate_loan},
-        {"inventory_fee", &Settings::inventory_fee},
-        {"tax_rate", &Settings::tax_rate},
+        {"interest_rate_cash", {&Settings::interest_rate_cash, false}},
+        {"interest_rate_loan", {&Settings::interest_rate_loan, false}},
+        {"inventory_fee", {&Settings::inventory_fee, false}},
+        {"tax_rate", {&Settings::tax_rate, false}},
 
-        {"mk_overload", &Settings::mk_overload},
-        {"mk_compression", &Settings::mk_compression},
+        {"mk_overload", {&Settings::mk_overload, true}},
+        {"mk_compression", {&Settings::mk_compression, false}},
 
-        {"demand", &Settings::demand},
-        {"demand_price", &Settings::demand_price},
-        {"demand_mk", &Settings::demand_mk},
-        {"demand_rd", &Settings::demand_rd},
+        {"demand", {&Settings::demand, true}},
+        {"demand_price", {&Settings::demand_price, false}},
+        {"demand_mk", {&Settings::demand_mk, false}},
+        {"demand_rd", {&Settings::demand_rd, false}},
 
-        {"demand_ref_price", &Settings::demand_ref_price},
-        {"demand_ref_mk", &Settings::demand_ref_mk},
-        {"demand_ref_rd", &Settings::demand_ref_rd},
-        {"demand_pow_price", &Settings::demand_pow_price},
-        {"demand_pow_mk", &Settings::demand_pow_mk},
-        {"demand_pow_rd", &Settings::demand_pow_rd},
+        {"demand_ref_price", {&Settings::demand_ref_price, false}},
+        {"demand_ref_mk", {&Settings::demand_ref_mk, true}},
+        {"demand_ref_rd", {&Settings::demand_ref_rd, true}},
+        {"demand_pow_price", {&Settings::demand_pow_price, false}},
+        {"demand_pow_mk", {&Settings::demand_pow_mk, false}},
+        {"demand_pow_rd", {&Settings::demand_pow_rd, false}},
 
-        {"share_price", &Settings::share_price},
-        {"share_mk", &Settings::share_mk},
-        {"share_rd", &Settings::share_rd},
-        {"share_pow_price", &Settings::share_pow_price},
-        {"share_pow_mk", &Settings::share_pow_mk},
-        {"share_pow_rd", &Settings::share_pow_rd},
+        {"share_price", {&Settings::share_price, false}},
+        {"share_mk", {&Settings::share_mk, false}},
+        {"share_rd", {&Settings::share_rd, false}},
+        {"share_pow_price", {&Settings::share_pow_price, false}},
+        {"share_pow_mk", {&Settings::share_pow_mk, false}},
+        {"share_pow_rd", {&Settings::share_pow_rd, false}},
 
-        {"price_overload", &Settings::price_overload},
+        {"price_overload", {&Settings::price_overload, false}},
 
-        {"mpi_retern_factor", &Settings::mpi_retern_factor},
-        {"mpi_factor_a", &Settings::mpi_factor_a},
-        {"mpi_factor_b", &Settings::mpi_factor_b},
-        {"mpi_factor_c", &Settings::mpi_factor_c},
-        {"mpi_factor_d", &Settings::mpi_factor_d},
-        {"mpi_factor_e", &Settings::mpi_factor_e},
-        {"mpi_factor_f", &Settings::mpi_factor_f}
+        {"mpi_retern_factor", {&Settings::mpi_retern_factor, true}},
+        {"mpi_factor_a", {&Settings::mpi_factor_a, false}},
+        {"mpi_factor_b", {&Settings::mpi_factor_b, false}},
+        {"mpi_factor_c", {&Settings::mpi_factor_c, false}},
+        {"mpi_factor_d", {&Settings::mpi_factor_d, false}},
+        {"mpi_factor_e", {&Settings::mpi_factor_e, false}},
+        {"mpi_factor_f", {&Settings::mpi_factor_f, false}}
     };
 
-    settings.*(name_map.at(name)) = value;
+    if (name_map.at(name).second) {
+        settings.*(name_map.at(name).first) = value * player_count;
+    } else {
+        settings.*(name_map.at(name).first) = value;
+    }
 }
 
 }
