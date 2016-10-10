@@ -133,47 +133,54 @@ void Game::close_force() {
 
     for (uint64_t i = 0; i < player_count; ++i) {
         if (!get_status(i)) {
+            double last_price {
+                max(
+                    min(
+                        period[now_period - 1].decisions.price[i],
+                        period[now_period].settings.price_max
+                    ),
+                    period[now_period].settings.price_min
+                )
+            };
+            double last_prod {
+                max(
+                    period[now_period - 1].prod_rate[i],
+                    period[now_period].settings.prod_rate_balanced
+                ) * period[now_period - 1].size[i]
+            };
+            double last_mk {
+                min(
+                    period[now_period - 1].decisions.mk[i],
+                    period[now_period].settings.mk_limit / player_count
+                )
+            };
+            double last_ci {
+                min(
+                    period[now_period - 1].decisions.ci[i],
+                    period[now_period].settings.ci_limit / player_count
+                )
+            };
+            double deprecation {
+                period[now_period].settings.deprecation_rate
+                    * period[now_period - 1].capital[i]
+            };
+            double last_rd {
+                min(
+                    period[now_period - 1].decisions.rd[i],
+                    period[now_period].settings.rd_limit / player_count
+                )
+            };
+
             submit(
-                i,
-                period[now_period - 1].decisions.price[i],
-                period[now_period - 1].size[i]
-                    * period[now_period - 1].settings.prod_rate_initial,
-                period[now_period - 1].decisions.mk[i],
-                period[now_period - 1].decisions.ci[i],
-                period[now_period - 1].decisions.rd[i]
+                i, last_price, last_prod, last_mk, last_ci, last_rd
             ) || submit(
-                i,
-                period[now_period - 1].decisions.price[i],
-                period[now_period - 1].size[i]
-                    * period[now_period - 1].settings.prod_rate_initial,
-                period[now_period - 1].decisions.mk[i],
-                period[now_period - 1].decisions.ci[i],
-                0
+                i, last_price, last_prod, last_mk, last_ci, 0
             ) || submit(
-                i,
-                period[now_period - 1].decisions.price[i],
-                period[now_period - 1].size[i]
-                    * period[now_period - 1].settings.prod_rate_initial,
-                period[now_period - 1].decisions.mk[i],
-                period[0].capital[i]
-                    * period[now_period - 1].settings.deprecation_rate,
-                0
+                i, last_price, last_prod, last_mk, deprecation, 0
             ) || submit(
-                i,
-                period[now_period - 1].decisions.price[i],
-                period[now_period - 1].size[i]
-                    * period[now_period - 1].settings.prod_rate_initial,
-                0,
-                period[0].capital[i]
-                    * period[now_period - 1].settings.deprecation_rate,
-                0
+                i, last_price, last_prod, 0, deprecation, 0
             ) || submit(
-                i,
-                period[now_period - 1].decisions.price[i],
-                0,
-                0,
-                0,
-                0
+                i, last_price, 0, 0, 0, 0
             );
         }
     }
