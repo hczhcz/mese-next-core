@@ -67,17 +67,17 @@ void test() {
 }
 
 void print_info(bool info, bool help, bool list, bool cow) {
-    const char indent[] {"    "};
+    static const char indent[] {"    "};
     #if defined(__linux__)
-        const char highlight0[] {"\x1b[1m"};
-        const char highlight1[] {"\x1b[1;7m"};
-        const char highlight2[] {"\x1b[1;34m"};
-        const char normal[] {"\x1b[0m"};
+        static const char highlight0[] {"\x1b[1m"};
+        static const char highlight1[] {"\x1b[1;7m"};
+        static const char highlight2[] {"\x1b[1;34m"};
+        static const char normal[] {"\x1b[0m"};
     #else
-        const char highlight0[] {""};
-        const char highlight1[] {""};
-        const char highlight2[] {""};
-        const char normal[] {""};
+        static const char highlight0[] {""};
+        static const char highlight1[] {""};
+        static const char highlight2[] {""};
+        static const char normal[] {""};
     #endif
 
     #define MESE_HL0(...) highlight0 << indent << __VA_ARGS__ << indent << normal
@@ -109,6 +109,9 @@ void print_info(bool info, bool help, bool list, bool cow) {
         std::cout << MESE_HL1("  System Information  ") << std::endl;
         std::cout << std::endl;
 
+        std::cout << MESE_HL2("version")
+            << "  " << std::hex << mese::BINARY_VER << std::dec
+                << ", " << mese::MAX_PLAYER << " players" << std::endl;
         std::cout << MESE_HL2("build date")
             << "  " << __DATE__ /* << " " << __TIME__ */ << std::endl;
         std::cout << MESE_HL2("build mode")
@@ -191,7 +194,7 @@ void print_info(bool info, bool help, bool list, bool cow) {
         std::cout << MESE_HL1("  Presets  ") << std::endl;
         std::cout << std::endl;
 
-        for (auto &i: mese::list_presets()) {
+        for (const std::string &i: mese::list_presets()) {
             std::cout << MESE_HL2(i) << std::endl;
         }
         std::cout << std::endl;
@@ -199,7 +202,7 @@ void print_info(bool info, bool help, bool list, bool cow) {
         std::cout << MESE_HL1("  Settings  ") << std::endl;
         std::cout << std::endl;
 
-        for (auto &i: mese::list_settings()) {
+        for (const std::string &i: mese::list_settings()) {
             std::cout << MESE_HL2(i) << std::endl;
         }
         std::cout << std::endl;

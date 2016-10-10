@@ -334,7 +334,7 @@ void Game::serialize(std::ostream &stream) {
         reinterpret_cast<const char *>(&vsize), sizeof(vsize)
     );
 
-    for (auto &i: period) {
+    for (Period &i: period) {
         i.serialize(stream);
     }
 }
