@@ -9,7 +9,7 @@
 
 namespace mese {
 
-const uint64_t BINARY_VER {114896u * 201606u};
+const uint64_t BINARY_VER {114896u * 201610u};
 const uint64_t MAX_PLAYER {32u};
 
 #define MESE_VAL(name) double name {NAN}
