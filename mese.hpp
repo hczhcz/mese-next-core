@@ -263,6 +263,11 @@ public:
         double price, double prod, double mk, double ci, double rd
     );
 
+    void submit_best(
+        uint64_t i,
+        double (*evaluation)(Period &period, uint64_t i)
+    );
+
     bool close();
     void close_force();
 
