@@ -3,6 +3,44 @@
 #include "mese.hpp"
 #include "mese_print.hpp"
 
+double evaluation(Period &period, Period &last, uint64_t i) {
+    double average_capital = 0;
+    double average_history_rd = 0;
+
+    for (uint64_t j = 0; j < period.player_count; ++j) {
+        if (j != i) {
+            average_capital += period.capital[i];
+            average_history_rd += period.history_rd[i];
+        }
+    }
+
+    average_capital /= period.player_count - 1;
+    average_history_rd /= period.player_count - 1;
+
+    double value = period.retern[i]
+        + 0.5
+            * mese::pow(last.retern[i] / last.capital[i], 0.5)
+            * (mese::pow(average_capital / period.capital[i], 0.5) - 0.5)
+            * period.capital[i]
+        + 1.2
+            * mese::pow(log(9) - log(period.now_period), 0.5)
+            * (mese::pow(average_history_rd / period.history_rd[i], 0.5) - 0.5)
+            * period.history_rd[i];
+
+    if (period.now_period >= 8) {
+        double max_mpi = -INFINITY;
+        for (uint64_t i = 0; i < period.player_count; ++i) {
+            if (period.mpi[i] > max_mpi) {
+                max_mpi = period.mpi[i];
+            }
+        }
+
+        value += 100000 * (period.mpi[i] - max_mpi);
+    }
+
+    return value;
+}
+
 void test() {
     using namespace mese;
 
@@ -56,9 +94,7 @@ void test() {
     game.submit(5, 65, 600, 5000, 10000,  7000);
     game.submit(6, 70, 650, 8000, 10500,  3000);
     // game.submit(7, 52, 654,    0, 10000,  6000);
-    game.submit_best(7, [](Period &period, uint64_t i) {
-        return period.retern[i];
-    });
+    game.submit_best(7, evaluation);
     game.close();
 
     // game.print_public(std::cout);
@@ -286,6 +322,21 @@ int frontend(int argc, char *argv[]) {
 
                 return 1;
             }
+        } else if (strcmp(argv[1], "submit_best")) { // hidden
+            Game game {std::cin};
+
+            if (argc < 2) {
+                throw 1; // TODO
+            }
+
+            game.submit_best(
+                strtoul(argv[2], nullptr, 10),
+                evaluation
+            );
+
+            game.serialize(std::cout);
+
+            return 0;
         } else if (strcmp(argv[1], "close") == 0) {
             Game game {std::cin};
 
@@ -343,11 +394,11 @@ int frontend(int argc, char *argv[]) {
             print_info(false, true, true, false);
 
             return 0;
-        } else if (strcmp(argv[1], "test") == 0) {
+        } else if (strcmp(argv[1], "test") == 0) { // hidden
             test();
 
             return 0;
-        } else if (strcmp(argv[1], "echopen") == 0) {
+        } else if (strcmp(argv[1], "echopen") == 0) { // hidden
             print_info(true, false, false, true);
 
             return 0;
