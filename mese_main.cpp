@@ -3,6 +3,8 @@
 #include "mese.hpp"
 #include "mese_print.hpp"
 
+namespace mese {
+
 double evaluation(Period &period, Period &last, uint64_t i) {
     double average_capital = 0;
     double average_history_rd = 0;
@@ -19,12 +21,12 @@ double evaluation(Period &period, Period &last, uint64_t i) {
 
     double value = period.retern[i]
         + 0.5
-            * mese::pow(last.retern[i] / last.capital[i], 0.5)
-            * (mese::pow(average_capital / period.capital[i], 0.5) - 0.5)
+            * pow(last.retern[i] / last.capital[i], 0.5)
+            * (pow(average_capital / period.capital[i], 0.5) - 0.5)
             * period.capital[i]
         + 1.2
-            * mese::pow(log(9) - log(period.now_period), 0.5)
-            * (mese::pow(average_history_rd / period.history_rd[i], 0.5) - 0.5)
+            * pow(log(9) - log(period.now_period), 0.5)
+            * (pow(average_history_rd / period.history_rd[i], 0.5) - 0.5)
             * period.history_rd[i];
 
     if (period.now_period >= 8) {
@@ -42,8 +44,6 @@ double evaluation(Period &period, Period &last, uint64_t i) {
 }
 
 void test() {
-    using namespace mese;
-
     Game game {8, get_preset("modern", 8)};
 
     // game.print_full(std::cout);
@@ -150,8 +150,8 @@ void print_info(bool info, bool help, bool list, bool cow) {
         std::cout << std::endl;
 
         std::cout << MESE_HL2("version")
-            << "  " << std::hex << mese::BINARY_VER << std::dec
-                << ", " << mese::MAX_PLAYER << " players" << std::endl;
+            << "  " << std::hex << BINARY_VER << std::dec
+                << ", " << MAX_PLAYER << " players" << std::endl;
         std::cout << MESE_HL2("build date")
             << "  " << __DATE__ /* << " " << __TIME__ */ << std::endl;
         std::cout << MESE_HL2("build mode")
@@ -186,7 +186,7 @@ void print_info(bool info, bool help, bool list, bool cow) {
         std::cout << MESE_HL2("byte width")
             << "  u64: " << sizeof(uint64_t)
                 << ", fp: " << sizeof(double)
-                << ", total: " << sizeof(mese::Period) << "n"
+                << ", total: " << sizeof(Period) << "n"
                     << " + " << 4 * sizeof(uint64_t) << std::endl;
         std::cout << std::endl;
     }
@@ -234,7 +234,7 @@ void print_info(bool info, bool help, bool list, bool cow) {
         std::cout << MESE_HL1("  Presets  ") << std::endl;
         std::cout << std::endl;
 
-        for (const std::string &i: mese::list_presets()) {
+        for (const std::string &i: list_presets()) {
             std::cout << MESE_HL2(i) << std::endl;
         }
         std::cout << std::endl;
@@ -242,7 +242,7 @@ void print_info(bool info, bool help, bool list, bool cow) {
         std::cout << MESE_HL1("  Settings  ") << std::endl;
         std::cout << std::endl;
 
-        for (const std::string &i: mese::list_settings()) {
+        for (const std::string &i: list_settings()) {
             std::cout << MESE_HL2(i) << std::endl;
         }
         std::cout << std::endl;
@@ -250,8 +250,6 @@ void print_info(bool info, bool help, bool list, bool cow) {
 }
 
 int frontend(int argc, char *argv[]) {
-    using namespace mese;
-
     if (argc < 2) {
         print_info(true, true, false, false);
 
@@ -322,7 +320,7 @@ int frontend(int argc, char *argv[]) {
 
                 return 1;
             }
-        } else if (strcmp(argv[1], "submit_best")) { // hidden
+        } else if (strcmp(argv[1], "submit_best") == 0) { // hidden
             Game game {std::cin};
 
             if (argc < 2) {
@@ -408,9 +406,11 @@ int frontend(int argc, char *argv[]) {
     }
 }
 
+}
+
 int main(int argc, char *argv[]) {
     try {
-        return frontend(argc, argv);
+        return mese::frontend(argc, argv);
     } catch (...) {
         std::cerr << "ERROR: Internal error" << std::endl;
 
