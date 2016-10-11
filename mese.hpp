@@ -265,7 +265,7 @@ public:
 
     void submit_best(
         uint64_t i,
-        double (*evaluation)(Period &period, uint64_t i)
+        double (*evaluation)(Period &period, Period &last, uint64_t i)
     );
 
     bool close();
