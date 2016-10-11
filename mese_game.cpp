@@ -112,7 +112,7 @@ bool Game::submit(
 
 void Game::submit_best(
     uint64_t i,
-    double (*evaluation)(Period &period, Period &last, uint64_t i)
+    double (*evaluation)(Period &period, uint64_t i)
 ) {
     uint64_t old_status = status;
 
@@ -153,7 +153,7 @@ void Game::submit_best(
         if (submit(i, price, prod, mk, ci, rd)) {
             periods[now_period].exec(periods[now_period - 1]);
 
-            double key = evaluation(periods[now_period], periods[now_period - 1], i);
+            double key = evaluation(periods[now_period], i);
 
             if (decisions.size() == limits[0]) {
                 decisions.erase(decisions.begin());
@@ -172,7 +172,7 @@ void Game::submit_best(
         if (submit(i, price, prod, mk, ci, rd)) {
             periods[now_period].exec(periods[now_period - 1]);
 
-            double key = evaluation(periods[now_period], periods[now_period - 1], i);
+            double key = evaluation(periods[now_period], i);
 
             if (key > iter->first) {
                 decisions.erase(iter);
