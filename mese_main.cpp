@@ -8,7 +8,7 @@ void test() {
 
     Game game {8, get_preset("modern", 8)};
 
-    game.print_full(std::cout);
+    // game.print_full(std::cout);
 
     game.alloc();
     game.alloc();
@@ -59,6 +59,7 @@ void test() {
     game.close();
 
     game.print_public(std::cout);
+    game.print_player(std::cout, 7);
 
     // game.serialize(std::cout);
 
@@ -240,7 +241,7 @@ int frontend(int argc, char *argv[]) {
         } else if (strcmp(argv[1], "alloc") == 0) {
             Game game {std::cin};
 
-            Settings settings = game.period.back().settings; // copy
+            Settings settings = game.periods.back().settings; // copy
             for (int i = 2; i < argc - 1; i += 2) {
                 change_setting(
                     settings, argv[i],

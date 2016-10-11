@@ -7,7 +7,7 @@ Game::Game(uint64_t count, Settings &&_settings):
     player_count {count},
     now_period {1},
     status {0},
-    period {{
+    periods {{
         player_count,
         std::move(_settings)
     }}
@@ -22,9 +22,9 @@ Game::Game(uint64_t count, Settings &&_settings):
         submit(
             i,
             settings.demand_ref_price,
-            period[0].size[i] * settings.prod_rate_initial,
+            periods[0].size[i] * settings.prod_rate_initial,
             settings.demand_ref_mk / player_count,
-            period[0].capital[i] * settings.deprecation_rate,
+            periods[0].capital[i] * settings.deprecation_rate,
             settings.demand_ref_rd / player_count
         );
     }
@@ -38,7 +38,7 @@ Game::Game(std::istream &stream):
     player_count {},
     now_period {},
     status {},
-    period {}
+    periods {}
 {
     uint64_t vtag;
     uint64_t vsize;
@@ -60,7 +60,7 @@ Game::Game(std::istream &stream):
     );
 
     for (; vsize > 0; --vsize) {
-        period.push_back({stream});
+        periods.push_back({stream});
     }
 
     if (vtag != BINARY_VER) {
@@ -69,17 +69,17 @@ Game::Game(std::istream &stream):
 }
 
 Settings &Game::alloc(Settings &&_settings) {
-    period.push_back({
+    periods.push_back({
         player_count,
-        period.back(),
+        periods.back(),
         std::move(_settings)
     });
 
-    return period.back().settings;
+    return periods.back().settings;
 }
 
 Settings &Game::alloc() {
-    Settings settings = period.back().settings; // copy
+    Settings settings = periods.back().settings; // copy
 
     return alloc(std::move(settings));
 }
@@ -92,12 +92,12 @@ bool Game::submit(
         throw 1; // TODO
     }
 
-    if (now_period >= period.size()) {
+    if (now_period >= periods.size()) {
         throw 1; // TODO
     }
 
-    if (period[now_period].submit(
-        period[now_period - 1], i,
+    if (periods[now_period].submit(
+        periods[now_period - 1], i,
         price, prod, mk, ci, rd
     )) {
         set_status(i);
@@ -111,12 +111,12 @@ bool Game::submit(
 }
 
 bool Game::close() {
-    if (now_period >= period.size()) {
+    if (now_period >= periods.size()) {
         throw 1; // TODO
     }
 
     if (ready()) {
-        period[now_period].exec(period[now_period - 1]);
+        periods[now_period].exec(periods[now_period - 1]);
         ++now_period;
         status = 0;
 
@@ -127,7 +127,7 @@ bool Game::close() {
 }
 
 void Game::close_force() {
-    if (now_period >= period.size()) {
+    if (now_period >= periods.size()) {
         throw 1; // TODO
     }
 
@@ -136,38 +136,38 @@ void Game::close_force() {
             double last_price {
                 max(
                     min(
-                        period[now_period - 1].decisions.price[i],
-                        period[now_period].settings.price_max
+                        periods[now_period - 1].decisions.price[i],
+                        periods[now_period].settings.price_max
                     ),
-                    period[now_period].settings.price_min
+                    periods[now_period].settings.price_min
                 )
             };
             double last_prod {
                 max(
-                    period[now_period - 1].prod_rate[i],
-                    period[now_period].settings.prod_rate_balanced
-                ) * period[now_period - 1].size[i]
+                    periods[now_period - 1].prod_rate[i],
+                    periods[now_period].settings.prod_rate_balanced
+                ) * periods[now_period - 1].size[i]
             };
             double last_mk {
                 min(
-                    period[now_period - 1].decisions.mk[i],
-                    period[now_period].settings.mk_limit / player_count
+                    periods[now_period - 1].decisions.mk[i],
+                    periods[now_period].settings.mk_limit / player_count
                 )
             };
             double last_ci {
                 min(
-                    period[now_period - 1].decisions.ci[i],
-                    period[now_period].settings.ci_limit / player_count
+                    periods[now_period - 1].decisions.ci[i],
+                    periods[now_period].settings.ci_limit / player_count
                 )
             };
             double deprecation {
-                period[now_period].settings.deprecation_rate
-                    * period[now_period - 1].capital[i]
+                periods[now_period].settings.deprecation_rate
+                    * periods[now_period - 1].capital[i]
             };
             double last_rd {
                 min(
-                    period[now_period - 1].decisions.rd[i],
-                    period[now_period].settings.rd_limit / player_count
+                    periods[now_period - 1].decisions.rd[i],
+                    periods[now_period].settings.rd_limit / player_count
                 )
             };
 
@@ -185,7 +185,7 @@ void Game::close_force() {
         }
     }
 
-    period[now_period].exec(period[now_period - 1]);
+    periods[now_period].exec(periods[now_period - 1]);
     ++now_period;
     status = 0;
 }
@@ -196,9 +196,9 @@ void Game::print_full(std::ostream &stream) {
         val("now_period", now_period);
         val("status", status);
 
-        for (uint64_t i = 1; i < period.size(); ++i) {
-            // notice: period[0].settings == period[1].settings, see Game::Game
-            period[i].print_full([&](auto callback) {
+        for (uint64_t i = 1; i < periods.size(); ++i) {
+            // notice: periods[0].settings == periods[1].settings, see Game::Game
+            periods[i].print_full([&](auto callback) {
                 doc("period_" + std::to_string(i), callback);
             });
         }
@@ -210,17 +210,17 @@ void Game::print_player_early(std::ostream &stream, uint64_t i) {
         throw 1; // TODO
     }
 
-    if (now_period >= period.size()) {
+    if (now_period >= periods.size()) {
         throw 1; // TODO
     }
 
     print(stream, player_count, MESE_PRINT {
         val("status", status);
 
-        period[now_period].print_decisions(i, [&](auto callback) {
+        periods[now_period].print_decisions(i, [&](auto callback) {
             doc("decisions", callback);
         });
-        period[now_period].print_player_early(i, [&](auto callback) {
+        periods[now_period].print_player_early(i, [&](auto callback) {
             doc("data_early", callback);
         });
     });
@@ -231,7 +231,7 @@ void Game::print_player(std::ostream &stream, uint64_t i) {
         throw 1; // TODO
     }
 
-    if (now_period - 1 >= period.size()) {
+    if (now_period - 1 >= periods.size()) {
         throw 1; // TODO
     }
 
@@ -241,38 +241,38 @@ void Game::print_player(std::ostream &stream, uint64_t i) {
         val("status", status);
 
         if (now_period >= 3) {
-            // period[now_period - 2].print_decisions(i, [&](auto callback) {
+            // periods[now_period - 2].print_decisions(i, [&](auto callback) {
             //     doc("last_decisions", callback);
             // });
-            // period[now_period - 2].print_player_early(i, [&](auto callback) {
+            // periods[now_period - 2].print_player_early(i, [&](auto callback) {
             //     doc("last_data_early", callback);
             // });
-            period[now_period - 2].print_player(i, [&](auto callback) {
+            periods[now_period - 2].print_player(i, [&](auto callback) {
                 doc("last_data", callback);
             });
-            period[now_period - 2].print_public([&](auto callback) {
+            periods[now_period - 2].print_public([&](auto callback) {
                 doc("last_data_public", callback);
             });
         }
 
-        period[now_period - 1].print_settings([&](auto callback) {
+        periods[now_period - 1].print_settings([&](auto callback) {
             doc("settings", callback);
         });
-        period[now_period - 1].print_decisions(i, [&](auto callback) {
+        periods[now_period - 1].print_decisions(i, [&](auto callback) {
             doc("decisions", callback);
         });
-        period[now_period - 1].print_player_early(i, [&](auto callback) {
+        periods[now_period - 1].print_player_early(i, [&](auto callback) {
             doc("data_early", callback);
         });
-        period[now_period - 1].print_player(i, [&](auto callback) {
+        periods[now_period - 1].print_player(i, [&](auto callback) {
             doc("data", callback);
         });
-        period[now_period - 1].print_public([&](auto callback) {
+        periods[now_period - 1].print_public([&](auto callback) {
             doc("data_public", callback);
         });
 
-        if (now_period < period.size()) {
-            period[now_period].print_settings([&](auto callback) {
+        if (now_period < periods.size()) {
+            periods[now_period].print_settings([&](auto callback) {
                 doc("next_settings", callback);
             });
         }
@@ -280,7 +280,7 @@ void Game::print_player(std::ostream &stream, uint64_t i) {
 }
 
 void Game::print_public(std::ostream &stream) {
-    if (now_period - 1 >= period.size()) {
+    if (now_period - 1 >= periods.size()) {
         throw 1; // TODO
     }
 
@@ -290,20 +290,20 @@ void Game::print_public(std::ostream &stream) {
         val("status", status);
 
         if (now_period >= 3) {
-            period[now_period - 2].print_public([&](auto callback) {
+            periods[now_period - 2].print_public([&](auto callback) {
                 doc("last_data_public", callback);
             });
         }
 
-        period[now_period - 1].print_settings([&](auto callback) {
+        periods[now_period - 1].print_settings([&](auto callback) {
             doc("settings", callback);
         });
-        period[now_period - 1].print_public([&](auto callback) {
+        periods[now_period - 1].print_public([&](auto callback) {
             doc("data_public", callback);
         });
 
-        if (now_period < period.size()) {
-            period[now_period].print_settings([&](auto callback) {
+        if (now_period < periods.size()) {
+            periods[now_period].print_settings([&](auto callback) {
                 doc("next_settings", callback);
             });
         }
@@ -316,7 +316,7 @@ void Game::serialize(std::ostream &stream) {
     static_assert(sizeof(Period) == 13248, "");
 
     uint64_t vtag {BINARY_VER};
-    uint64_t vsize {period.size()};
+    uint64_t vsize {periods.size()};
 
     stream.write(
         reinterpret_cast<const char *>(&vtag), sizeof(vtag)
@@ -334,8 +334,8 @@ void Game::serialize(std::ostream &stream) {
         reinterpret_cast<const char *>(&vsize), sizeof(vsize)
     );
 
-    for (Period &i: period) {
-        i.serialize(stream);
+    for (Period &period: periods) {
+        period.serialize(stream);
     }
 }
 

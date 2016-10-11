@@ -232,7 +232,7 @@ public:
     uint64_t now_period;
     uint64_t status;
 
-    std::vector<Period> period;
+    std::vector<Period> periods;
 
     // new game
     Game(uint64_t count, Settings &&_settings);
