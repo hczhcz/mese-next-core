@@ -55,10 +55,13 @@ void test() {
     game.submit(4, 77, 692, 3500,  8000,  4500);
     game.submit(5, 65, 600, 5000, 10000,  7000);
     game.submit(6, 70, 650, 8000, 10500,  3000);
-    game.submit(7, 52, 654,    0, 10000,  6000);
+    // game.submit(7, 52, 654,    0, 10000,  6000);
+    game.submit_best(7, [](Period &period, uint64_t i) {
+        return period.retern[i];
+    });
     game.close();
 
-    game.print_public(std::cout);
+    // game.print_public(std::cout);
     game.print_player(std::cout, 7);
 
     // game.serialize(std::cout);
