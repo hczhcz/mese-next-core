@@ -292,4 +292,6 @@ void change_setting(
     uint64_t player_count, double value
 );
 
+double ai_setsuna(Period &period, Period &last, uint64_t i);
+
 }
