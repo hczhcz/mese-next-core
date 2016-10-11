@@ -133,43 +133,31 @@ void Game::close_force() {
 
     for (uint64_t i = 0; i < player_count; ++i) {
         if (!get_status(i)) {
-            double last_price {
-                max(
-                    min(
-                        periods[now_period - 1].decisions.price[i],
-                        periods[now_period].settings.price_max
-                    ),
-                    periods[now_period].settings.price_min
-                )
-            };
-            double last_prod {
-                max(
-                    periods[now_period - 1].prod_rate[i],
-                    periods[now_period].settings.prod_rate_balanced
-                ) * periods[now_period - 1].size[i]
-            };
-            double last_mk {
+            double last_price = max(
                 min(
-                    periods[now_period - 1].decisions.mk[i],
-                    periods[now_period].settings.mk_limit / player_count
-                )
-            };
-            double last_ci {
-                min(
-                    periods[now_period - 1].decisions.ci[i],
-                    periods[now_period].settings.ci_limit / player_count
-                )
-            };
-            double deprecation {
-                periods[now_period].settings.deprecation_rate
-                    * periods[now_period - 1].capital[i]
-            };
-            double last_rd {
-                min(
-                    periods[now_period - 1].decisions.rd[i],
-                    periods[now_period].settings.rd_limit / player_count
-                )
-            };
+                    periods[now_period - 1].decisions.price[i],
+                    periods[now_period].settings.price_max
+                ),
+                periods[now_period].settings.price_min
+            );
+            double last_prod = max(
+                periods[now_period - 1].prod_rate[i],
+                periods[now_period].settings.prod_rate_balanced
+            ) * periods[now_period - 1].size[i];
+            double last_mk = min(
+                periods[now_period - 1].decisions.mk[i],
+                periods[now_period].settings.mk_limit / player_count
+            );
+            double last_ci = min(
+                periods[now_period - 1].decisions.ci[i],
+                periods[now_period].settings.ci_limit / player_count
+            );
+            double deprecation = periods[now_period].settings.deprecation_rate
+                * periods[now_period - 1].capital[i];
+            double last_rd = min(
+                periods[now_period - 1].decisions.rd[i],
+                periods[now_period].settings.rd_limit / player_count
+            );
 
             submit(
                 i, last_price, last_prod, last_mk, last_ci, last_rd

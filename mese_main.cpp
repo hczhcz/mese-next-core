@@ -223,9 +223,9 @@ int frontend(int argc, char *argv[]) {
                 throw 1; // TODO
             }
 
-            uint64_t player_count {strtoul(argv[2], nullptr, 10)};
+            uint64_t player_count = strtoul(argv[2], nullptr, 10);
 
-            Settings settings = get_preset(argv[3], player_count);
+            Settings settings {get_preset(argv[3], player_count)};
             for (int i = 4; i < argc - 1; i += 2) {
                 change_setting(
                     settings, argv[i],
