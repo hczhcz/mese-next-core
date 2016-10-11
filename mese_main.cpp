@@ -20,24 +20,18 @@ double evaluation(Period &period, Period &last, uint64_t i) {
     average_history_rd /= period.player_count - 1;
 
     double value = period.retern[i]
-        + 0.5
-            * pow(last.retern[i] / last.capital[i], 0.5)
-            * (pow(average_capital / period.capital[i], 0.5) - 0.5)
-            * period.capital[i]
-        + 1.2
-            * pow(log(9) - log(period.now_period), 0.5)
-            * (pow(average_history_rd / period.history_rd[i], 0.5) - 0.5)
-            * period.history_rd[i];
+        + (0.2 - 0.4 * period.inventory[i] / period.size[i]) * period.capital[i]
+        + (log(9) - log(period.now_period)) * period.history_rd[i];
 
     if (period.now_period >= 8) {
         double max_mpi = -INFINITY;
-        for (uint64_t i = 0; i < period.player_count; ++i) {
-            if (period.mpi[i] > max_mpi) {
-                max_mpi = period.mpi[i];
+        for (uint64_t j = 0; j < period.player_count; ++j) {
+            if (j != i && period.mpi[j] > max_mpi) {
+                max_mpi = period.mpi[j];
             }
         }
 
-        value += 100000 * (period.mpi[i] - max_mpi);
+        value *= period.mpi[i] - max_mpi;
     }
 
     return value;
