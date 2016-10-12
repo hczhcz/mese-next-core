@@ -3,88 +3,58 @@
 
 namespace mese {
 
-double e_setsuna(Game &game, uint64_t i) {
+double e_setsuna(
+    Game &game, uint64_t i,
+    double factor_ci, double factor_rd
+) {
     Period &period {game.periods[game.now_period]};
 
-    double value = period.retern[i]
-        + (0.2 - 0.4 * period.inventory[i] / period.size[i])
+    return period.retern[i]
+        + factor_ci
+            * (1 - 2 * period.inventory[i] / period.size[i])
             * period.capital[i]
-        + min(div(period.decisions.ci[i], period.decisions.rd[i], 1), 1)
+        + factor_rd
+            * min(div(period.decisions.ci[i], period.decisions.rd[i], 1), 1)
             * (log(game.periods.size()) - log(period.now_period + 1))
             * period.history_rd[i];
-
-    // notice: use ai after period data allocation
-    if (period.now_period == game.periods.size() - 1) {
-        double max_mpi = -INFINITY;
-        for (uint64_t j = 0; j < period.player_count; ++j) {
-            if (j != i && period.mpi[j] > max_mpi) {
-                max_mpi = period.mpi[j];
-            }
-        }
-
-        value *= period.mpi[i] - max_mpi;
-    }
-
-    return value;
 }
 
-double e_acute_predict(Game &game, uint64_t i) {
+double e_inertia(
+    Game &game, uint64_t i,
+    double factor_mk, double factor_ci, double factor_rd
+) {
     Period &period {game.periods[game.now_period]};
     Period &last {game.periods[game.now_period - 1]};
 
-    double value = period.retern[i]
-        + (0.2 - 0.4 * period.inventory[i] / period.size[i])
-            * period.capital[i]
-        + min(div(period.decisions.ci[i], period.decisions.rd[i], 1), 1)
-            * (log(game.periods.size()) - log(period.now_period + 1))
-            * period.history_rd[i]
-        - 0.2 * abs(period.decisions.mk[i] - last.decisions.mk[i])
-        - 0.1 * abs(period.decisions.ci[i] - last.decisions.ci[i])
-        - 0.2 * abs(period.decisions.rd[i] - last.decisions.rd[i]);
-
-    // notice: use ai after period data allocation
-    if (period.now_period == game.periods.size() - 1) {
-        double max_mpi = -INFINITY;
-        for (uint64_t j = 0; j < period.player_count; ++j) {
-            if (j != i && period.mpi[j] > max_mpi) {
-                max_mpi = period.mpi[j];
-            }
-        }
-
-        value *= period.mpi[i] - max_mpi;
-    }
-
-    return value;
+    return -(
+        factor_mk * abs(period.decisions.mk[i] - last.decisions.mk[i])
+        + factor_ci * abs(period.decisions.ci[i] - last.decisions.ci[i])
+        + factor_rd * abs(period.decisions.rd[i] - last.decisions.rd[i])
+    );
 }
 
-double e_acute(Game &game, uint64_t i) {
+double e_mpi(
+    Game &game, uint64_t i,
+    double factor_mpi
+) {
     Period &period {game.periods[game.now_period]};
 
-    double value = period.retern[i]
-        + (0.2 - 0.4 * period.inventory[i] / period.size[i])
-            * period.capital[i]
-        + min(div(period.decisions.ci[i], period.decisions.rd[i], 1), 1)
-            * (log(game.periods.size()) - log(period.now_period + 1))
-            * period.history_rd[i];
+    double max_mpi = -INFINITY;
 
-    // notice: use ai after period data allocation
-    if (period.now_period == game.periods.size() - 1) {
-        double max_mpi = -INFINITY;
-        for (uint64_t j = 0; j < period.player_count; ++j) {
-            if (j != i && period.mpi[j] > max_mpi) {
-                max_mpi = period.mpi[j];
-            }
+    for (uint64_t j = 0; j < period.player_count; ++j) {
+        if (j != i && period.mpi[j] > max_mpi) {
+            max_mpi = period.mpi[j];
         }
-
-        value += 500 * (period.mpi[i] - max_mpi);
     }
 
-    return value;
+    return factor_mpi
+        * period.settings.mpi_retern_factor / period.player_count
+        * (period.mpi[i] - max_mpi);
 }
 
+template <class T>
 std::array<double, 5> ai_find_best(
-    Game &game, uint64_t i,
-    double (*evaluator)(Game &game, uint64_t i)
+    Game &game, uint64_t i, T evaluator
 ) {
     Period &period {game.periods[game.now_period]};
     Period &last {game.periods[game.now_period - 1]};
@@ -221,9 +191,9 @@ std::array<double, 5> ai_find_best(
     return decisions.rbegin()->second;
 }
 
+template <class T>
 std::array<double, 5> ai_find_best_fast(
-    Game &game, uint64_t i,
-    double (*evaluator)(Game &game, uint64_t i)
+    Game &game, uint64_t i, T evaluator
 ) {
     Period &period {game.periods[game.now_period]};
     Period &last {game.periods[game.now_period - 1]};
@@ -363,12 +333,30 @@ std::array<double, 5> ai_find_best_fast(
 void ai_setsuna(Game &game, uint64_t i) {
     Game game_copy = game; // copy
 
+    Period &period {game_copy.periods[game_copy.now_period]};
+
     game_copy.close_force();
     --game_copy.now_period;
 
     std::array<double, 5> d {
-        ai_find_best(game_copy, i, e_setsuna)
+        ai_find_best(game_copy, i, [&](Game &game, uint64_t i) {
+            if (period.now_period == game.periods.size() - 1) {
+                return e_setsuna(
+                    game, i,
+                    0.2, 1.2
+                ) + e_mpi(
+                    game, i,
+                    1
+                );
+            } else{
+                return e_setsuna(
+                    game, i,
+                    0.2, 1.2
+                );
+            }
+        })
     };
+
     game.submit(i, d[0], d[1], d[2], d[3], d[4]);
 }
 
@@ -380,13 +368,56 @@ void ai_acute(Game &game, uint64_t i) {
     game_copy.close_force();
     --game_copy.now_period;
 
-    for (uint64_t j = 0; j < period.player_count; ++j) {
-        ai_find_best_fast(game_copy, j, e_acute_predict);
+    for (uint64_t count = 0; count < 2; ++count) {
+        for (uint64_t j = 0; j < period.player_count; ++j) {
+            std::array<double, 5> d {
+                ai_find_best_fast(game_copy, j, [&](Game &game, uint64_t i) {
+                    if (period.now_period == game.periods.size() - 1) {
+                        return e_setsuna(
+                            game, i,
+                            0.2, 1.2
+                        ) + e_inertia(
+                            game, i,
+                            0.2, 0.1, 0.2
+                        ) + e_mpi(
+                            game, i,
+                            0.2
+                        );
+                    } else{
+                        return e_setsuna(
+                            game, i,
+                            0.2, 1.2
+                        ) + e_inertia(
+                            game, i,
+                            0.2, 0.1, 0.2
+                        );
+                    }
+                })
+            };
+
+            game_copy.submit(i, d[0], d[1], d[2], d[3], d[4]);
+        }
     }
 
     std::array<double, 5> d {
-        ai_find_best(game_copy, i, e_acute)
+        ai_find_best(game_copy, i, [&](Game &game, uint64_t i) {
+            if (period.now_period == game.periods.size() - 1) {
+                return e_setsuna(
+                    game, i,
+                    0.2, 1.2
+                ) + e_mpi(
+                    game, i,
+                    0.3
+                );
+            } else{
+                return e_setsuna(
+                    game, i,
+                    0.2, 1.2
+                );
+            }
+        })
     };
+
     game.submit(i, d[0], d[1], d[2], d[3], d[4]);
 }
 
