@@ -56,7 +56,7 @@ void test() {
     game.submit(5, 65, 600, 5000, 10000,  7000);
     game.submit(6, 70, 650, 8000, 10500,  3000);
     // game.submit(7, 52, 654,    0, 10000,  6000);
-    ai_backward(game, 7, ai_setsuna);
+    ai_setsuna(game, 7);
     game.close();
 
     // game.print_public(std::cout);
@@ -346,10 +346,7 @@ int frontend(int argc, char *argv[]) {
                 throw 1; // TODO
             }
 
-            ai_backward(
-                game, strtoul(argv[2], nullptr, 10),
-                ai_setsuna
-            );
+            ai_setsuna(game, strtoul(argv[2], nullptr, 10));
 
             game.serialize(std::cout);
 
@@ -361,10 +358,7 @@ int frontend(int argc, char *argv[]) {
                 throw 1; // TODO
             }
 
-            ai_forward(
-                game, strtoul(argv[2], nullptr, 10),
-                ai_setsuna
-            );
+            ai_acute(game, strtoul(argv[2], nullptr, 10));
 
             game.serialize(std::cout);
 

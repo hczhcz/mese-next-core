@@ -3,7 +3,7 @@
 
 namespace mese {
 
-double ai_setsuna(Game &game, uint64_t i) {
+double e_setsuna(Game &game, uint64_t i) {
     Period &period {game.periods[game.now_period]};
 
     double value = period.retern[i]
@@ -28,7 +28,7 @@ double ai_setsuna(Game &game, uint64_t i) {
     return value;
 }
 
-double ai_acute_predict(Game &game, uint64_t i) {
+double e_acute_predict(Game &game, uint64_t i) {
     Period &period {game.periods[game.now_period]};
     Period &last {game.periods[game.now_period - 1]};
 
@@ -335,25 +335,19 @@ std::array<double, 5> ai_find_best_fast(
     return decisions.rbegin()->second;
 }
 
-void ai_backward(
-    Game &game, uint64_t i,
-    double (*evaluator)(Game &game, uint64_t i)
-) {
+void ai_setsuna(Game &game, uint64_t i) {
     Game game_copy = game; // copy
 
     game_copy.close_force();
     --game_copy.now_period;
 
     std::array<double, 5> d {
-        ai_find_best(game_copy, i, evaluator)
+        ai_find_best(game_copy, i, e_setsuna)
     };
     game.submit(i, d[0], d[1], d[2], d[3], d[4]);
 }
 
-void ai_forward(
-    Game &game, uint64_t i,
-    double (*evaluator)(Game &game, uint64_t i)
-) {
+void ai_acute(Game &game, uint64_t i) {
     Game game_copy = game; // copy
 
     Period &period {game_copy.periods[game_copy.now_period]};
@@ -362,15 +356,11 @@ void ai_forward(
     --game_copy.now_period;
 
     for (uint64_t j = 0; j < period.player_count; ++j) {
-        ai_find_best_fast(game_copy, j, evaluator);
-    }
-
-    for (uint64_t j = 0; j < period.player_count; ++j) {
-        ai_find_best_fast(game_copy, j, evaluator);
+        ai_find_best_fast(game_copy, j, e_acute_predict);
     }
 
     std::array<double, 5> d {
-        ai_find_best(game_copy, i, evaluator)
+        ai_find_best(game_copy, i, e_setsuna)
     };
     game.submit(i, d[0], d[1], d[2], d[3], d[4]);
 }

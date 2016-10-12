@@ -287,15 +287,7 @@ void change_setting(
     uint64_t player_count, double value
 );
 
-double ai_setsuna(Game &game, uint64_t i);
-
-void ai_backward(
-    Game &game, uint64_t i,
-    double (*evaluator)(Game &game, uint64_t i)
-);
-void ai_forward(
-    Game &game, uint64_t i,
-    double (*evaluator)(Game &game, uint64_t i)
-);
+void ai_setsuna(Game &game, uint64_t i);
+void ai_acute(Game &game, uint64_t i);
 
 }
