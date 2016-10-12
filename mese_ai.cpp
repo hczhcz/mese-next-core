@@ -10,7 +10,7 @@ double e_setsuna(Game &game, uint64_t i) {
         + (0.2 - 0.4 * period.inventory[i] / period.size[i])
             * period.capital[i]
         + min(div(period.decisions.ci[i], period.decisions.rd[i], 1), 1)
-            * (log(game.periods.size() - 1) - log(period.now_period))
+            * (log(game.periods.size()) - log(period.now_period + 1))
             * period.history_rd[i];
 
     // notice: use ai after period data allocation
@@ -36,7 +36,7 @@ double e_acute_predict(Game &game, uint64_t i) {
         + (0.2 - 0.4 * period.inventory[i] / period.size[i])
             * period.capital[i]
         + min(div(period.decisions.ci[i], period.decisions.rd[i], 1), 1)
-            * (log(game.periods.size() - 1) - log(period.now_period))
+            * (log(game.periods.size()) - log(period.now_period + 1))
             * period.history_rd[i]
         - 0.2 * abs(period.decisions.mk[i] - last.decisions.mk[i])
         - 0.1 * abs(period.decisions.ci[i] - last.decisions.ci[i])
@@ -63,8 +63,8 @@ double e_acute(Game &game, uint64_t i) {
     double value = period.retern[i]
         + (0.2 - 0.4 * period.inventory[i] / period.size[i])
             * period.capital[i]
-        + 2 * (1 - exp(-div(period.decisions.ci[i], period.decisions.rd[i], 10000)))
-            * (log(game.periods.size() - 1) - log(period.now_period))
+        + min(div(period.decisions.ci[i], period.decisions.rd[i], 1), 1)
+            * (log(game.periods.size()) - log(period.now_period + 1))
             * period.history_rd[i];
 
     // notice: use ai after period data allocation
