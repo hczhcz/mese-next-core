@@ -9,7 +9,8 @@ double ai_setsuna(Game &game, uint64_t i) {
     double value = period.retern[i]
         + (0.2 - 0.4 * period.inventory[i] / period.size[i])
             * period.capital[i]
-        + 1.2 * (log(game.periods.size() - 1) - log(period.now_period))
+        + min(div(period.decisions.ci[i], period.decisions.rd[i], 1), 1)
+            * (log(game.periods.size() - 1) - log(period.now_period))
             * period.history_rd[i];
 
     // notice: use ai after period data allocation
