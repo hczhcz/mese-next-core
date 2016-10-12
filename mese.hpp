@@ -263,11 +263,6 @@ public:
         double price, double prod, double mk, double ci, double rd
     );
 
-    void submit_best(
-        uint64_t i,
-        double (*evaluation)(Period &period, uint64_t i)
-    );
-
     bool close();
     void close_force();
 
@@ -293,5 +288,10 @@ void change_setting(
 );
 
 double ai_setsuna(Period &period, uint64_t i);
+
+void ai_find_best(
+    Game &game, uint64_t i,
+    double (*evaluation)(Period &period, uint64_t i)
+);
 
 }

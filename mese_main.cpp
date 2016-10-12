@@ -56,7 +56,7 @@ void test() {
     game.submit(5, 65, 600, 5000, 10000,  7000);
     game.submit(6, 70, 650, 8000, 10500,  3000);
     // game.submit(7, 52, 654,    0, 10000,  6000);
-    game.submit_best(7, ai_setsuna);
+    ai_find_best(game, 7, ai_setsuna);
     game.close();
 
     // game.print_public(std::cout);
@@ -289,8 +289,8 @@ int frontend(int argc, char *argv[]) {
                 throw 1; // TODO
             }
 
-            game.submit_best(
-                strtoul(argv[2], nullptr, 10),
+            ai_find_best(
+                game, strtoul(argv[2], nullptr, 10),
                 ai_setsuna
             );
 
