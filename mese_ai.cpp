@@ -4,18 +4,28 @@
 namespace mese {
 
 const uint64_t limits_slow[] {
-    1024,
-    768, 576, 432, 324, 243,
-    162, 108, 72, 48, 32,
-    16, 8, 4, 2, 1,
+    256, 224, 192, 160,
+    128, 112, 96, 80,
+    64, 56, 48, 40,
+    32, 28, 24, 20,
+    16, 14, 12, 10,
+    8, 7, 6, 5,
+    4, 4, 3, 3,
+    2, 2, 2, 2,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 const uint64_t limits_fast[] {
-    256,
-    192, 144, 108, 81,
-    54, 36, 24, 16,
-    8, 4, 2, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+    64, 56, 48, 40,
+    32, 28, 24, 20,
+    16, 14, 12, 10,
+    8, 7, 6, 5,
+    4, 4, 3, 3,
+    2, 2, 2, 2,
+    1, 1, 1, 1,
+    1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 const uint64_t steps_slow[5] {
     15, 10, 5, 5, 5
@@ -23,7 +33,7 @@ const uint64_t steps_slow[5] {
 const uint64_t steps_fast[5] {
     10, 8, 5, 3, 3
 };
-const double cooling_default {0.8};
+const double cooling_default {0.9};
 
 double e_setsuna(
     Game &game, uint64_t i,
@@ -173,7 +183,6 @@ std::array<double, 5> ai_find_best(
         while (decisions.size() > limit) {
             decisions.erase(decisions.begin());
         }
-
 
         for (size_t j = 0; j < 5; ++j) {
             delta[j] *= cooling;
