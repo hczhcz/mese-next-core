@@ -57,6 +57,31 @@ double e_acute_predict(Game &game, uint64_t i) {
     return value;
 }
 
+double e_acute(Game &game, uint64_t i) {
+    Period &period {game.periods[game.now_period]};
+
+    double value = period.retern[i]
+        + (0.2 - 0.4 * period.inventory[i] / period.size[i])
+            * period.capital[i]
+        + 2 * (1 - exp(-div(period.decisions.ci[i], period.decisions.rd[i], 10000)))
+            * (log(game.periods.size() - 1) - log(period.now_period))
+            * period.history_rd[i];
+
+    // notice: use ai after period data allocation
+    if (period.now_period == game.periods.size() - 1) {
+        double max_mpi = -INFINITY;
+        for (uint64_t j = 0; j < period.player_count; ++j) {
+            if (j != i && period.mpi[j] > max_mpi) {
+                max_mpi = period.mpi[j];
+            }
+        }
+
+        value += 500 * (period.mpi[i] - max_mpi);
+    }
+
+    return value;
+}
+
 std::array<double, 5> ai_find_best(
     Game &game, uint64_t i,
     double (*evaluator)(Game &game, uint64_t i)
@@ -360,7 +385,7 @@ void ai_acute(Game &game, uint64_t i) {
     }
 
     std::array<double, 5> d {
-        ai_find_best(game_copy, i, e_setsuna)
+        ai_find_best(game_copy, i, e_acute)
     };
     game.submit(i, d[0], d[1], d[2], d[3], d[4]);
 }
