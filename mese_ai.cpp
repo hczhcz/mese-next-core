@@ -9,7 +9,7 @@ double e_setsuna(Game &game, uint64_t i) {
     double value = period.retern[i]
         + (0.2 - 0.4 * period.inventory[i] / period.size[i])
             * period.capital[i]
-        + 2 * (1 - exp(-div(period.decisions.ci[i], period.decisions.rd[i], 10000)))
+        + min(div(period.decisions.ci[i], period.decisions.rd[i], 1), 1)
             * (log(game.periods.size() - 1) - log(period.now_period))
             * period.history_rd[i];
 
@@ -35,7 +35,7 @@ double e_acute_predict(Game &game, uint64_t i) {
     double value = period.retern[i]
         + (0.2 - 0.4 * period.inventory[i] / period.size[i])
             * period.capital[i]
-        + 2 * (1 - exp(-div(period.decisions.ci[i], period.decisions.rd[i], 10000)))
+        + min(div(period.decisions.ci[i], period.decisions.rd[i], 1), 1)
             * (log(game.periods.size() - 1) - log(period.now_period))
             * period.history_rd[i]
         - 0.2 * abs(period.decisions.mk[i] - last.decisions.mk[i])
