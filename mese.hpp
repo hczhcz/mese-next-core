@@ -287,11 +287,11 @@ void change_setting(
     uint64_t player_count, double value
 );
 
-double ai_setsuna(Period &period, uint64_t i);
+double ai_setsuna(Game &game, uint64_t i);
 
 void ai_find_best(
     Game &game, uint64_t i,
-    double (*evaluation)(Period &period, uint64_t i)
+    double (*evaluation)(Game &game, uint64_t i)
 );
 
 }

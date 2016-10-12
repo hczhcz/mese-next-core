@@ -3,12 +3,17 @@
 
 namespace mese {
 
-double ai_setsuna(Period &period, uint64_t i) {
-    double value = period.retern[i]
-        + (0.2 - 0.4 * period.inventory[i] / period.size[i]) * period.capital[i]
-        + 1.2 * (log(8) - log(period.now_period)) * period.history_rd[i];
+double ai_setsuna(Game &game, uint64_t i) {
+    Period &period {game.periods[game.now_period]};
 
-    if (period.now_period >= 8) {
+    double value = period.retern[i]
+        + (0.2 - 0.4 * period.inventory[i] / period.size[i])
+            * period.capital[i]
+        + 1.2 * (log(game.periods.size() - 1) - log(period.now_period))
+            * period.history_rd[i];
+
+    // notice: use ai after period data allocation
+    if (period.now_period == game.periods.size() - 1) {
         double max_mpi = -INFINITY;
         for (uint64_t j = 0; j < period.player_count; ++j) {
             if (j != i && period.mpi[j] > max_mpi) {
@@ -24,16 +29,16 @@ double ai_setsuna(Period &period, uint64_t i) {
 
 void ai_find_best(
     Game &game, uint64_t i,
-    double (*evaluation)(Period &period, uint64_t i)
+    double (*evaluation)(Game &game, uint64_t i)
 ) {
+    Period &period {game.periods[game.now_period]};
+    Period &last {game.periods[game.now_period - 1]};
+
     uint64_t old_status = game.status;
 
     game.close_force();
     --game.now_period;
     game.status = old_status;
-
-    Period &period {game.periods[game.now_period]};
-    Period &last {game.periods[game.now_period - 1]};
 
     static const uint64_t limits[] {
         1024,
@@ -68,7 +73,7 @@ void ai_find_best(
         if (game.submit(i, price, prod, mk, ci, rd)) {
             period.exec(last);
 
-            double key = evaluation(period, i);
+            double key = evaluation(game, i);
 
             if (decisions.size() == limits[0]) {
                 decisions.erase(decisions.begin());
@@ -87,7 +92,7 @@ void ai_find_best(
         if (game.submit(i, price, prod, mk, ci, rd)) {
             period.exec(last);
 
-            double key = evaluation(period, i);
+            double key = evaluation(game, i);
 
             if (key > iter->first) {
                 decisions.erase(iter);
