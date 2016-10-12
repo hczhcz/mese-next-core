@@ -106,7 +106,7 @@ std::array<double, 5> ai_find_best(
         period.settings.rd_limit / period.player_count
     };
     double delta[5];
-    for (size_t j = 0; j < 5; ++j) {
+    for (uint64_t j = 0; j < 5; ++j) {
         delta[j] = range[j] / steps[j];
     }
 
@@ -184,7 +184,7 @@ std::array<double, 5> ai_find_best(
             decisions.erase(decisions.begin());
         }
 
-        for (size_t j = 0; j < 5; ++j) {
+        for (uint64_t j = 0; j < 5; ++j) {
             delta[j] *= cooling;
         }
 

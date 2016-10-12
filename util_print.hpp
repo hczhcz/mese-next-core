@@ -21,9 +21,9 @@ void print(std::ostream &stream, uint64_t arr_size, T callback) {
         }
     };
 
-    auto print_indent = [&](size_t indent) {
+    auto print_indent = [&](uint64_t indent) {
         stream << std::endl;
-        for (size_t i = 0; i < indent; ++i) {
+        for (uint64_t i = 0; i < indent; ++i) {
             stream << "    ";
         }
     };
@@ -44,7 +44,7 @@ void print(std::ostream &stream, uint64_t arr_size, T callback) {
         stream << ']';
     };
 
-    auto doc_handler = [&](auto self, size_t indent, auto callback) {
+    auto doc_handler = [&](auto self, uint64_t indent, auto callback) {
         stream << '{';
 
         auto m_val_handler = [&](
