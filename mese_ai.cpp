@@ -9,9 +9,38 @@ double ai_setsuna(Game &game, uint64_t i) {
     double value = period.retern[i]
         + (0.2 - 0.4 * period.inventory[i] / period.size[i])
             * period.capital[i]
-        + min(div(period.decisions.ci[i], period.decisions.rd[i], 1), 1)
+        + 2 * (1 - exp(-div(period.decisions.ci[i], period.decisions.rd[i], 10000)))
             * (log(game.periods.size() - 1) - log(period.now_period))
             * period.history_rd[i];
+
+    // notice: use ai after period data allocation
+    if (period.now_period == game.periods.size() - 1) {
+        double max_mpi = -INFINITY;
+        for (uint64_t j = 0; j < period.player_count; ++j) {
+            if (j != i && period.mpi[j] > max_mpi) {
+                max_mpi = period.mpi[j];
+            }
+        }
+
+        value *= period.mpi[i] - max_mpi;
+    }
+
+    return value;
+}
+
+double ai_acute_predict(Game &game, uint64_t i) {
+    Period &period {game.periods[game.now_period]};
+    Period &last {game.periods[game.now_period - 1]};
+
+    double value = period.retern[i]
+        + (0.2 - 0.4 * period.inventory[i] / period.size[i])
+            * period.capital[i]
+        + 2 * (1 - exp(-div(period.decisions.ci[i], period.decisions.rd[i], 10000)))
+            * (log(game.periods.size() - 1) - log(period.now_period))
+            * period.history_rd[i]
+        - 0.2 * abs(period.decisions.mk[i] - last.decisions.mk[i])
+        - 0.1 * abs(period.decisions.ci[i] - last.decisions.ci[i])
+        - 0.2 * abs(period.decisions.rd[i] - last.decisions.rd[i]);
 
     // notice: use ai after period data allocation
     if (period.now_period == game.periods.size() - 1) {
