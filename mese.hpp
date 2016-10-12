@@ -289,9 +289,13 @@ void change_setting(
 
 double ai_setsuna(Game &game, uint64_t i);
 
-void ai_find_best(
+void ai_backward(
     Game &game, uint64_t i,
-    double (*evaluation)(Game &game, uint64_t i)
+    double (*evaluator)(Game &game, uint64_t i)
+);
+void ai_forward(
+    Game &game, uint64_t i,
+    double (*evaluator)(Game &game, uint64_t i)
 );
 
 }
