@@ -16,14 +16,10 @@ const uint64_t limits_slow[] {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 const uint64_t limits_fast[] {
-    64, 56, 48, 40,
-    32, 28, 24, 20,
     16, 14, 12, 10,
     8, 7, 6, 5,
     4, 4, 3, 3,
     2, 2, 2, 2,
-    1, 1, 1, 1,
-    1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
@@ -31,7 +27,7 @@ const uint64_t steps_slow[5] {
     15, 10, 5, 5, 5
 };
 const uint64_t steps_fast[5] {
-    10, 8, 5, 3, 3
+    8, 5, 3, 3, 3
 };
 const double cooling_default {0.9};
 
@@ -236,7 +232,7 @@ void ai_setsuna(Game &game, uint64_t i) {
                 if (period.now_period == game.periods.size() - 1) {
                     return e_setsuna(
                         game, i,
-                        0.2, 1.2
+                        0.2, 1
                     ) + e_mpi(
                         game, i,
                         1
@@ -244,7 +240,7 @@ void ai_setsuna(Game &game, uint64_t i) {
                 } else{
                     return e_setsuna(
                         game, i,
-                        0.2, 1.2
+                        0.2, 1
                     );
                 }
             }
@@ -271,10 +267,10 @@ void ai_acute(Game &game, uint64_t i) {
                     if (period.now_period == game.periods.size() - 1) {
                         return e_setsuna(
                             game, i,
-                            0.2, 1.2
+                            0.2, 1
                         ) + e_inertia(
                             game, i,
-                            3, 1, 2
+                            2.5, 1, 2
                         ) + e_mpi(
                             game, i,
                             0.2
@@ -282,10 +278,10 @@ void ai_acute(Game &game, uint64_t i) {
                     } else{
                         return e_setsuna(
                             game, i,
-                            0.2, 1.2
+                            0.2, 1
                         ) + e_inertia(
                             game, i,
-                            3, 1, 2
+                            2.5, 1, 2
                         );
                     }
                 }
@@ -303,15 +299,15 @@ void ai_acute(Game &game, uint64_t i) {
                 if (period.now_period == game.periods.size() - 1) {
                     return e_setsuna(
                         game, i,
-                        0.2, 1.2
+                        0.2, 1
                     ) + e_mpi(
                         game, i,
-                        0.3
+                        0.5
                     );
                 } else{
                     return e_setsuna(
                         game, i,
-                        0.2, 1.2
+                        0.2, 1
                     );
                 }
             }
@@ -330,37 +326,39 @@ void ai_kokoro(Game &game, uint64_t i) {
     game_copy.close_force();
     --game_copy.now_period;
 
-    for (uint64_t j = 0; j < period.player_count; ++j) {
-        std::array<double, 5> d {
-            ai_find_best(
-                game_copy, j,
-                limits_fast, steps_fast, cooling_default,
-                [&](Game &game, uint64_t i) {
-                    if (period.now_period == game.periods.size() - 1) {
-                        return e_setsuna(
-                            game, i,
-                            0.2, 1.2
-                        ) + e_inertia(
-                            game, i,
-                            3, 1, 2
-                        ) + e_mpi(
-                            game, i,
-                            0.2
-                        );
-                    } else{
-                        return e_setsuna(
-                            game, i,
-                            0.2, 1.2
-                        ) + e_inertia(
-                            game, i,
-                            3, 1, 2
-                        );
+    for (uint64_t count = 0; count < 2; ++count) {
+        for (uint64_t j = 0; j < period.player_count; ++j) {
+            std::array<double, 5> d {
+                ai_find_best(
+                    game_copy, j,
+                    limits_fast, steps_fast, cooling_default,
+                    [&](Game &game, uint64_t i) {
+                        if (period.now_period == game.periods.size() - 1) {
+                            return e_setsuna(
+                                game, i,
+                                0.2, 1
+                            ) + e_inertia(
+                                game, i,
+                                2.5, 1, 2
+                            ) + e_mpi(
+                                game, i,
+                                0.2
+                            );
+                        } else{
+                            return e_setsuna(
+                                game, i,
+                                0.2, 1
+                            ) + e_inertia(
+                                game, i,
+                                2.5, 1, 2
+                            );
+                        }
                     }
-                }
-            )
-        };
+                )
+            };
 
-        game_copy.submit(j, d[0], d[1], d[2], d[3], d[4]);
+            game_copy.submit(j, d[0], d[1], d[2], d[3], d[4]);
+        }
     }
 
     std::array<double, 5> d {
@@ -371,15 +369,15 @@ void ai_kokoro(Game &game, uint64_t i) {
                 if (period.now_period == game.periods.size() - 1) {
                     return e_setsuna(
                         game, i,
-                        0.2, 1.2
+                        0.2, 1
                     ) + e_mpi(
                         game, i,
-                        0.3
+                        0.5
                     );
                 } else{
                     return e_setsuna(
                         game, i,
-                        0.2, 1.2
+                        0.2, 1
                     );
                 }
             }
