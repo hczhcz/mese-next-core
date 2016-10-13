@@ -59,10 +59,16 @@ double e_inertia(
     Period &last {game.periods[game.now_period - 1]};
 
     return -(
-        factor_mk * abs(period.decisions.mk[i] - last.decisions.mk[i])
-        + factor_ci * abs(period.decisions.ci[i] - last.decisions.ci[i])
-        + factor_rd * abs(period.decisions.rd[i] - last.decisions.rd[i])
-    );
+        factor_mk
+            * (period.decisions.mk[i] - last.decisions.mk[i])
+            * (period.decisions.mk[i] - last.decisions.mk[i])
+        + factor_ci
+            * (period.decisions.ci[i] - last.decisions.ci[i])
+            * (period.decisions.ci[i] - last.decisions.ci[i])
+        + factor_rd
+            * (period.decisions.rd[i] - last.decisions.rd[i])
+            * (period.decisions.rd[i] - last.decisions.rd[i])
+    ) / last.cash[i];
 }
 
 double e_mpi(
@@ -268,7 +274,7 @@ void ai_acute(Game &game, uint64_t i) {
                             0.2, 1.2
                         ) + e_inertia(
                             game, i,
-                            0.2, 0.1, 0.2
+                            3, 1, 2
                         ) + e_mpi(
                             game, i,
                             0.2
@@ -279,7 +285,7 @@ void ai_acute(Game &game, uint64_t i) {
                             0.2, 1.2
                         ) + e_inertia(
                             game, i,
-                            0.2, 0.1, 0.2
+                            3, 1, 2
                         );
                     }
                 }
@@ -336,7 +342,7 @@ void ai_kokoro(Game &game, uint64_t i) {
                             0.2, 1.2
                         ) + e_inertia(
                             game, i,
-                            0.2, 0.1, 0.2
+                            3, 1, 2
                         ) + e_mpi(
                             game, i,
                             0.2
@@ -347,7 +353,7 @@ void ai_kokoro(Game &game, uint64_t i) {
                             0.2, 1.2
                         ) + e_inertia(
                             game, i,
-                            0.2, 0.1, 0.2
+                            3, 1, 2
                         );
                     }
                 }
