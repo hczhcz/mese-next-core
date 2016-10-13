@@ -259,7 +259,7 @@ void ai_acute(Game &game, uint64_t i) {
     for (uint64_t j = 0; j < period.player_count; ++j) {
         std::array<double, 5> d {
             ai_find_best(
-                game_copy, i,
+                game_copy, j,
                 limits_fast, steps_fast, cooling_default,
                 [&](Game &game, uint64_t i) {
                     if (period.now_period == game.periods.size() - 1) {
@@ -286,7 +286,75 @@ void ai_acute(Game &game, uint64_t i) {
             )
         };
 
-        game_copy.submit(i, d[0], d[1], d[2], d[3], d[4]);
+        game_copy.submit(j, d[0], d[1], d[2], d[3], d[4]);
+    }
+
+    std::array<double, 5> d {
+        ai_find_best(
+            game_copy, i,
+            limits_slow, steps_slow, cooling_default,
+            [&](Game &game, uint64_t i) {
+                if (period.now_period == game.periods.size() - 1) {
+                    return e_setsuna(
+                        game, i,
+                        0.2, 1.2
+                    ) + e_mpi(
+                        game, i,
+                        0.3
+                    );
+                } else{
+                    return e_setsuna(
+                        game, i,
+                        0.2, 1.2
+                    );
+                }
+            }
+        )
+    };
+
+    game.submit(i, d[0], d[1], d[2], d[3], d[4]);
+}
+
+void ai_kokoro(Game &game, uint64_t i) {
+    Game game_copy = game; // copy
+
+    Period &period {game_copy.periods[game_copy.now_period]};
+
+    game_copy.status = 0;
+    game_copy.close_force();
+    --game_copy.now_period;
+
+    for (uint64_t j = 0; j < period.player_count; ++j) {
+        std::array<double, 5> d {
+            ai_find_best(
+                game_copy, j,
+                limits_fast, steps_fast, cooling_default,
+                [&](Game &game, uint64_t i) {
+                    if (period.now_period == game.periods.size() - 1) {
+                        return e_setsuna(
+                            game, i,
+                            0.2, 1.2
+                        ) + e_inertia(
+                            game, i,
+                            0.2, 0.1, 0.2
+                        ) + e_mpi(
+                            game, i,
+                            0.2
+                        );
+                    } else{
+                        return e_setsuna(
+                            game, i,
+                            0.2, 1.2
+                        ) + e_inertia(
+                            game, i,
+                            0.2, 0.1, 0.2
+                        );
+                    }
+                }
+            )
+        };
+
+        game_copy.submit(j, d[0], d[1], d[2], d[3], d[4]);
     }
 
     std::array<double, 5> d {

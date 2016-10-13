@@ -339,26 +339,22 @@ int frontend(int argc, char *argv[]) {
             print_info(false, true, true, false);
 
             return 0;
-        } else if (strcmp(argv[1], "ai_1") == 0) { // hidden
+        } else if (strcmp(argv[1], "ai") == 0) { // hidden
             Game game {std::cin};
 
-            if (argc < 2) {
+            if (argc < 3) {
                 throw 1; // TODO
             }
 
-            ai_setsuna(game, strtoul(argv[2], nullptr, 10));
-
-            game.serialize(std::cout);
-
-            return 0;
-        } else if (strcmp(argv[1], "ai_2") == 0) { // hidden
-            Game game {std::cin};
-
-            if (argc < 2) {
+            if (strcmp(argv[3], "setsuna") == 0) {
+                ai_setsuna(game, strtoul(argv[2], nullptr, 10));
+            } else if (strcmp(argv[3], "acute") == 0) {
+                ai_acute(game, strtoul(argv[2], nullptr, 10));
+            } else if (strcmp(argv[3], "kokoro") == 0) {
+                ai_kokoro(game, strtoul(argv[2], nullptr, 10));
+            } else {
                 throw 1; // TODO
             }
-
-            ai_acute(game, strtoul(argv[2], nullptr, 10));
 
             game.serialize(std::cout);
 
