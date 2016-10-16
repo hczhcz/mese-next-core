@@ -6,66 +6,103 @@
 namespace mese {
 
 void test() {
-    Game game {8, get_preset("modern", 8)};
+    Game game {10, get_preset("modern", 10)};
 
-    // game.print_full(std::cout);
-
+    game.alloc().loan_limit = 50000 * 10;
     game.alloc();
     game.alloc();
-    game.alloc().loan_limit = 50000 * 8;
+    game.alloc();
+    game.alloc();
+    game.alloc();
+    game.alloc();
 
-    if (false) {
-        // classic
-        game.submit(0, 30, 393, 1050, 1050, 393);
-        game.submit(1, 30, 393, 1050, 1050, 393);
-        game.submit(2, 30, 393, 1050, 1050, 393);
-        game.submit(3, 30, 393, 1050, 1050, 393);
-        game.submit(4, 30, 393, 1050, 1050, 393);
-        game.submit(5, 30, 393, 1050, 1050, 393);
-        game.submit(6, 30, 393, 1050, 1050, 393);
-        game.submit(7, 30, 393, 1050, 1050, 393);
-        game.close();
-    } else {
-        // modern
-        game.submit(0, 30, 420, 1050, 1050, 420);
-        game.submit(1, 30, 420, 1050, 1050, 420);
-        game.submit(2, 30, 420, 1050, 1050, 420);
-        game.submit(3, 30, 420, 1050, 1050, 420);
-        game.submit(4, 30, 420, 1050, 1050, 420);
-        game.submit(5, 30, 420, 1050, 1050, 420);
-        game.submit(6, 30, 420, 1050, 1050, 420);
-        game.submit(7, 30, 420, 1050, 1050, 420);
-        game.close();
-    }
-
-    game.submit(0, 65, 472,    0, 11900, 15000);
-    game.submit(1, 84, 462, 3200, 15000,  9000);
-    game.submit(2, 80, 462, 2200,  1000, 15000);
-    game.submit(3, 80, 474,  500, 10050, 13000);
-    game.submit(4, 70, 420, 5000, 11000, 10000);
-    game.submit(5, 65, 447, 5000, 10000, 10000);
-    game.submit(6, 70, 445, 4000, 13000, 10111);
-    game.submit(7, 69, 472,    0, 15000, 11900);
+    ai_kokoro(game, 9);
+    game.submit(0, 75, 500, 5000, 12000, 8500);
+    game.submit(1, 62, 446, 0, 12000, 10000);
+    game.submit(2, 73, 525, 7070, 12000, 10111);
+    game.submit(3, 75, 525, 8000, 12000, 8500);
+    game.submit(4, 68, 447, 5364, 12000, 9834);
+    game.submit(5, 70, 420, 8000, 12000, 0);
+    game.submit(6, 62, 420, 2000, 9000, 12000);
+    game.submit(7, 65, 447, 0, 15000, 12500);
+    game.submit(8, 60, 525, 4000, 15000, 5000);
     game.close();
 
-    game.submit(0, 68, 756, 7200,  5000,  6000);
-    game.submit(1, 62, 699, 4000,  9747,  2000);
-    game.submit(2, 71, 462, 2500, 15000, 10000);
-    game.submit(3, 55, 657,  500,  7500,  7300);
-    game.submit(4, 77, 692, 3500,  8000,  4500);
-    game.submit(5, 65, 600, 5000, 10000,  7000);
-    game.submit(6, 70, 650, 8000, 10500,  3000);
-    // game.submit(7, 52, 654,    0, 10000,  6000);
-    ai_setsuna(game, 7);
+    ai_kokoro(game, 9);
+    game.submit(0, 68, 720, 9000, 4900, 0);
+    game.submit(1, 60, 640, 7500, 7000, 0);
+    game.submit(2, 65, 798, 5000, 9000, 7690);
+    game.submit(3, 67, 719, 9000, 10000, 8000);
+    game.submit(4, 68, 642, 3201, 10000, 5073);
+    game.submit(5, 52, 680, 0, 12000, 7200);
+    game.submit(6, 54, 723, 0, 12000, 0);
+    game.submit(7, 57, 750, 8000, 6798, 0);
+    game.submit(8, 62, 720, 6000, 15000, 0);
     game.close();
 
-    // game.print_public(std::cout);
-    game.print_player(std::cout, 7);
+    ai_kokoro(game, 9);
+    game.submit(0, 60, 800, 12000, 13000, 13000);
+    game.submit(1, 52, 747, 10000, 15000, 3500);
+    game.submit(2, 51, 787, 2000, 8000, 12000);
+    game.submit(3, 59, 908, 10500, 10000, 10000);
+    game.submit(4, 50, 812, 812, 10000, 8932);
+    game.submit(5, 55, 900, 8000, 3000, 10000);
+    game.submit(6, 47, 890, 8000, 13000, 1000);
+    game.submit(7, 51, 900, 5000, 11900, 12000);
+    game.submit(8, 39, 964, 4000, 13000, 0);
+    game.close();
+
+    ai_kokoro(game, 9);
+    game.submit(0, 58, 1162, 10000, 15000, 15000);
+    game.submit(1, 46, 1010, 13000, 15000, 0);
+    game.submit(2, 37, 908, 1000, 12000, 1000);
+    game.submit(3, 69, 1208, 15000, 15000, 15000);
+    game.submit(4, 35, 971, 1442, 11000, 5000);
+    game.submit(5, 36, 919, 0, 12000, 11900);
+    game.submit(6, 42, 1011, 8000, 2526, 10000);
+    game.submit(7, 47, 1000, 6000, 13595, 10000);
+    game.submit(8, 35, 1350, 6000, 15000, 0);
+    game.close();
+
+    ai_kokoro(game, 9);
+    game.submit(0, 45, 1400, 13000, 14000, 15000);
+    game.submit(1, 41, 1260, 15000, 15000, 0);
+    game.submit(2, 27, 1102, 1000, 12000, 1000);
+    game.submit(3, 50, 1219, 15000, 7000, 7000);
+    game.submit(4, 31, 1144, 6864, 9000, 9696);
+    game.submit(5, 47, 1194, 10000, 13600, 10000);
+    game.submit(6, 42, 1263, 12000, 2526, 12000);
+    game.submit(7, 45, 1369, 10000, 15000, 12000);
+    game.submit(8, 30, 1650, 6000, 10000, 0);
+    game.close();
+
+    ai_kokoro(game, 9);
+    game.submit(0, 42, 1750, 15000, 15000, 0);
+    game.submit(1, 38, 1500, 15000, 15000, 0);
+    game.submit(2, 34, 1287, 12000, 12000, 1000);
+    game.submit(3, 38, 1298, 15000, 3244, 0);
+    game.submit(4, 33, 1347, 4041, 12000, 9000);
+    game.submit(5, 54, 1500, 11100, 14000, 12000);
+    game.submit(6, 34, 1263, 0, 2526, 0);
+    game.submit(7, 43, 1688, 15000, 15000, 10000);
+    game.submit(8, 28, 1932, 6000, 10000, 0);
+    game.close();
+
+    ai_kokoro(game, 9);
+    game.submit(0, 30, 1900, 15000, 15000, 0);
+    game.submit(1, 30, 1722, 15000, 4304, 0);
+    game.submit(2, 28, 1463, 12000, 12000, 1000);
+    game.submit(3, 33, 1298, 15000, 0, 0);
+    game.submit(4, 29, 1446, 6892, 12000, 9);
+    game.submit(5, 35, 1700, 15000, 4000, 0);
+    game.submit(6, 39, 1263, 12000, 0, 0);
+    game.submit(7, 39, 1920, 15000, 13913, 0);
+    game.submit(8, 22, 2086, 0, 5000, 0);
+    game.close();
+
+    game.print_player(std::cout, 9);
 
     // game.serialize(std::cout);
-
-    // Game game2 {std::cin};
-    // game2.print_public(std::cout);
 }
 
 void print_info(bool info, bool help, bool list, bool cow) {

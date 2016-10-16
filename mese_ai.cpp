@@ -255,6 +255,7 @@ void ai_acute(Game &game, uint64_t i) {
 
     Period &period {game_copy.periods[game_copy.now_period]};
 
+    game_copy.status = 0;
     game_copy.close_force();
     --game_copy.now_period;
 
