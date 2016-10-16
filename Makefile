@@ -27,10 +27,10 @@ mese32.exe: $(FILES) $(HEADERS)
 %.o: %.cpp $(HEADERS)
 	clang++ -c $(CFLAGS_DEBUG) $< -o $@
 
-debug: $(OBJECTS)
-	clang++ $(CFLAGS_DEBUG) $(OBJECTS) -o mese
+mese-debug: $(OBJECTS)
+	clang++ $(CFLAGS_DEBUG) $(OBJECTS) -o $@
 
-all: mese mese32 mese-gcc mese32-gcc mese.exe mese32.exe
+all: mese mese32 mese-gcc mese32-gcc mese.exe mese32.exe mese-debug
 
 clean:
-	rm -f mese mese32 mese-gcc mese32-gcc mese.exe mese32.exe $(OBJECTS)
+	rm -f mese mese32 mese-gcc mese32-gcc mese.exe mese32.exe mese-debug $(OBJECTS)
