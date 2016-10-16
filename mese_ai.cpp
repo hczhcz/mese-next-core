@@ -75,7 +75,7 @@ double e_mpi(
 
     double max_mpi = -INFINITY;
 
-    for (uint64_t j = 0; j < period.player_count; ++j) {
+    for (uint64_t j = 0; j < game.player_count; ++j) {
         if (j != i && period.mpi[j] > max_mpi) {
             max_mpi = period.mpi[j];
         }
@@ -219,8 +219,6 @@ std::array<double, 5> ai_find_best(
 void ai_setsuna(Game &game, uint64_t i) {
     Game game_copy = game; // copy
 
-    Period &period {game_copy.periods[game_copy.now_period]};
-
     game_copy.close_force();
     --game_copy.now_period;
 
@@ -229,6 +227,8 @@ void ai_setsuna(Game &game, uint64_t i) {
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
             [&](Game &game, uint64_t i) {
+                Period &period {game.periods[game_copy.now_period]};
+
                 if (period.now_period == game.periods.size() - 1) {
                     return e_setsuna(
                         game, i,
@@ -253,18 +253,18 @@ void ai_setsuna(Game &game, uint64_t i) {
 void ai_acute(Game &game, uint64_t i) {
     Game game_copy = game; // copy
 
-    Period &period {game_copy.periods[game_copy.now_period]};
-
     game_copy.status = 0;
     game_copy.close_force();
     --game_copy.now_period;
 
-    for (uint64_t j = 0; j < period.player_count; ++j) {
+    for (uint64_t j = 0; j < game_copy.player_count; ++j) {
         std::array<double, 5> d {
             ai_find_best(
                 game_copy, j,
                 limits_fast, steps_fast, cooling_default,
                 [&](Game &game, uint64_t i) {
+                    Period &period {game.periods[game_copy.now_period]};
+
                     if (period.now_period == game.periods.size() - 1) {
                         return e_setsuna(
                             game, i,
@@ -297,6 +297,8 @@ void ai_acute(Game &game, uint64_t i) {
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
             [&](Game &game, uint64_t i) {
+                Period &period {game.periods[game_copy.now_period]};
+
                 if (period.now_period == game.periods.size() - 1) {
                     return e_setsuna(
                         game, i,
@@ -321,45 +323,45 @@ void ai_acute(Game &game, uint64_t i) {
 void ai_kokoro(Game &game, uint64_t i) {
     Game game_copy = game; // copy
 
-    Period &period {game_copy.periods[game_copy.now_period]};
-
     game_copy.status = 0;
     game_copy.close_force();
     --game_copy.now_period;
 
-    for (uint64_t count = 0; count < 2; ++count) {
-        for (uint64_t j = 0; j < period.player_count; ++j) {
-            std::array<double, 5> d {
-                ai_find_best(
-                    game_copy, j,
-                    limits_fast, steps_fast, cooling_default,
-                    [&](Game &game, uint64_t i) {
-                        if (period.now_period == game.periods.size() - 1) {
-                            return e_setsuna(
-                                game, i,
-                                0.2, 1
-                            ) + e_inertia(
-                                game, i,
-                                2.5, 1, 2
-                            ) + e_mpi(
-                                game, i,
-                                0.2
-                            );
-                        } else{
-                            return e_setsuna(
-                                game, i,
-                                0.2, 1
-                            ) + e_inertia(
-                                game, i,
-                                2.5, 1, 2
-                            );
-                        }
-                    }
-                )
-            };
+    Game game_copy_2 = game_copy; // copy
 
-            game_copy.submit(j, d[0], d[1], d[2], d[3], d[4]);
-        }
+    for (uint64_t j = 0; j < game_copy_2.player_count; ++j) {
+        std::array<double, 5> d {
+            ai_find_best(
+                game_copy_2, j,
+                limits_fast, steps_fast, cooling_default,
+                [&](Game &game, uint64_t i) {
+                    Period &period {game.periods[game_copy.now_period]};
+
+                    if (period.now_period == game.periods.size() - 1) {
+                        return e_setsuna(
+                            game, i,
+                            0.2, 1
+                        ) + e_inertia(
+                            game, i,
+                            2.5, 1, 2
+                        ) + e_mpi(
+                            game, i,
+                            0.2
+                        );
+                    } else{
+                        return e_setsuna(
+                            game, i,
+                            0.2, 1
+                        ) + e_inertia(
+                            game, i,
+                            2.5, 1, 2
+                        );
+                    }
+                }
+            )
+        };
+
+        game_copy.submit(j, d[0], d[1], d[2], d[3], d[4]);
     }
 
     std::array<double, 5> d {
@@ -367,6 +369,8 @@ void ai_kokoro(Game &game, uint64_t i) {
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
             [&](Game &game, uint64_t i) {
+                Period &period {game.periods[game_copy.now_period]};
+
                 if (period.now_period == game.periods.size() - 1) {
                     return e_setsuna(
                         game, i,
