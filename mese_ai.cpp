@@ -43,7 +43,7 @@ double e_setsuna(
             * period.capital[i]
         + factor_rd
             * min(div(period.decisions.ci[i], period.decisions.rd[i], 1), 1)
-            * (log(game.periods.size()) - log(period.now_period + 1))
+            * (log(game.periods.size()) - log(game.now_period + 1))
             * period.history_rd[i];
 }
 
@@ -82,7 +82,7 @@ double e_mpi(
     }
 
     return factor_mpi
-        * period.settings.mpi_retern_factor / period.player_count
+        * period.settings.mpi_retern_factor / game.player_count
         * (period.mpi[i] - max_mpi);
 }
 
@@ -103,9 +103,9 @@ std::array<double, 5> ai_find_best(
     double range[5] {
         period.settings.price_max - price_min,
         last.size[i],
-        period.settings.mk_limit / period.player_count,
-        period.settings.ci_limit / period.player_count,
-        period.settings.rd_limit / period.player_count
+        period.settings.mk_limit / game.player_count,
+        period.settings.ci_limit / game.player_count,
+        period.settings.rd_limit / game.player_count
     };
     double delta[5];
     for (uint64_t j = 0; j < 5; ++j) {
@@ -226,10 +226,8 @@ void ai_setsuna(Game &game, uint64_t i) {
         ai_find_best(
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
-            [&](Game &game, uint64_t i) {
-                Period &period {game.periods[game_copy.now_period]};
-
-                if (period.now_period == game.periods.size() - 1) {
+            [](Game &game, uint64_t i) {
+                if (game.now_period == game.periods.size() - 1) {
                     return e_setsuna(
                         game, i,
                         0.2, 1
@@ -262,10 +260,8 @@ void ai_acute(Game &game, uint64_t i) {
             ai_find_best(
                 game_copy, j,
                 limits_fast, steps_fast, cooling_default,
-                [&](Game &game, uint64_t i) {
-                    Period &period {game.periods[game_copy.now_period]};
-
-                    if (period.now_period == game.periods.size() - 1) {
+                [](Game &game, uint64_t i) {
+                    if (game.now_period == game.periods.size() - 1) {
                         return e_setsuna(
                             game, i,
                             0.2, 1
@@ -296,10 +292,8 @@ void ai_acute(Game &game, uint64_t i) {
         ai_find_best(
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
-            [&](Game &game, uint64_t i) {
-                Period &period {game.periods[game_copy.now_period]};
-
-                if (period.now_period == game.periods.size() - 1) {
+            [](Game &game, uint64_t i) {
+                if (game.now_period == game.periods.size() - 1) {
                     return e_setsuna(
                         game, i,
                         0.2, 1
@@ -329,15 +323,13 @@ void ai_kokoro(Game &game, uint64_t i) {
 
     Game game_copy_2 = game_copy; // copy
 
-    for (uint64_t j = 0; j < game_copy_2.player_count; ++j) {
+    for (uint64_t j = 0; j < game_copy.player_count; ++j) {
         std::array<double, 5> d {
             ai_find_best(
                 game_copy_2, j,
                 limits_fast, steps_fast, cooling_default,
-                [&](Game &game, uint64_t i) {
-                    Period &period {game.periods[game_copy.now_period]};
-
-                    if (period.now_period == game.periods.size() - 1) {
+                [](Game &game, uint64_t i) {
+                    if (game.now_period == game.periods.size() - 1) {
                         return e_setsuna(
                             game, i,
                             0.2, 1
@@ -368,10 +360,8 @@ void ai_kokoro(Game &game, uint64_t i) {
         ai_find_best(
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
-            [&](Game &game, uint64_t i) {
-                Period &period {game.periods[game_copy.now_period]};
-
-                if (period.now_period == game.periods.size() - 1) {
+            [](Game &game, uint64_t i) {
+                if (game.now_period == game.periods.size() - 1) {
                     return e_setsuna(
                         game, i,
                         0.2, 1
