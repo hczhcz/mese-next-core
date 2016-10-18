@@ -222,7 +222,7 @@ std::array<double, 5> ai_find_best(
     }
 }
 
-void ai_setsuna(Game &game, uint64_t i) {
+void ai_setsuna(Game &game, uint64_t i, double factor_rd) {
     Game game_copy = game; // copy
 
     game_copy.close_force();
@@ -232,11 +232,11 @@ void ai_setsuna(Game &game, uint64_t i) {
         ai_find_best(
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
-            [](Game &game, uint64_t i) {
+            [&](Game &game, uint64_t i) {
                 if (game.now_period == game.periods.size() - 1) {
                     return e_setsuna(
                         game, i,
-                        0.2, 1
+                        0.2, factor_rd
                     ) + e_mpi(
                         game, i,
                         1
@@ -244,7 +244,7 @@ void ai_setsuna(Game &game, uint64_t i) {
                 } else{
                     return e_setsuna(
                         game, i,
-                        0.2, 1
+                        0.2, factor_rd
                     );
                 }
             }
@@ -254,7 +254,7 @@ void ai_setsuna(Game &game, uint64_t i) {
     game.submit(i, d[0], d[1], d[2], d[3], d[4]);
 }
 
-void ai_acute(Game &game, uint64_t i) {
+void ai_acute(Game &game, uint64_t i, double factor_rd) {
     Game game_copy = game; // copy
 
     game_copy.status = 0;
@@ -266,7 +266,7 @@ void ai_acute(Game &game, uint64_t i) {
             ai_find_best(
                 game_copy, j,
                 limits_fast, steps_fast, cooling_default,
-                [](Game &game, uint64_t i) {
+                [&](Game &game, uint64_t i) {
                     if (game.now_period == game.periods.size() - 1) {
                         return e_setsuna(
                             game, i,
@@ -298,11 +298,11 @@ void ai_acute(Game &game, uint64_t i) {
         ai_find_best(
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
-            [](Game &game, uint64_t i) {
+            [&](Game &game, uint64_t i) {
                 if (game.now_period == game.periods.size() - 1) {
                     return e_setsuna(
                         game, i,
-                        0.2, 1
+                        0.2, factor_rd
                     ) + e_mpi(
                         game, i,
                         0.5
@@ -310,7 +310,7 @@ void ai_acute(Game &game, uint64_t i) {
                 } else{
                     return e_setsuna(
                         game, i,
-                        0.2, 1
+                        0.2, factor_rd
                     );
                 }
             }
@@ -320,7 +320,7 @@ void ai_acute(Game &game, uint64_t i) {
     game.submit(i, d[0], d[1], d[2], d[3], d[4]);
 }
 
-void ai_kokoro(Game &game, uint64_t i) {
+void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
     Game game_copy = game; // copy
 
     game_copy.status = 0;
@@ -334,7 +334,7 @@ void ai_kokoro(Game &game, uint64_t i) {
             ai_find_best(
                 game_copy_2, j,
                 limits_fast, steps_fast, cooling_default,
-                [](Game &game, uint64_t i) {
+                [&](Game &game, uint64_t i) {
                     if (game.now_period == game.periods.size() - 1) {
                         return e_setsuna(
                             game, i,
@@ -366,11 +366,11 @@ void ai_kokoro(Game &game, uint64_t i) {
         ai_find_best(
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
-            [](Game &game, uint64_t i) {
+            [&](Game &game, uint64_t i) {
                 if (game.now_period == game.periods.size() - 1) {
                     return e_setsuna(
                         game, i,
-                        0.2, 1
+                        0.2, factor_rd
                     ) + e_mpi(
                         game, i,
                         0.5
@@ -378,7 +378,7 @@ void ai_kokoro(Game &game, uint64_t i) {
                 } else{
                     return e_setsuna(
                         game, i,
-                        0.2, 1
+                        0.2, factor_rd
                     );
                 }
             }

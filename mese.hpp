@@ -287,8 +287,8 @@ void change_setting(
     uint64_t player_count, double value
 );
 
-void ai_setsuna(Game &game, uint64_t i);
-void ai_acute(Game &game, uint64_t i);
-void ai_kokoro(Game &game, uint64_t i);
+void ai_setsuna(Game &game, uint64_t i, double factor_rd);
+void ai_acute(Game &game, uint64_t i, double factor_rd);
+void ai_kokoro(Game &game, uint64_t i, double factor_rd);
 
 }
