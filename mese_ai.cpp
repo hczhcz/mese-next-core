@@ -75,7 +75,7 @@ double e_mpi(
 ) {
     Period &period {game.periods[game.now_period]};
 
-    double max_mpi = -INFINITY;
+    double max_mpi = game.player_count > 1 ? -INFINITY : 0;
 
     for (uint64_t j = 0; j < game.player_count; ++j) {
         if (j != i && period.mpi[j] > max_mpi) {
