@@ -54,7 +54,7 @@ double e_inertia(
     Period &period {game.periods[game.now_period]};
     Period &last {game.periods[game.now_period - 1]};
 
-    return -(
+    return -div(
         factor_mk
             * (period.decisions.mk[i] - last.decisions.mk[i])
             * (period.decisions.mk[i] - last.decisions.mk[i])
@@ -63,8 +63,10 @@ double e_inertia(
             * (period.decisions.ci[i] - last.decisions.ci[i])
         + factor_rd
             * (period.decisions.rd[i] - last.decisions.rd[i])
-            * (period.decisions.rd[i] - last.decisions.rd[i])
-    ) / last.cash[i];
+            * (period.decisions.rd[i] - last.decisions.rd[i]),
+        last.cash[i],
+        0
+    );
 }
 
 double e_mpi(
@@ -213,7 +215,11 @@ std::array<double, 5> ai_find_best(
         }
     }
 
-    return decisions.rbegin()->second;
+    if (decisions.size() > 0) {
+        return decisions.rbegin()->second;
+    } else {
+        return {{-1, 0, 0, 0, 0}}; // error
+    }
 }
 
 void ai_setsuna(Game &game, uint64_t i) {
