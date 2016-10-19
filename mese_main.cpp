@@ -26,7 +26,7 @@ void test() {
     game.submit(6, 62, 420, 2000, 9000, 12000);
     game.submit(7, 65, 447, 0, 15000, 12500);
     game.submit(8, 60, 525, 4000, 15000, 5000);
-    game.close();
+    game.close_force();
 
     ai_kokoro(game, 9, 1);
     game.submit(0, 68, 720, 9000, 4900, 0);
@@ -38,7 +38,7 @@ void test() {
     game.submit(6, 54, 723, 0, 12000, 0);
     game.submit(7, 57, 750, 8000, 6798, 0);
     game.submit(8, 62, 720, 6000, 15000, 0);
-    game.close();
+    game.close_force();
 
     ai_kokoro(game, 9, 1);
     game.submit(0, 60, 800, 12000, 13000, 13000);
@@ -50,7 +50,7 @@ void test() {
     game.submit(6, 47, 890, 8000, 13000, 1000);
     game.submit(7, 51, 900, 5000, 11900, 12000);
     game.submit(8, 39, 964, 4000, 13000, 0);
-    game.close();
+    game.close_force();
 
     ai_kokoro(game, 9, 1);
     game.submit(0, 58, 1162, 10000, 15000, 15000);
@@ -62,7 +62,7 @@ void test() {
     game.submit(6, 42, 1011, 8000, 2526, 10000);
     game.submit(7, 47, 1000, 6000, 13595, 10000);
     game.submit(8, 35, 1350, 6000, 15000, 0);
-    game.close();
+    game.close_force();
 
     ai_kokoro(game, 9, 1);
     game.submit(0, 45, 1400, 13000, 14000, 15000);
@@ -74,7 +74,7 @@ void test() {
     game.submit(6, 42, 1263, 12000, 2526, 12000);
     game.submit(7, 45, 1369, 10000, 15000, 12000);
     game.submit(8, 30, 1650, 6000, 10000, 0);
-    game.close();
+    game.close_force();
 
     ai_kokoro(game, 9, 1);
     game.submit(0, 42, 1750, 15000, 15000, 0);
@@ -86,7 +86,7 @@ void test() {
     game.submit(6, 34, 1263, 0, 2526, 0);
     game.submit(7, 43, 1688, 15000, 15000, 10000);
     game.submit(8, 28, 1932, 6000, 10000, 0);
-    game.close();
+    game.close_force();
 
     ai_kokoro(game, 9, 1);
     game.submit(0, 30, 1900, 15000, 15000, 0);
@@ -98,7 +98,7 @@ void test() {
     game.submit(6, 39, 1263, 12000, 0, 0);
     game.submit(7, 39, 1920, 15000, 13913, 0);
     game.submit(8, 22, 2086, 0, 5000, 0);
-    game.close();
+    game.close_force();
 
     game.print_player(std::cout, 9);
 

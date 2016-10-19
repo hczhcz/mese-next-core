@@ -241,7 +241,7 @@ void ai_setsuna(Game &game, uint64_t i, double factor_rd) {
                         game, i,
                         1
                     );
-                } else{
+                } else {
                     return e_setsuna(
                         game, i,
                         0.2, factor_rd
@@ -261,12 +261,10 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
     game_copy.close_force();
     --game_copy.now_period;
 
-    Game game_copy_2 = game_copy; // copy
-
     for (uint64_t j = 0; j < game_copy.player_count; ++j) {
         std::array<double, 5> d {
             ai_find_best(
-                game_copy_2, j,
+                game_copy, j,
                 limits_fast, steps_fast, cooling_default,
                 [&](Game &game, uint64_t i) {
                     if (game.now_period == game.periods.size() - 1) {
@@ -280,7 +278,7 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
                             game, i,
                             0.2
                         );
-                    } else{
+                    } else {
                         return e_setsuna(
                             game, i,
                             0.2, 1
