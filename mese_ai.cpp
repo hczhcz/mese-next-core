@@ -88,28 +88,26 @@ double e_mpi(
         * (period.mpi[i] - max_mpi);
 }
 
-template <class Tl, class Ts, class Te>
-std::array<double, 5> ai_find_best(
+template <class T>
+void find_best_global(
     Game &game, uint64_t i,
-    Tl &limits,
-    Ts &steps,
-    double cooling,
-    Te evaluator
+    std::multimap<double, std::array<double, 5>> &decisions,
+    uint64_t limit,
+    const uint64_t (&steps)[5],
+    double (&delta)[5],
+    T evaluator
 ) {
     Period &period {game.periods[game.now_period]};
     Period &last {game.periods[game.now_period - 1]};
 
-    std::multimap<double, std::array<double, 5>> decisions;
-
-    double price_min = period.settings.price_min;
     double range[5] {
-        period.settings.price_max - price_min,
+        period.settings.price_max - period.settings.price_min,
         last.size[i],
         period.settings.mk_limit / game.player_count,
         period.settings.ci_limit / game.player_count,
         period.settings.rd_limit / game.player_count
     };
-    double delta[5];
+
     for (uint64_t j = 0; j < 5; ++j) {
         delta[j] = range[j] / steps[j];
     }
@@ -122,7 +120,7 @@ std::array<double, 5> ai_find_best(
 
             double key = evaluator(game, i);
 
-            if (decisions.size() == limits[0]) {
+            if (decisions.size() == limit) {
                 decisions.erase(decisions.begin());
             }
 
@@ -132,30 +130,13 @@ std::array<double, 5> ai_find_best(
         }
     };
 
-    auto try_replace = [&](
-        decltype(decisions)::iterator &iter,
-        double price, double prod, double mk, double ci, double rd
-    ) {
-        if (game.submit(i, price, prod, mk, ci, rd)) {
-            period.exec(last);
-
-            double key = evaluator(game, i);
-
-            if (key > iter->first) {
-                decisions.erase(iter);
-
-                iter = decisions.insert({
-                    key, {{price, prod, mk, ci, rd}}
-                });
-            }
-        }
-    };
-
     for (
-        double price = price_min + 0.5 * delta[0];
-        price < range[0] + price_min;
+        double price = period.settings.price_min + 0.5 * delta[0];
+        price < range[0] + period.settings.price_min;
         price += delta[0]
     ) {
+        try_submit(price, 0, 0, 0, 0); // loan limit protection
+
         for (
             double prod = 0.5 * delta[1];
             prod < range[1];
@@ -182,6 +163,73 @@ std::array<double, 5> ai_find_best(
             }
         }
     }
+}
+
+template <class T>
+void find_best_local(
+    Game &game, uint64_t i,
+    std::multimap<double, std::array<double, 5>> &decisions,
+    const double (&delta)[5],
+    T evaluator
+) {
+    Period &period {game.periods[game.now_period]};
+    Period &last {game.periods[game.now_period - 1]};
+
+    auto try_replace = [&](
+        std::multimap<double, std::array<double, 5>>::iterator &iter,
+        double price, double prod, double mk, double ci, double rd
+    ) {
+        if (game.submit(i, price, prod, mk, ci, rd)) {
+            period.exec(last);
+
+            double key = evaluator(game, i);
+
+            if (key > iter->first) {
+                decisions.erase(iter);
+
+                iter = decisions.insert({
+                    key, {{price, prod, mk, ci, rd}}
+                });
+            }
+        }
+    };
+
+    std::multimap<double, std::array<double, 5>> old_decisions;
+    old_decisions.swap(decisions);
+
+    for (auto &j: old_decisions) {
+        std::array<double, 5> &d {j.second};
+
+        std::multimap<double, std::array<double, 5>>::iterator iter {
+            decisions.insert({j.first, j.second})
+        };
+
+        try_replace(iter, d[0] - delta[0], d[1], d[2], d[3], d[4]);
+        try_replace(iter, d[0] + delta[0], d[1], d[2], d[3], d[4]);
+        try_replace(iter, d[0], d[1] - delta[1], d[2], d[3], d[4]);
+        try_replace(iter, d[0], d[1] + delta[1], d[2], d[3], d[4]);
+        try_replace(iter, d[0], d[1], d[2] - delta[2], d[3], d[4]);
+        try_replace(iter, d[0], d[1], d[2] + delta[2], d[3], d[4]);
+        try_replace(iter, d[0], d[1], d[2], d[3] - delta[3], d[4]);
+        try_replace(iter, d[0], d[1], d[2], d[3] + delta[3], d[4]);
+        try_replace(iter, d[0], d[1], d[2], d[3], d[4] - delta[4]);
+        try_replace(iter, d[0], d[1], d[2], d[3], d[4] + delta[4]);
+    }
+}
+
+template <uint64_t iter_count, class T>
+std::array<double, 5> find_best(
+    Game &game, uint64_t i,
+    const uint64_t (&limits)[iter_count],
+    const uint64_t (&steps)[5],
+    double cooling,
+    T evaluator
+) {
+    std::multimap<double, std::array<double, 5>> decisions;
+
+    double delta[5];
+
+    find_best_global(game, i, decisions, limits[0], steps, delta, evaluator);
 
     for (uint64_t limit: limits) {
         while (decisions.size() > limit) {
@@ -192,27 +240,7 @@ std::array<double, 5> ai_find_best(
             delta[j] *= cooling;
         }
 
-        std::multimap<double, std::array<double, 5>> old_decisions;
-        old_decisions.swap(decisions);
-
-        for (auto &j: old_decisions) {
-            std::array<double, 5> &d {j.second};
-
-            decltype(decisions)::iterator iter {
-                decisions.insert({j.first, j.second})
-            };
-
-            try_replace(iter, d[0] - delta[0], d[1], d[2], d[3], d[4]);
-            try_replace(iter, d[0] + delta[0], d[1], d[2], d[3], d[4]);
-            try_replace(iter, d[0], d[1] - delta[1], d[2], d[3], d[4]);
-            try_replace(iter, d[0], d[1] + delta[1], d[2], d[3], d[4]);
-            try_replace(iter, d[0], d[1], d[2] - delta[2], d[3], d[4]);
-            try_replace(iter, d[0], d[1], d[2] + delta[2], d[3], d[4]);
-            try_replace(iter, d[0], d[1], d[2], d[3] - delta[3], d[4]);
-            try_replace(iter, d[0], d[1], d[2], d[3] + delta[3], d[4]);
-            try_replace(iter, d[0], d[1], d[2], d[3], d[4] - delta[4]);
-            try_replace(iter, d[0], d[1], d[2], d[3], d[4] + delta[4]);
-        }
+        find_best_local(game, i, decisions, delta, evaluator);
     }
 
     if (decisions.size() > 0) {
@@ -229,7 +257,7 @@ void ai_setsuna(Game &game, uint64_t i, double factor_rd) {
     --game_copy.now_period;
 
     std::array<double, 5> d {
-        ai_find_best(
+        find_best(
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
             [&](Game &game, uint64_t i) {
@@ -263,7 +291,7 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
 
     for (uint64_t j = 0; j < game_copy.player_count; ++j) {
         std::array<double, 5> d {
-            ai_find_best(
+            find_best(
                 game_copy, j,
                 limits_fast, steps_fast, cooling_default,
                 [&](Game &game, uint64_t i) {
@@ -295,7 +323,7 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
     }
 
     std::array<double, 5> d {
-        ai_find_best(
+        find_best(
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
             [&](Game &game, uint64_t i) {
