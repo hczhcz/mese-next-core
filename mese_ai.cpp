@@ -118,7 +118,7 @@ void find_best_global(
         if (game.submit(i, price, prod, mk, ci, rd)) {
             period.exec(last);
 
-            double key = evaluator(game, i);
+            double key = evaluator();
 
             if (decisions.size() == limit) {
                 decisions.erase(decisions.begin());
@@ -182,7 +182,7 @@ void find_best_local(
         if (game.submit(i, price, prod, mk, ci, rd)) {
             period.exec(last);
 
-            double key = evaluator(game, i);
+            double key = evaluator();
 
             if (key > iter->first) {
                 decisions.erase(iter);
@@ -260,18 +260,18 @@ void ai_setsuna(Game &game, uint64_t i, double factor_rd) {
         find_best(
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
-            [&](Game &game, uint64_t i) {
-                if (game.now_period == game.periods.size() - 1) {
+            [&]() {
+                if (game_copy.now_period == game_copy.periods.size() - 1) {
                     return e_setsuna(
-                        game, i,
+                        game_copy, i,
                         0.2, factor_rd
                     ) + e_mpi(
-                        game, i,
+                        game_copy, i,
                         1
                     );
                 } else {
                     return e_setsuna(
-                        game, i,
+                        game_copy, i,
                         0.2, factor_rd
                     );
                 }
@@ -294,24 +294,24 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
             find_best(
                 game_copy, j,
                 limits_fast, steps_fast, cooling_default,
-                [&](Game &game, uint64_t i) {
-                    if (game.now_period == game.periods.size() - 1) {
+                [&]() {
+                    if (game_copy.now_period == game_copy.periods.size() - 1) {
                         return e_setsuna(
-                            game, i,
+                            game_copy, j,
                             0.2, 1
                         ) + e_inertia(
-                            game, i,
+                            game_copy, j,
                             2.5, 1, 2
                         ) + e_mpi(
-                            game, i,
+                            game_copy, j,
                             0.2
                         );
                     } else {
                         return e_setsuna(
-                            game, i,
+                            game_copy, j,
                             0.2, 1
                         ) + e_inertia(
-                            game, i,
+                            game_copy, j,
                             2.5, 1, 2
                         );
                     }
@@ -326,18 +326,18 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
         find_best(
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
-            [&](Game &game, uint64_t i) {
-                if (game.now_period == game.periods.size() - 1) {
+            [&]() {
+                if (game_copy.now_period == game_copy.periods.size() - 1) {
                     return e_setsuna(
-                        game, i,
+                        game_copy, i,
                         0.2, factor_rd
                     ) + e_mpi(
-                        game, i,
+                        game_copy, i,
                         0.5
                     );
                 } else{
                     return e_setsuna(
-                        game, i,
+                        game_copy, i,
                         0.2, factor_rd
                     );
                 }
@@ -363,24 +363,24 @@ void ai_spica(Game &game, uint64_t i, double factor_rd) {
                 find_best(
                     game_copy, j,
                     limits_fast, steps_fast, cooling_default,
-                    [&](Game &game, uint64_t i) {
-                        if (game.now_period == game.periods.size() - 1) {
+                    [&]() {
+                        if (game_copy.now_period == game_copy.periods.size() - 1) {
                             return e_setsuna(
-                                game, i,
+                                game_copy, j,
                                 0.2, 1
                             ) + e_inertia(
-                                game, i,
+                                game_copy, j,
                                 2.5, 1, 2
                             ) + e_mpi(
-                                game, i,
+                                game_copy, j,
                                 0.2
                             );
                         } else{
                             return e_setsuna(
-                                game, i,
+                                game_copy, j,
                                 0.2, 1
                             ) + e_inertia(
-                                game, i,
+                                game_copy, j,
                                 2.5, 1, 2
                             );
                         }
@@ -400,23 +400,23 @@ void ai_spica(Game &game, uint64_t i, double factor_rd) {
         find_best(
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
-            [&](Game &game, uint64_t i) {
+            [&]() {
                 for (
                     uint64_t j = start_period + 1;
-                    j < game.periods.size();
+                    j < game_copy.periods.size();
                     ++j
                 ) {
-                    game.periods[j].exec(game.periods[j - 1]);
+                    game_copy.periods[j].exec(game_copy.periods[j - 1]);
                 }
 
-                game.now_period = game.periods.size() - 1;
+                game_copy.now_period = game_copy.periods.size() - 1;
 
                 double result = e_mpi(
-                    game, i,
+                    game_copy, i,
                     0.5
                 );
 
-                game.now_period = start_period;
+                game_copy.now_period = start_period;
 
                 return result;
             }
