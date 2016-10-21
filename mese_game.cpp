@@ -60,7 +60,7 @@ Game::Game(std::istream &stream):
     );
 
     for (; vsize > 0; --vsize) {
-        periods.push_back({stream});
+        periods.push_back(Period {stream});
     }
 
     if (vtag != BINARY_VER) {

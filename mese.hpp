@@ -199,7 +199,7 @@ public:
     // normal period
     Period(uint64_t count, Period &last, Settings &&_settings);
     // unserialize
-    Period(std::istream &stream);
+    explicit Period(std::istream &stream);
 
     bool submit(
         Period &last, uint64_t i,
@@ -237,7 +237,7 @@ public:
     // new game
     Game(uint64_t count, Settings &&_settings);
     // unserialize
-    Game(std::istream &stream);
+    explicit Game(std::istream &stream);
 
     inline bool get_status(uint64_t i) {
         return (status & (1u << i)) != 0;
