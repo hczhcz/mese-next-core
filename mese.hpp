@@ -289,5 +289,6 @@ void change_setting(
 
 void ai_setsuna(Game &game, uint64_t i, double factor_rd);
 void ai_kokoro(Game &game, uint64_t i, double factor_rd);
+void ai_spica(Game &game, uint64_t i, double factor_rd);
 
 }

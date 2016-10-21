@@ -348,4 +348,82 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
     game.submit(i, d[0], d[1], d[2], d[3], d[4]);
 }
 
+void ai_spica(Game &game, uint64_t i, double factor_rd) {
+    Game game_copy = game; // copy
+
+    game_copy.status = 0;
+    game_copy.close_force();
+    --game_copy.now_period;
+
+    uint64_t start_period = game_copy.now_period;
+
+    while (game_copy.now_period < game_copy.periods.size()) {
+        for (uint64_t j = 0; j < game_copy.player_count; ++j) {
+            std::array<double, 5> d {
+                find_best(
+                    game_copy, j,
+                    limits_fast, steps_fast, cooling_default,
+                    [&](Game &game, uint64_t i) {
+                        if (game.now_period == game.periods.size() - 1) {
+                            return e_setsuna(
+                                game, i,
+                                0.2, 1
+                            ) + e_inertia(
+                                game, i,
+                                2.5, 1, 2
+                            ) + e_mpi(
+                                game, i,
+                                0.2
+                            );
+                        } else{
+                            return e_setsuna(
+                                game, i,
+                                0.2, 1
+                            ) + e_inertia(
+                                game, i,
+                                2.5, 1, 2
+                            );
+                        }
+                    }
+                )
+            };
+
+            game_copy.submit(j, d[0], d[1], d[2], d[3], d[4]);
+        }
+
+        game_copy.close_force();
+    }
+
+    game_copy.now_period = start_period;
+
+    std::array<double, 5> d {
+        find_best(
+            game_copy, i,
+            limits_slow, steps_slow, cooling_default,
+            [&](Game &game, uint64_t i) {
+                for (
+                    uint64_t j = start_period + 1;
+                    j < game.periods.size();
+                    ++j
+                ) {
+                    game.periods[j].exec(game.periods[j - 1]);
+                }
+
+                game.now_period = game.periods.size() - 1;
+
+                double result = e_mpi(
+                    game, i,
+                    0.5
+                );
+
+                game.now_period = start_period;
+
+                return result;
+            }
+        )
+    };
+
+    game.submit(i, d[0], d[1], d[2], d[3], d[4]);
+}
+
 }
