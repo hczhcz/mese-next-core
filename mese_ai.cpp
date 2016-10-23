@@ -348,7 +348,7 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
                         game_copy, i,
                         0.5
                     );
-                } else{
+                } else {
                     return e_setsuna(
                         game_copy, i,
                         0.2, factor_rd, 4
@@ -388,7 +388,7 @@ void ai_spica(Game &game, uint64_t i, double factor_rd) {
                                 game_copy, j,
                                 0.2
                             );
-                        } else{
+                        } else {
                             return e_setsuna(
                                 game_copy, j,
                                 0.2, 1, 4
@@ -412,14 +412,10 @@ void ai_spica(Game &game, uint64_t i, double factor_rd) {
     std::array<double, 5> d {
         find_best(
             game_copy, i,
-            limits_slow, steps_slow, cooling_default,
+            limits_fast, steps_fast, cooling_default,
             [&]() {
-                for (
-                    uint64_t j = start_period + 1;
-                    j < game_copy.periods.size();
-                    ++j
-                ) {
-                    game_copy.periods[j].exec(game_copy.periods[j - 1]);
+                while (game_copy.now_period < game_copy.periods.size()) {
+                    game_copy.close_force();
                 }
 
                 game_copy.now_period = game_copy.periods.size() - 1;
