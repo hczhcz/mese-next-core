@@ -33,18 +33,21 @@ const double cooling_default {0.9};
 
 double e_setsuna(
     Game &game, uint64_t i,
-    double factor_ci, double factor_rd
+    double factor_ci, double factor_rd, double factor_inv
 ) {
     Period &period {game.periods[game.now_period]};
+    Period &last {game.periods[game.now_period - 1]};
 
     return period.retern[i]
         + factor_ci
-            * (1 - 2 * period.inventory[i] / period.size[i])
+            * (1 - 2 * last.inventory[i] / last.size[i])
             * period.capital[i]
         + factor_rd
             * min(div(period.decisions.ci[i], period.decisions.rd[i], 1), 1)
             * (log(game.periods.size()) - log(game.now_period + 1))
-            * period.history_rd[i];
+            * period.history_rd[i]
+        + factor_inv
+            * period.inventory[i];
 }
 
 double e_inertia(
@@ -229,7 +232,12 @@ std::array<double, 5> find_best(
 
     double delta[5];
 
-    find_best_global(game, i, decisions, limits[0], steps, delta, evaluator);
+    find_best_global(
+        game, i,
+        decisions,
+        limits[0], steps, delta,
+        evaluator
+    );
 
     for (uint64_t limit: limits) {
         while (decisions.size() > limit) {
@@ -240,11 +248,16 @@ std::array<double, 5> find_best(
             delta[j] *= cooling;
         }
 
-        find_best_local(game, i, decisions, delta, evaluator);
+        find_best_local(
+            game, i,
+            decisions,
+            delta,
+            evaluator
+        );
     }
 
     if (decisions.size() > 0) {
-        return decisions.rbegin()->second;
+        return decisions.rbegin()->second; // copy
     } else {
         return {{-1, 0, 0, 0, 0}}; // error
     }
@@ -264,7 +277,7 @@ void ai_setsuna(Game &game, uint64_t i, double factor_rd) {
                 if (game_copy.now_period == game_copy.periods.size() - 1) {
                     return e_setsuna(
                         game_copy, i,
-                        0.2, factor_rd
+                        0.2, factor_rd, 0
                     ) + e_mpi(
                         game_copy, i,
                         1
@@ -272,7 +285,7 @@ void ai_setsuna(Game &game, uint64_t i, double factor_rd) {
                 } else {
                     return e_setsuna(
                         game_copy, i,
-                        0.2, factor_rd
+                        0.2, factor_rd, 0
                     );
                 }
             }
@@ -298,7 +311,7 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
                     if (game_copy.now_period == game_copy.periods.size() - 1) {
                         return e_setsuna(
                             game_copy, j,
-                            0.2, 1
+                            0.2, 1, 4
                         ) + e_inertia(
                             game_copy, j,
                             2.5, 1, 2
@@ -309,7 +322,7 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
                     } else {
                         return e_setsuna(
                             game_copy, j,
-                            0.2, 1
+                            0.2, 1, 4
                         ) + e_inertia(
                             game_copy, j,
                             2.5, 1, 2
@@ -330,7 +343,7 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
                 if (game_copy.now_period == game_copy.periods.size() - 1) {
                     return e_setsuna(
                         game_copy, i,
-                        0.2, factor_rd
+                        0.2, factor_rd, 4
                     ) + e_mpi(
                         game_copy, i,
                         0.5
@@ -338,7 +351,7 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
                 } else{
                     return e_setsuna(
                         game_copy, i,
-                        0.2, factor_rd
+                        0.2, factor_rd, 4
                     );
                 }
             }
@@ -367,7 +380,7 @@ void ai_spica(Game &game, uint64_t i, double factor_rd) {
                         if (game_copy.now_period == game_copy.periods.size() - 1) {
                             return e_setsuna(
                                 game_copy, j,
-                                0.2, 1
+                                0.2, 1, 4
                             ) + e_inertia(
                                 game_copy, j,
                                 2.5, 1, 2
@@ -378,7 +391,7 @@ void ai_spica(Game &game, uint64_t i, double factor_rd) {
                         } else{
                             return e_setsuna(
                                 game_copy, j,
-                                0.2, 1
+                                0.2, 1, 4
                             ) + e_inertia(
                                 game_copy, j,
                                 2.5, 1, 2
