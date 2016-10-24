@@ -91,6 +91,51 @@ double e_mpi(
         * (period.mpi[i] - max_mpi);
 }
 
+double ec_play(
+    Game &game, uint64_t i,
+    double factor_ci, double factor_rd, double factor_inv,
+    double factor_mpi
+) {
+    if (game.now_period == game.periods.size() - 1) {
+        return e_setsuna(
+            game, i,
+            factor_ci, factor_rd, factor_inv
+        ) + e_mpi(
+            game, i,
+            factor_mpi
+        );
+    } else {
+        return e_setsuna(
+            game, i,
+            factor_ci, factor_rd, factor_inv
+        );
+    }
+}
+
+double ec_predict(
+    Game &game, uint64_t i,
+    double factor_ci, double factor_rd, double factor_inv,
+    double factor_mpi
+) {
+    if (game.now_period == game.periods.size() - 1) {
+        return e_setsuna(
+            game, i,
+            factor_ci, factor_rd, factor_inv
+        ) + e_mpi(
+            game, i,
+            factor_mpi
+        );
+    } else {
+        return e_setsuna(
+            game, i,
+            factor_ci, factor_rd, factor_inv
+        ) + e_inertia(
+            game, i,
+            2.5, 1, 2
+        );
+    }
+}
+
 template <class T>
 void find_best_global(
     Game &game, uint64_t i,
@@ -274,20 +319,7 @@ void ai_setsuna(Game &game, uint64_t i, double factor_rd) {
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
             [&]() {
-                if (game_copy.now_period == game_copy.periods.size() - 1) {
-                    return e_setsuna(
-                        game_copy, i,
-                        0.2, factor_rd, 0
-                    ) + e_mpi(
-                        game_copy, i,
-                        1
-                    );
-                } else {
-                    return e_setsuna(
-                        game_copy, i,
-                        0.2, factor_rd, 0
-                    );
-                }
+                return ec_play(game_copy, i, 0.2, factor_rd, 0, 1);
             }
         )
     };
@@ -308,23 +340,7 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
                 game_copy, j,
                 limits_fast, steps_fast, cooling_default,
                 [&]() {
-                    if (game_copy.now_period == game_copy.periods.size() - 1) {
-                        return e_setsuna(
-                            game_copy, j,
-                            0.2, 1, 4
-                        ) + e_mpi(
-                            game_copy, j,
-                            0.2
-                        );
-                    } else {
-                        return e_setsuna(
-                            game_copy, j,
-                            0.2, 1, 4
-                        ) + e_inertia(
-                            game_copy, j,
-                            2.5, 1, 2
-                        );
-                    }
+                    return ec_predict(game_copy, j, 0.2, 1, 4, 0.2);
                 }
             )
         };
@@ -337,20 +353,7 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
             [&]() {
-                if (game_copy.now_period == game_copy.periods.size() - 1) {
-                    return e_setsuna(
-                        game_copy, i,
-                        0.2, factor_rd, 4
-                    ) + e_mpi(
-                        game_copy, i,
-                        0.5
-                    );
-                } else {
-                    return e_setsuna(
-                        game_copy, i,
-                        0.2, factor_rd, 4
-                    );
-                }
+                return ec_play(game_copy, i, 0.2, factor_rd, 4, 0.5);
             }
         )
     };
@@ -376,20 +379,7 @@ void ai_melody(Game &game, uint64_t i) {
                     game_copy, j,
                     limits_fast, steps_fast, cooling_default,
                     [&]() {
-                        if (game_copy.now_period == game_copy.periods.size() - 1) {
-                            return e_setsuna(
-                                game_copy, j,
-                                0.2, 1, 4
-                            ) + e_mpi(
-                                game_copy, j,
-                                0.2
-                            );
-                        } else {
-                            return e_setsuna(
-                                game_copy, j,
-                                0.2, 1, 4
-                            );
-                        }
+                        return ec_play(game_copy, j, 0.2, 1, 4, 0.2);
                     }
                 )
             };
@@ -426,20 +416,7 @@ void ai_melody(Game &game, uint64_t i) {
                     game_copy, i,
                     limits_fast, steps_fast, cooling_default,
                     [&]() {
-                        if (game_copy.now_period == game_copy.periods.size() - 1) {
-                            return e_setsuna(
-                                game_copy, i,
-                                0.2, factor_rd, 0
-                            ) + e_mpi(
-                                game_copy, i,
-                                1
-                            );
-                        } else {
-                            return e_setsuna(
-                                game_copy, i,
-                                0.2, factor_rd, 0
-                            );
-                        }
+                        return ec_play(game_copy, i, 0.2, factor_rd, 0, 1);
                     }
                 )
             };
@@ -464,27 +441,13 @@ void ai_melody(Game &game, uint64_t i) {
 
         game_copy.now_period = start_period;
     }
-    std::cerr << best_factor_rd<<std::endl;
 
     std::array<double, 5> d {
         find_best(
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
             [&]() {
-                if (game_copy.now_period == game_copy.periods.size() - 1) {
-                    return e_setsuna(
-                        game_copy, i,
-                        0.2, best_factor_rd, 0
-                    ) + e_mpi(
-                        game_copy, i,
-                        1
-                    );
-                } else {
-                    return e_setsuna(
-                        game_copy, i,
-                        0.2, best_factor_rd, 0
-                    );
-                }
+                return ec_play(game_copy, i, 0.2, best_factor_rd, 0, 1);
             }
         )
     };
@@ -508,27 +471,10 @@ void ai_spica(Game &game, uint64_t i) {
                     game_copy, j,
                     limits_fast, steps_fast, cooling_default,
                     [&]() {
-                        if (game_copy.now_period == game_copy.periods.size() - 1) {
-                            return e_setsuna(
-                                game_copy, j,
-                                0.2, 1, 4
-                            ) + e_mpi(
-                                game_copy, j,
-                                0.2
-                            );
-                        } else if (game_copy.now_period > start_period) {
-                            return e_setsuna(
-                                game_copy, j,
-                                0.2, 1, 4
-                            );
+                        if (game_copy.now_period > start_period) {
+                            return ec_play(game_copy, j, 0.2, 1, 4, 0.2);
                         } else {
-                            return e_setsuna(
-                                game_copy, j,
-                                0.2, 1, 4
-                            ) + e_inertia(
-                                game_copy, j,
-                                2.5, 1, 2
-                            );
+                            return ec_predict(game_copy, j, 0.2, 1, 4, 0.2);
                         }
                     }
                 )
@@ -566,20 +512,7 @@ void ai_spica(Game &game, uint64_t i) {
                     game_copy, i,
                     limits_fast, steps_fast, cooling_default,
                     [&]() {
-                        if (game_copy.now_period == game_copy.periods.size() - 1) {
-                            return e_setsuna(
-                                game_copy, i,
-                                0.2, factor_rd, 4
-                            ) + e_mpi(
-                                game_copy, i,
-                                0.5
-                            );
-                        } else {
-                            return e_setsuna(
-                                game_copy, i,
-                                0.2, factor_rd, 4
-                            );
-                        }
+                        return ec_play(game_copy, i, 0.2, factor_rd, 4, 0.5);
                     }
                 )
             };
@@ -610,20 +543,7 @@ void ai_spica(Game &game, uint64_t i) {
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
             [&]() {
-                if (game_copy.now_period == game_copy.periods.size() - 1) {
-                    return e_setsuna(
-                        game_copy, i,
-                        0.2, best_factor_rd, 4
-                    ) + e_mpi(
-                        game_copy, i,
-                        0.5
-                    );
-                } else {
-                    return e_setsuna(
-                        game_copy, i,
-                        0.2, best_factor_rd, 4
-                    );
-                }
+                return ec_play(game_copy, i, 0.2, best_factor_rd, 4, 0.5);
             }
         )
     };
