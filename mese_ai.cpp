@@ -247,20 +247,23 @@ void find_best_local(
     old_decisions.swap(decisions);
 
     for (auto &j: old_decisions) {
-        std::array<double, 5> &d {j.second};
-
         std::multimap<double, std::array<double, 5>>::iterator iter {
             decisions.insert({j.first, j.second})
         };
 
+        std::array<double, 5> &d {iter->second};
         try_replace(iter, d[0] - delta[0], d[1], d[2], d[3], d[4]);
         try_replace(iter, d[0] + delta[0], d[1], d[2], d[3], d[4]);
+        d = iter->second;
         try_replace(iter, d[0], d[1] - delta[1], d[2], d[3], d[4]);
         try_replace(iter, d[0], d[1] + delta[1], d[2], d[3], d[4]);
+        d = iter->second;
         try_replace(iter, d[0], d[1], d[2] - delta[2], d[3], d[4]);
         try_replace(iter, d[0], d[1], d[2] + delta[2], d[3], d[4]);
+        d = iter->second;
         try_replace(iter, d[0], d[1], d[2], d[3] - delta[3], d[4]);
         try_replace(iter, d[0], d[1], d[2], d[3] + delta[3], d[4]);
+        d = iter->second;
         try_replace(iter, d[0], d[1], d[2], d[3], d[4] - delta[4]);
         try_replace(iter, d[0], d[1], d[2], d[3], d[4] + delta[4]);
     }
