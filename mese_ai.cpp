@@ -358,7 +358,7 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
     game.submit(i, d[0], d[1], d[2], d[3], d[4]);
 }
 
-void ai_spica(Game &game, uint64_t i, double /* factor_rd */) {
+void ai_spica(Game &game, uint64_t i) {
     Game game_copy = game; // copy
 
     uint64_t start_period = game_copy.now_period;

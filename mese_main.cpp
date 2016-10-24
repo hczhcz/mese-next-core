@@ -400,7 +400,7 @@ int frontend(int argc, char *argv[]) {
             } else if (strcmp(argv[3], "moon") == 0) {
                 ai_kokoro(game, strtoul(argv[2], nullptr, 10), 0.6);
             } else if (strcmp(argv[3], "spica") == 0) {
-                ai_spica(game, strtoul(argv[2], nullptr, 10), 1);
+                ai_spica(game, strtoul(argv[2], nullptr, 10));
             } else {
                 throw 1; // TODO
             }
