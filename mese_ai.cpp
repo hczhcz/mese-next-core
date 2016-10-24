@@ -40,12 +40,13 @@ double e_setsuna(
 
     return period.retern[i]
         + factor_ci
+            * (1 - exp(-div(period.sales[i], period.decisions.ci[i], 1)))
             * (1 - 2 * last.inventory[i] / last.size[i])
-            * period.capital[i]
+            * period.decisions.ci[i]
         + factor_rd
-            * min(div(period.decisions.ci[i], period.decisions.rd[i], 1), 1)
+            * (1 - exp(-div(period.decisions.ci[i], period.decisions.rd[i], 1)))
             * (log(game.periods.size()) - log(game.now_period + 1))
-            * period.history_rd[i]
+            * period.decisions.rd[i]
         + factor_inv
             * period.inventory[i];
 }
