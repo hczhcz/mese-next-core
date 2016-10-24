@@ -358,6 +358,140 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
     game.submit(i, d[0], d[1], d[2], d[3], d[4]);
 }
 
+void ai_melody(Game &game, uint64_t i) {
+    Game game_copy = game; // copy
+
+    uint64_t start_period = game_copy.now_period;
+
+    game_copy.close_force();
+
+    while (game_copy.now_period < game_copy.periods.size()) {
+        game_copy.status = 0;
+        game_copy.close_force();
+        --game_copy.now_period;
+
+        for (uint64_t j = 0; j < game_copy.player_count; ++j) {
+            std::array<double, 5> d {
+                find_best(
+                    game_copy, j,
+                    limits_fast, steps_fast, cooling_default,
+                    [&]() {
+                        if (game_copy.now_period == game_copy.periods.size() - 1) {
+                            return e_setsuna(
+                                game_copy, j,
+                                0.2, 1, 4
+                            ) + e_mpi(
+                                game_copy, j,
+                                0.2
+                            );
+                        } else {
+                            return e_setsuna(
+                                game_copy, j,
+                                0.2, 1, 4
+                            );
+                        }
+                    }
+                )
+            };
+
+            game_copy.submit(j, d[0], d[1], d[2], d[3], d[4]);
+        }
+
+        game_copy.close_force();
+    }
+
+    game_copy.now_period = start_period;
+
+    double best_evaluation;
+    double best_factor_rd;
+
+    for (double factor_rd = 0; factor_rd < 3; factor_rd += 0.25) {
+        while (game_copy.now_period < game_copy.periods.size()) {
+            Period &period {game_copy.periods[game_copy.now_period]};
+            Period &last {game_copy.periods[game_copy.now_period - 1]};
+
+            for (uint64_t j = 0; j < game_copy.player_count; ++j) {
+                game_copy.submit(
+                    j,
+                    period.decisions.price[j],
+                    period.decisions.prod[j],
+                    period.decisions.mk[j],
+                    period.decisions.ci[j],
+                    period.decisions.rd[j]
+                );
+            }
+
+            std::array<double, 5> d {
+                find_best(
+                    game_copy, i,
+                    limits_fast, steps_fast, cooling_default,
+                    [&]() {
+                        if (game_copy.now_period == game_copy.periods.size() - 1) {
+                            return e_setsuna(
+                                game_copy, i,
+                                0.2, factor_rd, 0
+                            ) + e_mpi(
+                                game_copy, i,
+                                1
+                            );
+                        } else {
+                            return e_setsuna(
+                                game_copy, i,
+                                0.2, factor_rd, 0
+                            );
+                        }
+                    }
+                )
+            };
+
+            game_copy.submit(i, d[0], d[1], d[2], d[3], d[4]);
+
+            period.exec(last);
+            ++game_copy.now_period;
+        }
+
+        game_copy.now_period = game_copy.periods.size() - 1;
+
+        double evaluation = e_mpi(
+            game_copy, i,
+            1
+        );
+
+        if (evaluation > best_evaluation) {
+            best_evaluation = evaluation;
+            best_factor_rd = factor_rd;
+        }
+
+        game_copy.now_period = start_period;
+    }
+    std::cerr << best_factor_rd<<std::endl;
+
+    std::array<double, 5> d {
+        find_best(
+            game_copy, i,
+            limits_slow, steps_slow, cooling_default,
+            [&]() {
+                if (game_copy.now_period == game_copy.periods.size() - 1) {
+                    return e_setsuna(
+                        game_copy, i,
+                        0.2, best_factor_rd, 0
+                    ) + e_mpi(
+                        game_copy, i,
+                        1
+                    );
+                } else {
+                    return e_setsuna(
+                        game_copy, i,
+                        0.2, best_factor_rd, 0
+                    );
+                }
+            }
+        )
+    };
+
+    game.submit(i, d[0], d[1], d[2], d[3], d[4]);
+}
+
 void ai_spica(Game &game, uint64_t i) {
     Game game_copy = game; // copy
 

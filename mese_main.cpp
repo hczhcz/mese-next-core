@@ -16,7 +16,6 @@ void test() {
     game.alloc();
     game.alloc();
 
-    ai_kokoro(game, 9, 1);
     game.submit(0, 75, 500, 5000, 12000, 8500);
     game.submit(1, 62, 446, 0, 12000, 10000);
     game.submit(2, 73, 525, 7070, 12000, 10111);
@@ -26,9 +25,9 @@ void test() {
     game.submit(6, 62, 420, 2000, 9000, 12000);
     game.submit(7, 65, 447, 0, 15000, 12500);
     game.submit(8, 60, 525, 4000, 15000, 5000);
+    ai_melody(game, 9);
     game.close_force();
 
-    ai_kokoro(game, 9, 1);
     game.submit(0, 68, 720, 9000, 4900, 0);
     game.submit(1, 60, 640, 7500, 7000, 0);
     game.submit(2, 65, 798, 5000, 9000, 7690);
@@ -38,9 +37,9 @@ void test() {
     game.submit(6, 54, 723, 0, 12000, 0);
     game.submit(7, 57, 750, 8000, 6798, 0);
     game.submit(8, 62, 720, 6000, 15000, 0);
+    ai_melody(game, 9);
     game.close_force();
 
-    ai_kokoro(game, 9, 1);
     game.submit(0, 60, 800, 12000, 13000, 13000);
     game.submit(1, 52, 747, 10000, 15000, 3500);
     game.submit(2, 51, 787, 2000, 8000, 12000);
@@ -50,9 +49,9 @@ void test() {
     game.submit(6, 47, 890, 8000, 13000, 1000);
     game.submit(7, 51, 900, 5000, 11900, 12000);
     game.submit(8, 39, 964, 4000, 13000, 0);
+    ai_melody(game, 9);
     game.close_force();
 
-    ai_kokoro(game, 9, 1);
     game.submit(0, 58, 1162, 10000, 15000, 15000);
     game.submit(1, 46, 1010, 13000, 15000, 0);
     game.submit(2, 37, 908, 1000, 12000, 1000);
@@ -62,9 +61,9 @@ void test() {
     game.submit(6, 42, 1011, 8000, 2526, 10000);
     game.submit(7, 47, 1000, 6000, 13595, 10000);
     game.submit(8, 35, 1350, 6000, 15000, 0);
+    ai_melody(game, 9);
     game.close_force();
 
-    ai_kokoro(game, 9, 1);
     game.submit(0, 45, 1400, 13000, 14000, 15000);
     game.submit(1, 41, 1260, 15000, 15000, 0);
     game.submit(2, 27, 1102, 1000, 12000, 1000);
@@ -74,9 +73,9 @@ void test() {
     game.submit(6, 42, 1263, 12000, 2526, 12000);
     game.submit(7, 45, 1369, 10000, 15000, 12000);
     game.submit(8, 30, 1650, 6000, 10000, 0);
+    ai_melody(game, 9);
     game.close_force();
 
-    ai_kokoro(game, 9, 1);
     game.submit(0, 42, 1750, 15000, 15000, 0);
     game.submit(1, 38, 1500, 15000, 15000, 0);
     game.submit(2, 34, 1287, 12000, 12000, 1000);
@@ -86,9 +85,9 @@ void test() {
     game.submit(6, 34, 1263, 0, 2526, 0);
     game.submit(7, 43, 1688, 15000, 15000, 10000);
     game.submit(8, 28, 1932, 6000, 10000, 0);
+    ai_melody(game, 9);
     game.close_force();
 
-    ai_kokoro(game, 9, 1);
     game.submit(0, 30, 1900, 15000, 15000, 0);
     game.submit(1, 30, 1722, 15000, 4304, 0);
     game.submit(2, 28, 1463, 12000, 12000, 1000);
@@ -98,6 +97,7 @@ void test() {
     game.submit(6, 39, 1263, 12000, 0, 0);
     game.submit(7, 39, 1920, 15000, 13913, 0);
     game.submit(8, 22, 2086, 0, 5000, 0);
+    ai_melody(game, 9);
     game.close_force();
 
     game.print_player(std::cout, 9);
@@ -399,6 +399,8 @@ int frontend(int argc, char *argv[]) {
                 ai_kokoro(game, strtoul(argv[2], nullptr, 10), 1);
             } else if (strcmp(argv[3], "moon") == 0) {
                 ai_kokoro(game, strtoul(argv[2], nullptr, 10), 0.6);
+            } else if (strcmp(argv[3], "melody") == 0) {
+                ai_melody(game, strtoul(argv[2], nullptr, 10));
             } else if (strcmp(argv[3], "spica") == 0) {
                 ai_spica(game, strtoul(argv[2], nullptr, 10));
             } else {
