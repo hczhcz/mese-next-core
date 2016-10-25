@@ -40,8 +40,7 @@ double e_setsuna(
 
     return period.retern[i]
         + factor_ci
-            * (1 - exp(-div(period.sales[i], period.decisions.ci[i], 1)))
-            * (1 - 2 * last.inventory[i] / last.size[i])
+            * max(1 - 1.5 * last.inventory[i] / last.sold[i], 0)
             * period.decisions.ci[i]
         + factor_rd
             * (1 - exp(-div(period.decisions.ci[i], period.decisions.rd[i], 1)))
@@ -323,7 +322,7 @@ void ai_setsuna(Game &game, uint64_t i, double factor_rd) {
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
             [&]() {
-                return ec_play(game_copy, i, 0.2, factor_rd, 0, 1);
+                return ec_play(game_copy, i, 0.1, factor_rd, 0, 1);
             }
         )
     };
@@ -344,7 +343,7 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
                 game_copy, j,
                 limits_fast, steps_fast, cooling_default,
                 [&]() {
-                    return ec_predict(game_copy, j, 0.2, 1, 4, 0.2);
+                    return ec_predict(game_copy, j, 0.1, 1, 4, 0.2);
                 }
             )
         };
@@ -357,7 +356,7 @@ void ai_kokoro(Game &game, uint64_t i, double factor_rd) {
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
             [&]() {
-                return ec_play(game_copy, i, 0.2, factor_rd, 4, 0.5);
+                return ec_play(game_copy, i, 0.1, factor_rd, 4, 0.5);
             }
         )
     };
@@ -383,7 +382,7 @@ void ai_melody(Game &game, uint64_t i) {
                     game_copy, j,
                     limits_fast, steps_fast, cooling_default,
                     [&]() {
-                        return ec_play(game_copy, j, 0.2, 1, 4, 0.2);
+                        return ec_play(game_copy, j, 0.1, 1, 4, 0.2);
                     }
                 )
             };
@@ -420,7 +419,7 @@ void ai_melody(Game &game, uint64_t i) {
                     game_copy, i,
                     limits_fast, steps_fast, cooling_default,
                     [&]() {
-                        return ec_play(game_copy, i, 0.2, factor_rd, 0, 1);
+                        return ec_play(game_copy, i, 0.1, factor_rd, 0, 1);
                     }
                 )
             };
@@ -451,7 +450,7 @@ void ai_melody(Game &game, uint64_t i) {
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
             [&]() {
-                return ec_play(game_copy, i, 0.2, best_factor_rd, 0, 1);
+                return ec_play(game_copy, i, 0.1, best_factor_rd, 0, 1);
             }
         )
     };
@@ -476,9 +475,9 @@ void ai_spica(Game &game, uint64_t i) {
                     limits_fast, steps_fast, cooling_default,
                     [&]() {
                         if (game_copy.now_period > start_period) {
-                            return ec_play(game_copy, j, 0.2, 1, 4, 0.2);
+                            return ec_play(game_copy, j, 0.1, 1, 4, 0.2);
                         } else {
-                            return ec_predict(game_copy, j, 0.2, 1, 4, 0.2);
+                            return ec_predict(game_copy, j, 0.1, 1, 4, 0.2);
                         }
                     }
                 )
@@ -516,7 +515,7 @@ void ai_spica(Game &game, uint64_t i) {
                     game_copy, i,
                     limits_fast, steps_fast, cooling_default,
                     [&]() {
-                        return ec_play(game_copy, i, 0.2, factor_rd, 4, 0.5);
+                        return ec_play(game_copy, i, 0.1, factor_rd, 4, 0.5);
                     }
                 )
             };
@@ -547,7 +546,7 @@ void ai_spica(Game &game, uint64_t i) {
             game_copy, i,
             limits_slow, steps_slow, cooling_default,
             [&]() {
-                return ec_play(game_copy, i, 0.2, best_factor_rd, 4, 0.5);
+                return ec_play(game_copy, i, 0.1, best_factor_rd, 4, 0.5);
             }
         )
     };
