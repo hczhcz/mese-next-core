@@ -141,8 +141,8 @@ void find_best_global(
     Game &game, uint64_t i,
     std::multimap<double, std::array<double, 5>> &decisions,
     uint64_t limit,
-    const double (&min)[5],
-    const double (&max)[5],
+    const double (&range_min)[5],
+    const double (&range_max)[5],
     const double (&delta)[5],
     T evaluator
 ) {
@@ -168,30 +168,30 @@ void find_best_global(
     };
 
     for (
-        double price = min[0] + 0.5 * delta[0];
-        price < max[0];
+        double price = range_min[0] + 0.5 * delta[0];
+        price < range_max[0];
         price += delta[0]
     ) {
         try_submit(price, 0, 0, 0, 0); // loan limit protection
 
         for (
-            double prod = min[1] + 0.5 * delta[1];
-            prod < max[1];
+            double prod = range_min[1] + 0.5 * delta[1];
+            prod < range_max[1];
             prod += delta[1]
         ) {
             for (
-                double mk = min[2] + 0.5 * delta[2];
-                mk < max[2];
+                double mk = range_min[2] + 0.5 * delta[2];
+                mk < range_max[2];
                 mk += delta[2]
             ) {
                 for (
-                    double ci = min[3] + 0.5 * delta[3];
-                    ci < max[3];
+                    double ci = range_min[3] + 0.5 * delta[3];
+                    ci < range_max[3];
                     ci += delta[3]
                 ) {
                     for (
-                        double rd = min[4] + 0.5 * delta[4];
-                        rd < max[4];
+                        double rd = range_min[4] + 0.5 * delta[4];
+                        rd < range_max[4];
                         rd += delta[4]
                     ) {
                         try_submit(price, prod, mk, ci, rd);
@@ -270,7 +270,7 @@ std::array<double, 5> find_best(
 
     std::multimap<double, std::array<double, 5>> decisions;
 
-    double min[5] {
+    double range_min[5] {
         period.settings.price_min,
         0,
         0,
@@ -278,7 +278,7 @@ std::array<double, 5> find_best(
         0
     };
 
-    double max[5] {
+    double range_max[5] {
         period.settings.price_max,
         last.size[i],
         period.settings.mk_limit / game.player_count,
@@ -286,15 +286,32 @@ std::array<double, 5> find_best(
         period.settings.rd_limit / game.player_count
     };
 
+    double fund = last.cash[i] - last.loan[i]
+        + period.settings.loan_limit / game.player_count
+        + period.settings.deprecation_rate * last.capital[i];
+    double range_limit[5] {
+        last.average_price * 3,
+        last.size[i],
+        0.5 * fund,
+        0.5 * fund,
+        0.5 * fund
+    };
+
     double delta[5];
     for (uint64_t j = 0; j < 5; ++j) {
-        delta[j] = (max[j] - min[j]) / steps[j];
+        delta[j] = min(
+            range_max[j] - range_min[j],
+            max(
+                0.25 * (range_max[j] - range_min[j]),
+                range_limit[j]
+            )
+        ) / steps[j];
     }
 
     find_best_global(
         game, i,
         decisions,
-        limits[0], min, max, delta,
+        limits[0], range_min, range_max, delta,
         evaluator
     );
 
