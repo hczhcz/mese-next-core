@@ -141,24 +141,13 @@ void find_best_global(
     Game &game, uint64_t i,
     std::multimap<double, std::array<double, 5>> &decisions,
     uint64_t limit,
-    const uint64_t (&steps)[5],
-    double (&delta)[5],
+    const double (&min)[5],
+    const double (&max)[5],
+    const double (&delta)[5],
     T evaluator
 ) {
     Period &period {game.periods[game.now_period]};
     Period &last {game.periods[game.now_period - 1]};
-
-    double range[5] {
-        period.settings.price_max - period.settings.price_min,
-        last.size[i],
-        period.settings.mk_limit / game.player_count,
-        period.settings.ci_limit / game.player_count,
-        period.settings.rd_limit / game.player_count
-    };
-
-    for (uint64_t j = 0; j < 5; ++j) {
-        delta[j] = range[j] / steps[j];
-    }
 
     auto try_submit = [&](
         double price, double prod, double mk, double ci, double rd
@@ -179,30 +168,30 @@ void find_best_global(
     };
 
     for (
-        double price = period.settings.price_min + 0.5 * delta[0];
-        price < range[0] + period.settings.price_min;
+        double price = min[0] + 0.5 * delta[0];
+        price < max[0];
         price += delta[0]
     ) {
         try_submit(price, 0, 0, 0, 0); // loan limit protection
 
         for (
-            double prod = 0.5 * delta[1];
-            prod < range[1];
+            double prod = min[1] + 0.5 * delta[1];
+            prod < max[1];
             prod += delta[1]
         ) {
             for (
-                double mk = 0.5 * delta[2];
-                mk < range[2];
+                double mk = min[2] + 0.5 * delta[2];
+                mk < max[2];
                 mk += delta[2]
             ) {
                 for (
-                    double ci = 0.5 * delta[3];
-                    ci < range[3];
+                    double ci = min[3] + 0.5 * delta[3];
+                    ci < max[3];
                     ci += delta[3]
                 ) {
                     for (
-                        double rd = 0.5 * delta[4];
-                        rd < range[4];
+                        double rd = min[4] + 0.5 * delta[4];
+                        rd < max[4];
                         rd += delta[4]
                     ) {
                         try_submit(price, prod, mk, ci, rd);
@@ -245,9 +234,9 @@ void find_best_local(
     std::multimap<double, std::array<double, 5>> old_decisions;
     old_decisions.swap(decisions);
 
-    for (auto &j: old_decisions) {
+    for (auto &decision: old_decisions) {
         std::multimap<double, std::array<double, 5>>::iterator iter {
-            decisions.insert({j.first, j.second})
+            decisions.insert({decision.first, decision.second})
         };
 
         std::array<double, 5> &d {iter->second};
@@ -276,14 +265,36 @@ std::array<double, 5> find_best(
     double cooling,
     T evaluator
 ) {
+    Period &period {game.periods[game.now_period]};
+    Period &last {game.periods[game.now_period - 1]};
+
     std::multimap<double, std::array<double, 5>> decisions;
 
+    double min[5] {
+        period.settings.price_min,
+        0,
+        0,
+        0,
+        0
+    };
+
+    double max[5] {
+        period.settings.price_max,
+        last.size[i],
+        period.settings.mk_limit / game.player_count,
+        period.settings.ci_limit / game.player_count,
+        period.settings.rd_limit / game.player_count
+    };
+
     double delta[5];
+    for (uint64_t j = 0; j < 5; ++j) {
+        delta[j] = (max[j] - min[j]) / steps[j];
+    }
 
     find_best_global(
         game, i,
         decisions,
-        limits[0], steps, delta,
+        limits[0], min, max, delta,
         evaluator
     );
 

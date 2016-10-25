@@ -233,16 +233,16 @@ void print_info(bool info, bool help, bool list, bool cow) {
         std::cout << MESE_HL1("  Presets  ") << std::endl;
         std::cout << std::endl;
 
-        for (const std::string &i: list_presets()) {
-            std::cout << MESE_HL2(i) << std::endl;
+        for (const std::string &item: list_presets()) {
+            std::cout << MESE_HL2(item) << std::endl;
         }
         std::cout << std::endl;
 
         std::cout << MESE_HL1("  Settings  ") << std::endl;
         std::cout << std::endl;
 
-        for (const std::string &i: list_settings()) {
-            std::cout << MESE_HL2(i) << std::endl;
+        for (const std::string &item: list_settings()) {
+            std::cout << MESE_HL2(item) << std::endl;
         }
         std::cout << std::endl;
     }
