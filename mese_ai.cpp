@@ -293,9 +293,9 @@ std::array<double, 5> find_best(
     double range_limit[5] {
         last.average_price * 3,
         last.size[i],
-        0.5 * fund,
-        0.5 * fund,
-        0.5 * fund
+        min(0.5 * fund, period.settings.initial_capital / game.player_count),
+        min(0.5 * fund, period.settings.initial_capital / game.player_count),
+        min(0.5 * fund, period.settings.initial_capital / game.player_count)
     };
 
     double delta[5];
