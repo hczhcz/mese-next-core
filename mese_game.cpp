@@ -24,7 +24,7 @@ Game::Game(uint64_t count, Settings &&_settings):
             settings.demand_ref_price,
             periods[0].size[i] * settings.prod_rate_initial,
             settings.demand_ref_mk / player_count,
-            periods[0].capital[i] * settings.deprecation_rate,
+            periods[0].capital[i] * settings.depreciation_rate,
             settings.demand_ref_rd / player_count
         );
     }
@@ -152,7 +152,7 @@ void Game::close_force() {
                 periods[now_period - 1].decisions.ci[i],
                 periods[now_period].settings.ci_limit / player_count
             );
-            double deprecation = periods[now_period].settings.deprecation_rate
+            double depreciation = periods[now_period].settings.depreciation_rate
                 * periods[now_period - 1].capital[i];
             double last_rd = min(
                 periods[now_period - 1].decisions.rd[i],
@@ -164,9 +164,9 @@ void Game::close_force() {
             ) || submit(
                 i, last_price, last_prod, last_mk, last_ci, 0
             ) || submit(
-                i, last_price, last_prod, last_mk, deprecation, 0
+                i, last_price, last_prod, last_mk, depreciation, 0
             ) || submit(
-                i, last_price, last_prod, 0, deprecation, 0
+                i, last_price, last_prod, 0, depreciation, 0
             ) || submit(
                 i, last_price, 0, 0, 0, 0
             );

@@ -32,7 +32,7 @@ void Period::print_full(T callback) {
                 val("prod_cost_factor_const", settings.prod_cost_factor_const);
 
                 val("unit_fee", settings.unit_fee);
-                val("deprecation_rate", settings.deprecation_rate);
+                val("depreciation_rate", settings.depreciation_rate);
             });
 
             doc("balance", MESE_PRINT {
@@ -106,7 +106,7 @@ void Period::print_full(T callback) {
             });
 
             doc("balance", MESE_PRINT {
-                arr("deprecation", deprecation);
+                arr("depreciation", depreciation);
                 arr("capital", capital);
                 arr("size", size);
                 arr("spending", spending);
@@ -192,7 +192,7 @@ void Period::print_settings(T callback) {
             val("prod_rate_balanced", settings.prod_rate_balanced);
 
             val("unit_fee", settings.unit_fee);
-            val("deprecation_rate", settings.deprecation_rate);
+            val("depreciation_rate", settings.depreciation_rate);
         });
 
         doc("balance", MESE_PRINT {
@@ -233,7 +233,7 @@ void Period::print_player_early(uint64_t i, T callback) {
         });
 
         doc("balance", MESE_PRINT {
-            val("deprecation", deprecation[i]);
+            val("depreciation", depreciation[i]);
             val("capital", capital[i]);
             val("size", size[i]);
             val("spending", spending[i]);

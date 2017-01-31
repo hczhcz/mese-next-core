@@ -48,7 +48,7 @@ struct Settings {
     MESE_VAL(prod_cost_factor_const);
 
     MESE_VAL(unit_fee);
-    MESE_VAL(deprecation_rate);
+    MESE_VAL(depreciation_rate);
 
     MESE_VAL(initial_cash);
     MESE_VAL(initial_capital);
@@ -114,7 +114,7 @@ struct PeriodDataEarly {
     MESE_ARR(goods_cost);
     MESE_ARR(goods_max_sales);
 
-    MESE_ARR(deprecation);
+    MESE_ARR(depreciation);
     MESE_ARR(capital); // *
     MESE_ARR(size); // *
     MESE_ARR(spending);

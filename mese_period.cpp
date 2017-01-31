@@ -95,15 +95,15 @@ bool Period::submit(
     goods_cost[i] = MESE_CASH(last.goods_cost_inventory[i] + prod_cost[i]);
     goods_max_sales[i] = MESE_CASH(decisions.price[i] * goods[i]);
 
-    deprecation[i] = MESE_CASH(settings.deprecation_rate * last.capital[i]);
+    depreciation[i] = MESE_CASH(settings.depreciation_rate * last.capital[i]);
     capital[i] = MESE_CASH(
-        last.capital[i] + decisions.ci[i] - deprecation[i]
+        last.capital[i] + decisions.ci[i] - depreciation[i]
     );
     size[i] = MESE_UNIT(capital[i] / settings.unit_fee);
 
     spending[i] = MESE_CASH(
         prod_cost[i]
-        + decisions.ci[i] - deprecation[i]
+        + decisions.ci[i] - depreciation[i]
         + decisions.mk[i] + decisions.rd[i]
     );
     balance_early[i] = MESE_CASH(
@@ -237,7 +237,7 @@ void Period::exec(Period &last) {
 
         cost_before_tax[i] = MESE_CASH(
             goods_cost_sold[i]
-            + deprecation[i]
+            + depreciation[i]
             + decisions.mk[i] + decisions.rd[i]
             - interest[i] + inventory_charge[i]
         );
@@ -253,13 +253,13 @@ void Period::exec(Period &last) {
 
         // balance[i] = MESE_CASH(
         //     balance_early[i] + loan_early[i]
-        //     + sales[i] - deprecation[i]
+        //     + sales[i] - depreciation[i]
         //     + interest[i] - inventory_charge[i] - tax_charge[i]
         // );
         balance[i] = MESE_CASH(
             last.cash[i] - last.loan[i] + loan_early[i]
             + profit[i]
-            - decisions.ci[i] + deprecation[i]
+            - decisions.ci[i] + depreciation[i]
             + goods_cost_sold[i] - prod_cost[i]
         );
         loan[i] = MESE_CASH(

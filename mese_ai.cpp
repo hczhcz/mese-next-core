@@ -289,7 +289,7 @@ std::array<double, 5> find_best(
 
     double fund = last.cash[i] - last.loan[i]
         + period.settings.loan_limit / game.player_count
-        + period.settings.deprecation_rate * last.capital[i];
+        + period.settings.depreciation_rate * last.capital[i];
     double range_limit[5] {
         last.average_price * 3,
         last.size[i],

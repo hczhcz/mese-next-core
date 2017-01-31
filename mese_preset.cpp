@@ -60,7 +60,7 @@ Settings get_preset(const std::string &name, uint64_t player_count) {
     settings.prod_cost_factor_const = 3;
 
     settings.unit_fee = 40;
-    settings.deprecation_rate = 0.05;
+    settings.depreciation_rate = 0.05;
 
     settings.initial_cash = MESE_SETTING(1837.5, 1837.5, 1750) * player_count;
     settings.initial_capital = 21000 * player_count;
@@ -114,7 +114,7 @@ const std::vector<std::string> &list_settings() {
         "prod_cost_factor_rate_over", "prod_cost_factor_rate_under",
         "prod_cost_factor_size", "prod_cost_factor_const",
 
-        "unit_fee", "deprecation_rate",
+        "unit_fee", "depreciation_rate",
 
         "initial_cash", "initial_capital",
 
@@ -165,7 +165,7 @@ void change_setting(
         {"prod_cost_factor_const", {&Settings::prod_cost_factor_const, false}},
 
         {"unit_fee", {&Settings::unit_fee, false}},
-        {"deprecation_rate", {&Settings::deprecation_rate, false}},
+        {"depreciation_rate", {&Settings::depreciation_rate, false}},
 
         {"initial_cash", {&Settings::initial_cash, true}},
         {"initial_capital", {&Settings::initial_capital, true}},
