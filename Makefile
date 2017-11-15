@@ -1,5 +1,6 @@
 CFLAGS = -std=c++14 -Wall -pedantic
 CFLAGS_DEBUG = -std=c++14 -Wall -pedantic -g -O0
+CFLAGS_PUBLIC = -std=c++14 -Wall -pedantic -g -O2
 HEADERS = $(wildcard *.hpp)
 FILES = $(wildcard *.cpp)
 OBJECTS = $(patsubst %.cpp, %.o, $(FILES))
@@ -30,7 +31,10 @@ mese32.exe: $(FILES) $(HEADERS)
 mese-debug: $(OBJECTS)
 	clang++ $(CFLAGS_DEBUG) $(OBJECTS) -o $@
 
-all: mese mese32 mese-gcc mese32-gcc mese.exe mese32.exe mese-debug
+mese-public: $(FILES) $(HEADERS)
+	clang++ $(CFLAGS_PUBLIC) $(FILES) -o $@
+
+all: mese mese32 mese-gcc mese32-gcc mese.exe mese32.exe mese-debug mese-public
 
 clean:
-	rm -f mese mese32 mese-gcc mese32-gcc mese.exe mese32.exe mese-debug $(OBJECTS)
+	rm -f mese mese32 mese-gcc mese32-gcc mese.exe mese32.exe mese-debug mese-public $(OBJECTS)
