@@ -1,3 +1,5 @@
+#include <array>
+
 #include "mese.hpp"
 #include "mese_print.hpp"
 
